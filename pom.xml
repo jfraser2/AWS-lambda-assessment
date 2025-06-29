@@ -1,17 +1,97 @@
-<dependencies>
-    <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-lambda-java-core</artifactId>
-      <version>1.2.2</version>
-    </dependency>
-    <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-lambda-java-events</artifactId>
-      <version>3.11.1</version>
-    </dependency>
-    <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-lambda-java-log4j2</artifactId>
-      <version>1.5.1</version>
-    </dependency>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.fraser.joe.poc.microservices.springboot</groupId>
+  <artifactId>AWS-lambda-assessment</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  
+ 	<properties>
+    	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    	<java.version>21</java.version>
+	</properties>
+	
+  	<dependencies>
+    	<dependency>
+      		<groupId>com.amazonaws</groupId>
+      		<artifactId>aws-lambda-java-core</artifactId>
+      		<version>1.2.2</version>
+    	</dependency>
+    	
+    	<dependency>
+      		<groupId>com.amazonaws</groupId>
+      		<artifactId>aws-lambda-java-events</artifactId>
+      		<version>3.11.1</version>
+    	</dependency>
+    	
+    	<dependency>
+      		<groupId>com.amazonaws</groupId>
+      		<artifactId>aws-lambda-java-log4j2</artifactId>
+      		<version>1.5.1</version>
+    	</dependency>
   </dependencies>
+
+<!-- make the jar in eclipse 	right click Project, Run As: Maven Build -->
+<!-- goal needs to be set as clean package -->
+	<build>
+		<plugins>
+      		<plugin>
+        		<groupId>org.apache.maven.plugins</groupId>
+        		<artifactId>maven-shade-plugin</artifactId>
+        		<version>3.2.2</version>
+        		<configuration>
+          			<createDependencyReducedPom>false</createDependencyReducedPom>
+        		</configuration>
+        		<executions>
+          			<execution>
+            			<phase>package</phase>
+            			<goals>
+              				<goal>shade</goal>
+            			</goals>
+          			</execution>
+        		</executions>
+      		</plugin>
+			
+<!-- goal needs to be set as docker:build -->
+<!-- output directory is: ${project.build.directory}/docker -->	
+<!-- Don't think this will work on windows -->
+<!-- Not used
+			<plugin>
+  				<groupId>com.spotify</groupId>
+  				<artifactId>dockerfile-maven-plugin</artifactId>
+  				<version>1.4.10</version>
+  				<executions>
+    				<execution>
+      					<id>default</id>
+     					<phase>deploy</phase>
+          				<goals>
+        					<goal>build</goal>
+      					</goals>
+    				</execution>
+  				</executions>
+  				<configuration>
+					<contextDirectory>docker</contextDirectory>
+					<dockerfile>Dockerfile</dockerfile>
+  docker.containers/group-name/image-name 					  				
+    				<repository>docker.containers/joe-fraser-va-poc-service:1</repository>
+    				<tag>${project.version}</tag>
+    				<buildArgs>
+      					<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+    				</buildArgs>
+  				</configuration>
+			</plugin>	
+-->    			
+		</plugins>
+		
+	</build>
+		
+	<profiles>
+  		<profile>
+    		<id>dev</id>
+    		<activation>
+      			<activeByDefault>true</activeByDefault>
+    		</activation>
+		</profile>
+	</profiles>	
+  
+</project>
+  
