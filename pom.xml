@@ -8,15 +8,11 @@
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     	<java.version>21</java.version>
+    	<maven.compiler.source>21</maven.compiler.source>
+    	<maven.compiler.target>21</maven.compiler.target>    	
 	</properties>
 	
   	<dependencies>
-    	<dependency>
-      		<groupId>com.amazonaws</groupId>
-      		<artifactId>aws-lambda-java-core</artifactId>
-      		<version>1.2.2</version>
-    	</dependency>
-    	
     	<dependency>
       		<groupId>com.amazonaws</groupId>
       		<artifactId>aws-lambda-java-events</artifactId>
@@ -24,11 +20,23 @@
     	</dependency>
     	
     	<dependency>
-      		<groupId>com.amazonaws</groupId>
-      		<artifactId>aws-lambda-java-log4j2</artifactId>
-      		<version>1.5.1</version>
+        	<groupId>com.amazonaws</groupId>
+        	<artifactId>aws-lambda-java-core</artifactId>
+        	<version>1.2.3</version>
     	</dependency>
-  </dependencies>
+    	
+    	<dependency>
+        	<groupId>software.amazon.awssdk</groupId>
+        	<artifactId>s3</artifactId>
+        	<version>2.28.29</version>
+    	</dependency>
+    	
+    	<dependency>
+        	<groupId>org.slf4j</groupId>
+        	<artifactId>slf4j-nop</artifactId>
+        	<version>2.0.16</version>
+    	</dependency>
+    </dependencies>
 
 <!-- make the jar in eclipse 	right click Project, Run As: Maven Build -->
 <!-- goal needs to be set as clean package -->
@@ -37,9 +45,18 @@
       		<plugin>
         		<groupId>org.apache.maven.plugins</groupId>
         		<artifactId>maven-shade-plugin</artifactId>
-        		<version>3.2.2</version>
+        		<version>3.4.1</version>
         		<configuration>
           			<createDependencyReducedPom>false</createDependencyReducedPom>
+          			<filters>
+            			<filter>
+                			<artifact>*:*</artifact>
+                			<excludes>
+                    			<exclude>META-INF/*</exclude>
+                    			<exclude>META-INF/versions/**</exclude>
+                			</excludes>
+            			</filter>
+          			</filters>
         		</configuration>
         		<executions>
           			<execution>
@@ -50,6 +67,19 @@
           			</execution>
         		</executions>
       		</plugin>
+      		<plugin>
+        		<groupId>org.apache.maven.plugins</groupId>
+        		<artifactId>maven-compiler-plugin</artifactId>
+        		<version>3.13.0</version>
+        		<configuration>
+           			<release>21</release>
+        		</configuration>
+      		</plugin> 
+      		
+      		<plugin>
+        		<artifactId>maven-surefire-plugin</artifactId>
+        		<version>3.5.2</version>
+      		</plugin>      		     		
 			
 <!-- goal needs to be set as docker:build -->
 <!-- output directory is: ${project.build.directory}/docker -->	
