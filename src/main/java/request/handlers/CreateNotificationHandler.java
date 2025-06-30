@@ -1,5 +1,7 @@
 package request.handlers;
 
+import java.util.List;
+
 import com.amazonaws.lambda.thirdparty.com.google.gson.Gson;
 import com.amazonaws.lambda.thirdparty.com.google.gson.GsonBuilder;
 import com.amazonaws.services.lambda.runtime.Context;
@@ -13,6 +15,12 @@ import helpers.StringBuilderContainer;
 import helpers.ValidationErrorContainer;
 import software.amazon.awssdk.utils.Validate;
 import software.amazon.lambda.powertools.validation.ValidationConfig;
+import services.NotificationImpl;
+import services.interfaces.Notification;
+import services.interfaces.RequestValidation;
+import services.validation.request.RequestValidationService;
+import validation.exceptions.RequestValidationException;
+import errorHandling.helpers.ApiValidationError;
 
 public class CreateNotificationHandler
 	extends RequestHandlerBase
@@ -20,9 +28,8 @@ public class CreateNotificationHandler
 {
 	static ObjectMapper mapper;
 	static Gson gsonWithSerializeNullsAndPrettyPrint;
-	static Gson gsonWithSerializeNulls;	
-	static StringBuilderContainer stringBuilderContainer;
-	static ValidationErrorContainer validationErrorContainer;
+	static Gson gsonWithSerializeNulls;
+	static Notification notificationService;
 	
 	static {
 		
@@ -35,20 +42,44 @@ public class CreateNotificationHandler
 	    gsonWithSerializeNullsAndPrettyPrint = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
 	    gsonWithSerializeNulls = new GsonBuilder().serializeNulls().create();
 	    
-	   stringBuilderContainer = new StringBuilderContainer();
-	   validationErrorContainer = new ValidationErrorContainer();
-	   
+	    notificationService = new NotificationImpl(); //one per Class
+	    
 	}
 
 	@Override
 	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
 		// TODO Auto-generated method stub
+		String requestOrigin = getRequestOrigin(input);
+		StringBuilderContainer stringBuilderContainer = new StringBuilderContainer(); // request Scope
+		ValidationErrorContainer requestValidationErrorsContainer = new ValidationErrorContainer(); //request Scope
+		RequestValidation<CreateNotification> createNotificationValidation = 
+				new RequestValidationService<CreateNotification>(); // request Scope
+		
+		APIGatewayProxyResponseEvent retVar = null;
 		CreateNotification createNotification = (CreateNotification) convertJsonToObject(input.getBody(), mapper, CreateNotification.class);
 		
-		stringBuilderContainer.onDestroy();
-		validationErrorContainer.onDestroy();
+		// single field validation
+		createNotificationValidation.validateRequest(createNotification, requestValidationErrorsContainer, null);
+		List<ApiValidationError> errorList = requestValidationErrorsContainer.getValidationErrorList();
 		
-		return null;
+		if (errorList.size() > 0)
+		{
+//			System.out.println("Right before the throw");
+			retVar = handleRequestValidationException(new RequestValidationException(errorList, requestOrigin), mapper);
+		} else if (!notificationService.validateTemplateFields(createNotification)) { // multiple field validation
+			List<ApiValidationError> templateFieldsError = notificationService.generateTemplateFieldsError(createNotification);
+			retVar = handleRequestValidationException(new RequestValidationException(templateFieldsError, requestOrigin), mapper);
+		} else if () {
+			
+		} else {
+			
+		}
+		
+		
+		stringBuilderContainer.onDestroy();
+		requestValidationErrorsContainer.onDestroy();
+		
+		return retVar;
 	}	
 	
 

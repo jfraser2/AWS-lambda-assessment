@@ -9,15 +9,17 @@ import com.amazonaws.lambda.thirdparty.com.google.gson.JsonElement;
 import com.amazonaws.lambda.thirdparty.com.google.gson.JsonParser;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import helpers.StringBuilderContainer;
 import dto.response.NonModelAdditionalFields;
 import dto.response.ResultStatus;
+import errorHandling.processing.RequestValidationAdvice;
 
-public abstract class RequestHandlerBase {
+public abstract class RequestHandlerBase
+	extends RequestValidationAdvice
+{
 	
 	protected static final String EOL = System.getProperty("line.separator");
 	protected static final String INDENT = "  ";

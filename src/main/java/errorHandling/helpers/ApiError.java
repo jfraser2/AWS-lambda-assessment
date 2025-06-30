@@ -7,11 +7,9 @@ import java.util.List;
 //import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import software.amazon.awssdk.http.HttpStatusCode;
-
 public class ApiError
 {
-	private HttpStatusCode status;
+	private String status; //HttpStatus as Text
 	   
 	@JsonSerialize(using = DateConverter.class)
 //	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy HH:mm:ss")
@@ -26,12 +24,12 @@ public class ApiError
 		setTimestamp(new Date());
 	}
 
-	public HttpStatusCode getStatus() {
-		return status;
+	public String getStatus() {
+		return this.status;
 	}
 
-	public void setStatus(HttpStatusCode status) {
-		this.status = status;
+	public void setStatus(String statusText) {
+		this.status = statusText;
 	}
 
 	public String getMessage() {
