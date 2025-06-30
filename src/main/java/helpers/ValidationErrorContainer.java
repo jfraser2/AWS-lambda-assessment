@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-import springboot.errorHandling.helpers.ApiValidationError;
+import errorHandling.helpers.ApiValidationError;
 
 public class ValidationErrorContainer {
 	
