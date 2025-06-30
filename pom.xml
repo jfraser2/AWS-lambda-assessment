@@ -36,6 +36,20 @@
         	<artifactId>slf4j-nop</artifactId>
         	<version>2.0.16</version>
     	</dependency>
+    	
+    	<dependency>
+        	<groupId>software.amazon.lambda</groupId>
+        	<artifactId>powertools-validation</artifactId>
+        	<version>1.20.2</version>
+    	</dependency> 
+    	
+<!--   3.1.1 is latest, managed version is 3.0.2 -->
+    	<dependency>
+        	<groupId>jakarta.validation</groupId>
+ 			<artifactId>jakarta.validation-api</artifactId>        	
+        	<version>3.0.2</version>
+    	</dependency> 
+    	
     </dependencies>
 
 <!-- make the jar in eclipse 	right click Project, Run As: Maven Build -->
