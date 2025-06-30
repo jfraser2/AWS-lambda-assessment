@@ -4,13 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.SessionFactory;
+
+import dao.NotificationDao;
+import dao.TemplateDao;
 import dto.request.CreateNotification;
 import validation.exceptions.BuildNotificationException;
 import entities.NotificationEntity;
 import entities.TemplateEntity;
 import errorHandling.helpers.ApiValidationError;
-import springboot.repositories.NotificationRepository;
-import springboot.repositories.TemplateRepository;
 import services.interfaces.Notification;
 
 public class NotificationImpl
@@ -19,18 +21,19 @@ public class NotificationImpl
 	private static final String SUBSTITUTION_TEXT = "(personal)";
 	private static final String REGEX_SUBSTITUTION_TEXT = "\\(personal\\)";
 	
-	@Autowired
-	private NotificationRepository notificationRepository;
-
-	@Autowired
-	private TemplateRepository templateRepository;
+	private SessionFactory sessionFactory = createSessionFactory();	
+	private NotificationDao notificationDao;
+	private TemplateDao templateDao;
 	
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+	public NotificationImpl() {
+		this.notificationDao = new NotificationDao();
+		this.templateDao = new TemplateDao();
+	}
+	
 	public NotificationEntity findById(Long notificationId) {
 		NotificationEntity retVar = null;
 		
-		Optional<NotificationEntity> usne = notificationRepository.findById(notificationId);
+		Optional<NotificationEntity> usne = notificationDao.findById(notificationId);
 		if (usne.isPresent())
 			retVar = usne.get();
 		

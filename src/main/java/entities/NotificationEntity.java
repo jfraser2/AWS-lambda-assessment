@@ -2,7 +2,7 @@ package entities;
 
 import jakarta.persistence.*;
 
-@Table(name = "Notifications")
+@Table(name = "Notifications", schema="va_assessment")
 @Entity
 public class NotificationEntity {
 	

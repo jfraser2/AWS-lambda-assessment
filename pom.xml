@@ -50,6 +50,30 @@
         	<version>3.0.2</version>
     	</dependency> 
     	
+<!-- Begin Database Dependencies -->
+
+<!--   	42.7.7 is latest, managed version is 42.7.2  -->
+		<dependency>
+    		<groupId>org.postgresql</groupId>
+    		<artifactId>postgresql</artifactId>
+    		<version>42.7.2</version>
+		</dependency>
+
+<!--   	6.6.19.Final is latest, managed version is 6.6.18.Final  -->
+		<dependency>
+    		<groupId>org.hibernate</groupId>
+    		<artifactId>hibernate-core</artifactId>
+    		<version>6.6.18.Final</version>
+ 		</dependency>
+<!-- Hikari Connection Pool -->
+<!--   	6.6.19.Final is latest, managed version is 6.6.18.Final  -->
+		<dependency>
+    		<groupId>org.hibernate</groupId>
+    		<artifactId>hibernate-hikaricp</artifactId>
+    		<version>6.6.18.Final</version>
+		</dependency> 				
+    	
+    	
     </dependencies>
 
 <!-- make the jar in eclipse 	right click Project, Run As: Maven Build -->
