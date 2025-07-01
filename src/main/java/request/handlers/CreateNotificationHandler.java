@@ -1,5 +1,6 @@
 package request.handlers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.SessionFactory;
@@ -13,12 +14,14 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dto.request.CreateNotification;
+import dto.request.GetById;
 import helpers.StringBuilderContainer;
 import helpers.ValidationErrorContainer;
 import hibenate.utils.HibernateUtil;
 import software.amazon.awssdk.http.HttpStatusCode;
 //import software.amazon.awssdk.utils.Validate;
 import software.amazon.lambda.powertools.validation.ValidationConfig;
+import dto.response.NonModelAdditionalFields;
 import validation.exceptions.BuildNotificationException;
 import validation.exceptions.DatabaseRowNotFoundException;
 import entities.NotificationEntity;
@@ -79,47 +82,23 @@ public class CreateNotificationHandler
 		String requestOrigin = getRequestOrigin(input);
 		StringBuilderContainer stringBuilderContainer = new StringBuilderContainer(); // request Scope
 		ValidationErrorContainer requestValidationErrorsContainer = new ValidationErrorContainer(); //request Scope
-		RequestValidation<CreateNotification> createNotificationValidation = 
-				new RequestValidationService<CreateNotification>(); // request Scope
 		
 		APIGatewayProxyResponseEvent retVar = null;
-		CreateNotification createNotification = (CreateNotification) convertJsonToObject(input.getBody(), mapper, CreateNotification.class);
 		
-		// single field validation
-		createNotificationValidation.validateRequest(createNotification, requestValidationErrorsContainer, null);
-		List<ApiValidationError> errorList = requestValidationErrorsContainer.getValidationErrorList();
-		
-		if (errorList.size() > 0)
-		{
-//			System.out.println("Right before the throw");
-			retVar = handleRequestValidationException(new RequestValidationException(errorList, requestOrigin), mapper);
-		} else if (!notificationService.validateTemplateFields(createNotification)) { // multiple field validation
-			List<ApiValidationError> templateFieldsError = notificationService.generateTemplateFieldsError(createNotification);
-			retVar = handleRequestValidationException(new RequestValidationException(templateFieldsError, requestOrigin), mapper);
-		}
-		
-		NotificationEntity ne = null;
-		boolean buildOk = true;
-		String failureMessage = null;
-		
-		try {
-			ne = notificationService.buildNotificationEntity(createNotification);
-		} catch (BuildNotificationException bne) {
-			buildOk = false;
-			failureMessage = bne.getMessage();
-		}
-		
-		if (!buildOk) {
-			retVar = handleDatabaseRowNotFoundException(new DatabaseRowNotFoundException(failureMessage, requestOrigin), mapper);
-		} else {
-			String jsonString = goodResponse(ne, stringBuilderContainer, null, mapper);
-			// support CORS
-			retVar = new APIGatewayProxyResponseEvent();
-			retVar.setHeaders(createResponseHeader(input));
-			retVar.setStatusCode(HttpStatusCode.CREATED);
-			retVar.setBody(jsonString);
-		}
-		
+		switch (input.getResource()) {
+		    case "/v1/createNotification":
+				retVar = creation(input, notificationService, requestValidationErrorsContainer,
+					stringBuilderContainer, requestOrigin);
+		        break;
+		    case "/v1/all/notifications":
+				retVar = findAll(input, notificationService, requestValidationErrorsContainer,
+						stringBuilderContainer, requestOrigin);
+		        break;
+		    case "/v1/findByNotificationId/{id}":
+				retVar = findById(input, notificationService, requestValidationErrorsContainer,
+						stringBuilderContainer, requestOrigin);
+		        break;
+		}		
 		
 		stringBuilderContainer.onDestroy();
 		requestValidationErrorsContainer.onDestroy();
@@ -127,5 +106,136 @@ public class CreateNotificationHandler
 		return retVar;
 	}	
 	
+	protected APIGatewayProxyResponseEvent creation(APIGatewayProxyRequestEvent input, Notification notificationService,
+		ValidationErrorContainer requestValidationErrorsContainer, StringBuilderContainer stringBuilderContainer,
+		String requestOrigin)
+	{
+		APIGatewayProxyResponseEvent retVar = null;
+		RequestValidation<CreateNotification> createNotificationValidation = 
+				new RequestValidationService<CreateNotification>(); // request Scope
+		
+		CreateNotification createNotification = (CreateNotification) convertJsonToObject(input.getBody(), mapper, CreateNotification.class);
+		
+		// single field validation
+		createNotificationValidation.validateRequest(createNotification, requestValidationErrorsContainer, null);
+		List<ApiValidationError> errorList = requestValidationErrorsContainer.getValidationErrorList();
+		
+		boolean gotError = false;
+		
+		if (errorList.size() > 0)
+		{
+//			System.out.println("Right before the throw");
+			retVar = handleRequestValidationException(new RequestValidationException(errorList, requestOrigin), mapper);
+			gotError = true;
+		} else if (!notificationService.validateTemplateFields(createNotification)) { // multiple field validation
+			List<ApiValidationError> templateFieldsError = notificationService.generateTemplateFieldsError(createNotification);
+			retVar = handleRequestValidationException(new RequestValidationException(templateFieldsError, requestOrigin), mapper);
+			gotError = true;
+		}
+		
+		if (!gotError) {
+			NotificationEntity ne = null;
+			boolean buildOk = true;
+			String failureMessage = null;
+			
+			try {
+				ne = notificationService.buildNotificationEntity(createNotification);
+			} catch (BuildNotificationException bne) {
+				buildOk = false;
+				failureMessage = bne.getMessage();
+			}
+			
+			if (!buildOk) {
+				retVar = handleDatabaseRowNotFoundException(new DatabaseRowNotFoundException(failureMessage, requestOrigin), mapper);
+			} else {
+				String jsonString = goodResponse(ne, stringBuilderContainer, null, mapper);
+				// support CORS
+				retVar = new APIGatewayProxyResponseEvent();
+				retVar.setHeaders(createResponseHeader(input));
+				retVar.setStatusCode(HttpStatusCode.CREATED);
+				retVar.setBody(jsonString);
+			}
+		}
+		
+		return retVar;
+	}
 
+	protected APIGatewayProxyResponseEvent findAll(APIGatewayProxyRequestEvent input, Notification notificationService,
+			ValidationErrorContainer requestValidationErrorsContainer, StringBuilderContainer stringBuilderContainer,
+			String requestOrigin)
+	{
+		APIGatewayProxyResponseEvent retVar = null;
+
+		List<NotificationEntity> aList = notificationService.findAll();
+		boolean isEmpty = true;
+		if(null != aList && aList.size() > 0) {
+			isEmpty = false;
+		}
+		
+		if(isEmpty) {
+			retVar = handleDatabaseRowNotFoundException(new DatabaseRowNotFoundException("Notification Table is empty.", requestOrigin), mapper);
+		} else {
+			List<Object> objectList = new ArrayList<Object>(aList);
+			String jsonString = goodResponseList(objectList, stringBuilderContainer, gsonWithSerializeNullsAndPrettyPrint, mapper);
+			
+			// support CORS
+			retVar = new APIGatewayProxyResponseEvent();
+			retVar.setHeaders(createResponseHeader(input));
+			retVar.setStatusCode(HttpStatusCode.OK);
+			retVar.setBody(jsonString);
+		}
+		
+		return retVar;
+	}
+	
+	protected APIGatewayProxyResponseEvent findById(APIGatewayProxyRequestEvent input, Notification notificationService,
+			ValidationErrorContainer requestValidationErrorsContainer, StringBuilderContainer stringBuilderContainer,
+			String requestOrigin)
+	{
+		APIGatewayProxyResponseEvent retVar = null;
+		RequestValidation<GetById> getByIdValidation = 
+				new RequestValidationService<GetById>(); // request Scope
+		
+		String notificationId = input.getPathParameters().get("id");
+		GetById data = new GetById(notificationId);
+		
+		getByIdValidation.validateRequest(data, requestValidationErrorsContainer, null);
+		List<ApiValidationError> errorList = requestValidationErrorsContainer.getValidationErrorList();
+		
+		boolean gotError = false;
+		
+		if (errorList.size() > 0)
+		{
+//			System.out.println("Right before the throw");
+			retVar = handleRequestValidationException(new RequestValidationException(errorList, requestOrigin), mapper);
+			gotError = true;
+		}
+		
+		if (!gotError) {
+			Long tempId = Long.valueOf(notificationId);
+			NotificationEntity record = notificationService.findById(tempId);
+			if(null == record) {
+				String errorMessage = "The Notification for Id: " + notificationId + " does not exist.";
+				retVar = handleDatabaseRowNotFoundException(new DatabaseRowNotFoundException(errorMessage, requestOrigin), mapper);
+			} else {
+				String jsonString = null;
+				String substitutedText = notificationService.generatePersonalization(record);
+				if (null != substitutedText && substitutedText.length() > 0) {
+					NonModelAdditionalFields nonModelAdditionalFields = new NonModelAdditionalFields();
+					nonModelAdditionalFields.setContent(substitutedText);
+					jsonString = goodResponse(record, stringBuilderContainer, nonModelAdditionalFields, mapper);			
+				} else {
+					jsonString = goodResponse(record, stringBuilderContainer, null, mapper);			
+				}
+				// support CORS
+				retVar = new APIGatewayProxyResponseEvent();
+				retVar.setHeaders(createResponseHeader(input));
+				retVar.setStatusCode(HttpStatusCode.OK);
+				retVar.setBody(jsonString);
+			}
+		}
+
+		return retVar;
+	}
+	
 }
