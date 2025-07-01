@@ -12,5 +12,6 @@ public interface Template {
 	
 	public TemplateEntity buildTemplateEntity(CreateTemplate createTemplateRequest);
 	public TemplateEntity persistData(TemplateEntity templateEntity);
+	public TemplateEntity mergeData(TemplateEntity templateEntity);
 
 }

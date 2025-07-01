@@ -61,6 +61,23 @@ public class TemplateImpl
 		
 		return retVar;
 	}
+	
+	@Override
+	public TemplateEntity mergeData(TemplateEntity templateEntity) {
+		
+		TemplateEntity retVar = null;
+		
+		try {
+			if (null != templateEntity) {
+				templateDao.merge(this.session, templateEntity);
+				retVar = templateEntity;
+			}	
+		} catch (Exception e) {
+			retVar = null;
+		}
+		
+		return retVar;
+	}
 
 	@Override
 	public TemplateEntity buildTemplateEntity(CreateTemplate createTemplateRequest) {

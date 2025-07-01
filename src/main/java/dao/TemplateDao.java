@@ -16,6 +16,12 @@ public class TemplateDao {
 	    transaction.commit(); // session is flushed by default
 	}
 	
+	public void merge(Session session, TemplateEntity templateEntity) {
+	    Transaction transaction = session.beginTransaction();
+	    session.merge(templateEntity);
+	    transaction.commit(); // session is flushed by default
+	}
+	
 	public Optional<TemplateEntity> findById(Session session, Long id) {
 		
 		Optional<TemplateEntity> retVar = null;
