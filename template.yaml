@@ -7,12 +7,12 @@ Globals:
           Variables:
             DB_URL: jdbc:postgresql://postgres/postgres
             DB_USER: postgres
-            DB_PASSWORD: sa			
+            DB_PASSWORD: sa
 Resources:
   NotificationFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: target/AWS-lambda-assessment-1.0.0-SNAPSHOT.jar
+      CodeUri: target/AWS-lambda-assessment-0.0.1-SNAPSHOT.jar
       Handler: request.handlers.CreateNotificationHandler::handleRequest
       Runtime: java21
       Events:
@@ -34,7 +34,7 @@ Resources:
   TemplateFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: target/AWS-lambda-assessment-1.0.0-SNAPSHOT.jar
+      CodeUri: target/AWS-lambda-assessment-0.0.1-SNAPSHOT.jar
       Handler: request.handlers.CreateTemplateHandler::handleRequest
       Runtime: java21
       Events:
@@ -57,4 +57,4 @@ Resources:
           Type: Api
           Properties:
             Path: /v1/updateTemplate
-            Method: patch			 					  									
+            Method: patch
