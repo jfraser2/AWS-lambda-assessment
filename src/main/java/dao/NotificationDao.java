@@ -31,7 +31,7 @@ public class NotificationDao {
 		List<NotificationEntity> retVar = null;
 		
 	    Transaction transaction = session.beginTransaction();
-	    retVar = session.createQuery("SELECT a FROM Notifications a", NotificationEntity.class).getResultList();
+	    retVar = session.createQuery("SELECT a FROM NotificationEntity a", NotificationEntity.class).getResultList();
 	    transaction.commit(); // session is flushed by default
 	    
 	    return retVar;

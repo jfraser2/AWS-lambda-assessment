@@ -21,7 +21,7 @@ public class HibernateUtil {
 	    	    Properties properties = new Properties();
 	    	    
 	    	    properties.setProperty("hibernate.hbm2ddl.auto", "none");
-//	    	    properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
+//	    	    properties.setProperty("hibernate.hbm2ddl.auto", "create");
 //	    	    properties.setProperty("hibernate.hbm2ddl.auto", "update");
 	    	    properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
 	    	    properties.setProperty("hibernate.current_session_context_class", "thread");
@@ -32,20 +32,21 @@ public class HibernateUtil {
 	    	    properties.setProperty("hibernate.connection.release_mode", "after_transaction");
 	    	    
 	    	    properties.setProperty("hibernate.connection.provider_class", "com.zaxxer.hikari.hibernate.HikariConnectionProvider");
-	    	    properties.setProperty("hibernate.hikari.dataSource.auto-commit", "false");
-	    	    properties.setProperty("hibernate.hikari.dataSource.transaction-isolation", "2"); // TRANSACTION_READ_COMMITED
+	    	    properties.setProperty("hibernate.connection.driver_class", "org.hibernate.dialect.PostgreSQLDialect");
+	    	    
 	    	    
 	    	    String url = System.getenv("DB_URL"); // Environment Variable defined in template.yaml
 	    	    String userName = System.getenv("DB_USER"); // Environment Variable defined in template.yaml
 	    	    String password = System.getenv("DB_PASSWORD"); // Environment Variable defined in template.yaml
 	    	    
-	    	    properties.setProperty("hibernate.hikari.datasource.driver-class-name", "org.hibernate.dialect.PostgreSQLDialect");
-	    	    properties.setProperty("hibernate.hikari.dataSource.url", url);
-	    	    properties.setProperty("hibernate.hikari.dataSource.user", userName);
-	    	    properties.setProperty("hibernate.hikari.dataSource.password", password);
+	    	    properties.setProperty("hibernate.connection.url", url);
+	    	    properties.setProperty("hibernate.hikari.dataSource.user", "postgres");
+	    	    properties.setProperty("hibernate.hikari.dataSource.password", "sa");
 	    	    
-	    	    properties.setProperty("hibernate.hikari.autoconnectionTimeout", "20000");
-	    	    properties.setProperty("hibernate.hikari.autoconnectionTimeout", "20000");
+	    	    properties.setProperty("hibernate.hikari.dataSource.auto-commit", "false");
+	    	    properties.setProperty("hibernate.hikari.dataSource.transaction-isolation", "2"); // TRANSACTION_READ_COMMITED
+//	    	    properties.setProperty("hibernate.hikari.autoconnectionTimeout", "20000");
+//	    	    properties.setProperty("hibernate.hikari.autoconnectionTimeout", "20000");
 	    	    properties.setProperty("hibernate.hikari.connectionTimeout", "20000");
 	    	    properties.setProperty("hibernate.hikari.minimumIdle", "1");
 	    	    properties.setProperty("hibernate.hikari.maximumPoolSize", "5");

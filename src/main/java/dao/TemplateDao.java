@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import entities.NotificationEntity;
 import entities.TemplateEntity;
 
 public class TemplateDao {
@@ -38,7 +39,7 @@ public class TemplateDao {
 		List<TemplateEntity> retVar = null;
 		
 	    Transaction transaction = session.beginTransaction();
-	    retVar = session.createQuery("SELECT a FROM Templates a", TemplateEntity.class).getResultList();
+	    retVar = session.createQuery("SELECT a FROM TemplateEntity a", TemplateEntity.class).getResultList();
 	    transaction.commit(); // session is flushed by default
 	    
 	    return retVar;
