@@ -67,8 +67,8 @@ public class HibernateUtil {
 	            // Create a Configuration object and apply properties from the Map
 	            Configuration configuration = new Configuration();
 	            configuration.setProperties(properties);
-	            configuration.addClass(NotificationEntity.class);
-	            configuration.addClass(TemplateEntity.class);
+	            configuration.addAnnotatedClass(NotificationEntity.class);
+	            configuration.addAnnotatedClass(TemplateEntity.class);
 	
 	            // Add annotated classes or mapping resources
 	            // For example, if you have an annotated entity class named 'User':
