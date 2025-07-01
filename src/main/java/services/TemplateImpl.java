@@ -3,23 +3,30 @@ package services;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+
+import dao.TemplateDao;
 import dto.request.CreateTemplate;
 import entities.TemplateEntity;
-import springboot.repositories.TemplateRepository;
 import services.interfaces.Template;
 
 public class TemplateImpl
 	implements Template
 {
-	@Autowired
-	private TemplateRepository templateRepository;
+	private final Session session;
+	private final TemplateDao templateDao;
+	
+	public TemplateImpl(SessionFactory sessionFactory) {
+		this.templateDao = new TemplateDao();
+		this.session = sessionFactory.openSession();
+	}
 	
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
 	public TemplateEntity findById(Long templateId) {
 		TemplateEntity retVar = null;
 		
-		Optional<TemplateEntity> usne = templateRepository.findById(templateId);
+		Optional<TemplateEntity> usne = templateDao.findById(this.session, templateId);
 		if (usne.isPresent())
 			retVar = usne.get();
 		
@@ -27,11 +34,10 @@ public class TemplateImpl
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
 	public List<TemplateEntity> findAll() {
 		List<TemplateEntity> retVar = null;
 		
-		List<TemplateEntity> usne = templateRepository.findAll();
+		List<TemplateEntity> usne = templateDao.findAll(this.session);
 		if (null != usne)
 			retVar = usne;
 		
@@ -40,14 +46,14 @@ public class TemplateImpl
 	
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
 	public TemplateEntity persistData(TemplateEntity templateEntity) {
 		
 		TemplateEntity retVar = null;
 		
 		try {
 			if (null != templateEntity) {
-				retVar = templateRepository.save(templateEntity);
+				templateDao.save(this.session, templateEntity);
+				retVar = templateEntity;
 			}	
 		} catch (Exception e) {
 			retVar = null;
@@ -67,7 +73,6 @@ public class TemplateImpl
 			{
 				retVar = new TemplateEntity();
 				retVar.setBody(templateBody);
-				
 			}
 		} catch (Exception e) {
 			retVar = null;

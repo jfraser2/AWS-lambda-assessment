@@ -1,0 +1,33 @@
+
+Globals:
+    Function:
+        Timeout: 20
+        MemorySize: 512
+        Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+          Variables:
+            DB_URL: jdbc:postgresql://postgres/postgres
+            DB_USER: postgres
+            DB_PASSWORD: sa			
+Resources:
+  NotificationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: target/AWS-lambda-assessment-1.0.0-SNAPSHOT.jar
+      Handler: request.handlers.CreateNotificationHandler::handleRequest
+      Runtime: java21
+      Events:
+        CreateNotification:
+          Type: Api 
+          Properties:
+            Path: /v1/createNotification
+            Method: post
+        FindAllNotifications:
+          Type: Api
+          Properties:
+            Path: /v1/all/notifications
+            Method: get
+        FindNotificationById:
+          Type: Api
+          Properties:
+            Path: /v1/findByNotificationId/{id}
+            Method: get

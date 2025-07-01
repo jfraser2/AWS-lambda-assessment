@@ -2,6 +2,8 @@ package request.handlers;
 
 import java.util.List;
 
+import org.hibernate.SessionFactory;
+
 import com.amazonaws.lambda.thirdparty.com.google.gson.Gson;
 import com.amazonaws.lambda.thirdparty.com.google.gson.GsonBuilder;
 import com.amazonaws.services.lambda.runtime.Context;
@@ -13,8 +15,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dto.request.CreateNotification;
 import helpers.StringBuilderContainer;
 import helpers.ValidationErrorContainer;
-import software.amazon.awssdk.utils.Validate;
+import hibenate.utils.HibernateUtil;
+import software.amazon.awssdk.http.HttpStatusCode;
+//import software.amazon.awssdk.utils.Validate;
 import software.amazon.lambda.powertools.validation.ValidationConfig;
+import validation.exceptions.BuildNotificationException;
+import validation.exceptions.DatabaseRowNotFoundException;
+import entities.NotificationEntity;
 import services.NotificationImpl;
 import services.interfaces.Notification;
 import services.interfaces.RequestValidation;
@@ -30,6 +37,7 @@ public class CreateNotificationHandler
 	static Gson gsonWithSerializeNullsAndPrettyPrint;
 	static Gson gsonWithSerializeNulls;
 	static Notification notificationService;
+	static SessionFactory sessionFactory;
 	
 	static {
 		
@@ -41,14 +49,14 @@ public class CreateNotificationHandler
 	    
 	    gsonWithSerializeNullsAndPrettyPrint = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
 	    gsonWithSerializeNulls = new GsonBuilder().serializeNulls().create();
+	    sessionFactory = HibernateUtil.getSessionFactory();
 	    
-	    notificationService = new NotificationImpl(); //one per Class
+	    notificationService = new NotificationImpl(sessionFactory); //one per Class
 	    
 	}
 
 	@Override
 	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
-		// TODO Auto-generated method stub
 		String requestOrigin = getRequestOrigin(input);
 		StringBuilderContainer stringBuilderContainer = new StringBuilderContainer(); // request Scope
 		ValidationErrorContainer requestValidationErrorsContainer = new ValidationErrorContainer(); //request Scope
@@ -69,10 +77,28 @@ public class CreateNotificationHandler
 		} else if (!notificationService.validateTemplateFields(createNotification)) { // multiple field validation
 			List<ApiValidationError> templateFieldsError = notificationService.generateTemplateFieldsError(createNotification);
 			retVar = handleRequestValidationException(new RequestValidationException(templateFieldsError, requestOrigin), mapper);
-		} else if () {
-			
+		}
+		
+		NotificationEntity ne = null;
+		boolean buildOk = true;
+		String failureMessage = null;
+		
+		try {
+			ne = notificationService.buildNotificationEntity(createNotification);
+		} catch (BuildNotificationException bne) {
+			buildOk = false;
+			failureMessage = bne.getMessage();
+		}
+		
+		if (!buildOk) {
+			retVar = handleDatabaseRowNotFoundException(new DatabaseRowNotFoundException(failureMessage, requestOrigin), mapper);
 		} else {
-			
+			String jsonString = goodResponse(ne, stringBuilderContainer, null, mapper);
+			// support CORS
+			retVar = new APIGatewayProxyResponseEvent();
+			retVar.setHeaders(createResponseHeader(input));
+			retVar.setStatusCode(HttpStatusCode.CREATED);
+			retVar.setBody(jsonString);
 		}
 		
 		

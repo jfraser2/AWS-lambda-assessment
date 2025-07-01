@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import dao.NotificationDao;
@@ -21,19 +22,21 @@ public class NotificationImpl
 	private static final String SUBSTITUTION_TEXT = "(personal)";
 	private static final String REGEX_SUBSTITUTION_TEXT = "\\(personal\\)";
 	
-	private SessionFactory sessionFactory = createSessionFactory();	
-	private NotificationDao notificationDao;
-	private TemplateDao templateDao;
+	private final Session session;
 	
-	public NotificationImpl() {
+	private final NotificationDao notificationDao;
+	private final TemplateDao templateDao;
+	
+	public NotificationImpl(SessionFactory sessionFactory) {
 		this.notificationDao = new NotificationDao();
 		this.templateDao = new TemplateDao();
+		this.session = sessionFactory.openSession();
 	}
 	
 	public NotificationEntity findById(Long notificationId) {
 		NotificationEntity retVar = null;
 		
-		Optional<NotificationEntity> usne = notificationDao.findById(notificationId);
+		Optional<NotificationEntity> usne = notificationDao.findById(this.session, notificationId);
 		if (usne.isPresent())
 			retVar = usne.get();
 		
@@ -41,11 +44,10 @@ public class NotificationImpl
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
 	public List<NotificationEntity> findAll() {
 		List<NotificationEntity> retVar = null;
 		
-		List<NotificationEntity> usne = notificationRepository.findAll();
+		List<NotificationEntity> usne = notificationDao.findAll(this.session);
 		if (null != usne)
 			retVar = usne;
 		
@@ -74,14 +76,14 @@ public class NotificationImpl
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
 	public NotificationEntity persistData(NotificationEntity notificationEntity) {
 		
 		NotificationEntity retVar = null;
 		
 		try {
 			if (null != notificationEntity) {
-				retVar = notificationRepository.save(notificationEntity);
+				notificationDao.save(this.session, notificationEntity);
+				retVar = notificationEntity;
 			}	
 		} catch (Exception e) {
 //			System.out.println("Exception is: " + e.getMessage());
@@ -92,7 +94,6 @@ public class NotificationImpl
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED)
 	public NotificationEntity buildNotificationEntity(CreateNotification createNotificationRequest)
 		throws BuildNotificationException
 	{
@@ -104,7 +105,7 @@ public class NotificationImpl
 		if (null != templateId && templateId.length() > 0)
 		{
 			Long tempId = Long.valueOf(templateId);
-			Optional<TemplateEntity> te = templateRepository.findById(tempId);
+			Optional<TemplateEntity> te = templateDao.findById(this.session, tempId);
 			if (te.isPresent()) {
 				templateEntity = te.get();
 			} else {
@@ -116,7 +117,7 @@ public class NotificationImpl
 			{	
 				TemplateEntity tempEntity = new TemplateEntity();
 				tempEntity.setBody(createNotificationRequest.getTemplateText());
-				templateEntity = templateRepository.save(tempEntity);
+				templateDao.save(this.session, tempEntity);
 			}	
 		}
 		
