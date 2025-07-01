@@ -31,3 +31,30 @@ Resources:
           Properties:
             Path: /v1/findByNotificationId/{id}
             Method: get
+  TemplateFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: target/AWS-lambda-assessment-1.0.0-SNAPSHOT.jar
+      Handler: request.handlers.CreateTemplateHandler::handleRequest
+      Runtime: java21
+      Events:
+        CreateTemplate:
+          Type: Api 
+          Properties:
+            Path: /v1/createTemplate
+            Method: post
+        FindAllTemplates:
+          Type: Api
+          Properties:
+            Path: /v1/all/templates
+            Method: get
+        FindTemplateById:
+          Type: Api
+          Properties:
+            Path: /v1/findByTemplateId/{id}
+            Method: get
+        UpdateTemplate:
+          Type: Api
+          Properties:
+            Path: /v1/updateTemplate
+            Method: patch			 					  									

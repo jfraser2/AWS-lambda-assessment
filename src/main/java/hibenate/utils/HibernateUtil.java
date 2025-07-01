@@ -12,7 +12,7 @@ import java.util.Properties;
 
 public class HibernateUtil {
 	
-	private static SessionFactory sessionFactory;
+	protected static SessionFactory sessionFactory;
 
 	public static SessionFactory getSessionFactory() {
 	    if (sessionFactory == null) {
@@ -89,12 +89,14 @@ public class HibernateUtil {
 	            throw new ExceptionInInitializerError(e);
 	        }
 	    }
+	    
 	    return sessionFactory;
 	}
 
 	public static void shutdown() {
 	    if (sessionFactory != null) {
-	        sessionFactory.close();
+	    	sessionFactory.close();
 	    }
 	}
+	
 }

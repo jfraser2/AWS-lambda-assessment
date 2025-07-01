@@ -66,13 +66,12 @@
     		<version>6.6.18.Final</version>
  		</dependency>
 <!-- Hikari Connection Pool -->
-<!--   	6.6.19.Final is latest, managed version is 6.6.18.Final  -->
+<!--   	6.3.0 is latest, managed version is 6.3.0  -->
 		<dependency>
-    		<groupId>org.hibernate</groupId>
-    		<artifactId>hibernate-hikaricp</artifactId>
-    		<version>6.6.18.Final</version>
-		</dependency> 				
-    	
+    		<groupId>com.zaxxer</groupId>
+    		<artifactId>HikariCP</artifactId>
+    		<version>3.4.5</version>
+		</dependency>
     	
     </dependencies>
 

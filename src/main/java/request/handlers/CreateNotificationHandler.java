@@ -53,6 +53,25 @@ public class CreateNotificationHandler
 	    
 	    notificationService = new NotificationImpl(sessionFactory); //one per Class
 	    
+	    Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                System.out.println("[runtime] ShutdownHook triggered");
+
+                System.out.println("[runtime] Cleaning up");
+                // perform actual clean up work here.
+                try {
+                	HibernateUtil.shutdown();
+                    Thread.sleep(200);
+                 } catch (Exception e) {
+                    System.out.println(e);
+                 }
+
+                System.out.println("[runtime] exiting");
+                System.exit(0);
+            }
+        });	    
+	    
 	}
 
 	@Override
