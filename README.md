@@ -38,8 +38,9 @@ now you can open your windows Administrator shell, and cd to the project install
 
 The build is done from project file template.yaml, and your compiled project jar file in the target folder.<br/>
 from your windows Administrator shell, and your project folder(cd C:\\work\\java\\eclipse-workspace2\\AWS-lambda-assessment)<br/>
-type: sam build<enter> this is a one time thing<br/>
+for one time only, type: sam build<br/>
 after every compile(if needed), command is: sam local start-api --docker-network VA-assessment<br/>
+Ctrl-C to exit the App
 
 #Start Testing
 
