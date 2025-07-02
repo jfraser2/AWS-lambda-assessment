@@ -36,19 +36,73 @@
         	<artifactId>slf4j-nop</artifactId>
         	<version>2.0.16</version>
     	</dependency>
-    	
+ <!--   	
     	<dependency>
         	<groupId>software.amazon.lambda</groupId>
         	<artifactId>powertools-validation</artifactId>
         	<version>1.20.2</version>
     	</dependency> 
+-->    	
+
+<!-- json to java conversion -->
+<!--   	2.19.1 is latest, managed version is 2.19.1  -->
+		<dependency>
+    		<groupId>com.fasterxml.jackson.core</groupId>
+    		<artifactId>jackson-databind</artifactId>
+    		<version>2.19.1</version>
+    	</dependency>
     	
+<!-- For handling Request Validation Errors -->		
+<!--   	2.19.1 is latest, managed version is 2.19.1  -->
+		<dependency>
+		   <groupId>com.fasterxml.jackson.datatype</groupId>
+		   <artifactId>jackson-datatype-jsr310</artifactId>
+		   <version>2.19.1</version>
+		</dependency>
+		
+<!-- java to json conversion --> 
+<!--   	2.13.1 is latest, managed version is 2.13.1  -->
+ 		<dependency>
+    		<groupId>com.google.code.gson</groupId>
+    		<artifactId>gson</artifactId>
+    		<version>2.13.1</version>
+		</dependency> 
+		 	
+<!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator -->
+		<dependency>
+    		<groupId>org.hibernate.validator</groupId>
+    		<artifactId>hibernate-validator</artifactId>
+    		<version>9.0.1.Final</version>
+		</dependency>
+<!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator dependency -->
+		<dependency>
+    		<groupId>org.glassfish.expressly</groupId>
+    		<artifactId>expressly</artifactId>
+    		<version>6.0.0</version>
+		</dependency>						
+					 	
 <!--   3.1.1 is latest, managed version is 3.0.2 -->
     	<dependency>
         	<groupId>jakarta.validation</groupId>
  			<artifactId>jakarta.validation-api</artifactId>        	
         	<version>3.0.2</version>
     	</dependency> 
+    	
+<!--Testing -->  
+<!--   	5.13.1 is latest, managed version is 5.12.2  -->
+    	<dependency>
+      		<groupId>org.junit.jupiter</groupId>
+      		<artifactId>junit-jupiter-engine</artifactId>
+      		<version>5.12.2</version>
+      		<scope>test</scope>
+    	</dependency>
+<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-params -->
+		<dependency>
+    		<groupId>org.junit.jupiter</groupId>
+    		<artifactId>junit-jupiter-params</artifactId>
+    		<version>5.12.2</version>
+    		<scope>test</scope>
+		</dependency>  	
     	
 <!-- Begin Database Dependencies -->
 

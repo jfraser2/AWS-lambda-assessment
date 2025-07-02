@@ -5,13 +5,13 @@ import java.util.List;
 
 import org.hibernate.SessionFactory;
 
-import com.amazonaws.lambda.thirdparty.com.google.gson.Gson;
-import com.amazonaws.lambda.thirdparty.com.google.gson.GsonBuilder;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import dto.request.CreateNotification;
 import dto.request.GetById;
@@ -20,7 +20,6 @@ import helpers.ValidationErrorContainer;
 import hibenate.utils.HibernateUtil;
 import software.amazon.awssdk.http.HttpStatusCode;
 //import software.amazon.awssdk.utils.Validate;
-import software.amazon.lambda.powertools.validation.ValidationConfig;
 import dto.response.NonModelAdditionalFields;
 import validation.exceptions.BuildNotificationException;
 import validation.exceptions.DatabaseRowNotFoundException;
@@ -48,7 +47,7 @@ public class CreateNotificationHandler
 //		ValidationConfig.get().setSchemaVersion(SpecVersion.VersionFlag.V4);
 		
 	    // update (de)serializationConfig or other properties
-	    mapper = ValidationConfig.get().getObjectMapper();
+	    mapper = new ObjectMapper();
 	    
 	    gsonWithSerializeNullsAndPrettyPrint = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
 	    gsonWithSerializeNulls = new GsonBuilder().serializeNulls().create();
