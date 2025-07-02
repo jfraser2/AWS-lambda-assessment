@@ -9,12 +9,4 @@ docker run --name postgres --network VA-assessment -e POSTGRES_PASSWORD="sa" -d 
 #debug container if it does not start
 docker logs postgres
 
-#add a schema
-#starts a working psql shell
-docker exec -it postgres psql -U postgres
-
-at the prompt enter name of your schema
-create schema va_assessment
-
-Control-D to exit
 

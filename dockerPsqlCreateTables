@@ -1,8 +1,18 @@
  
- #Start psql from windows command line
- #Control-D to exit
- 
- docker exec -it postgres psql -U postgres
+#add a schema
+#starts a working psql shell
+docker exec -it postgres psql -U postgres
+
+at the prompt enter name of your schema
+create schema va_assessment;
+
+Control-D to exit
+
+#add a schema
+#Start psql shell from windows command line
+docker exec -it postgres psql -U postgres
+
+ #Start Typing, lol
  
  	create schema va_assessment;
  
@@ -28,4 +38,7 @@
  #check work
  
  SELECT * FROM pg_catalog.pg_tables WHERE schemaname='va_assessment';
+ 
+ #Control-D to exit(when all work is done)
+ 
        
