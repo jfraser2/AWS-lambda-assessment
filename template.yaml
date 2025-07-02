@@ -12,7 +12,7 @@ Resources:
   NotificationFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: target/AWS-lambda-assessment-0.0.1-SNAPSHOT.jar
+      CodeUri: C:\work\java\eclipse-workspace2\AWS-lambda-assessment
       Handler: request.handlers.CreateNotificationHandler::handleRequest
       Runtime: java21
       Events:
@@ -34,7 +34,7 @@ Resources:
   TemplateFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: target/AWS-lambda-assessment-0.0.1-SNAPSHOT.jar
+      CodeUri: C:\work\java\eclipse-workspace2\AWS-lambda-assessment
       Handler: request.handlers.CreateTemplateHandler::handleRequest
       Runtime: java21
       Events:

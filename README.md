@@ -29,17 +29,20 @@ After download(https://maven.apache.org/download.cgi) you have to set<br/>
 the windows MAVEN\_HOME, and add it the windows path.<br/>
 
 Now the local AWS Lambda runtime. It is AWS\_SAM\_CLI<br/>
-Download AWS\_SAM\_CLI\_64\_PY3.msi url is:<br/>
+Download AWS\_SAM\_CLI\_64\_PY3.msi(I chose version 1.142.1) url is:<br/>
 https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html<br/>
-This is much nicer path is set during install<br/>
+This is much nicer, path is set during install<br/>
 now you can open your windows Administrator shell, and cd to the project install folder<br/>
 
 #Building the Lambda Functions(do this fourth)
 
-The build is done from project file template.yaml, and your compiled project jar file in the target folder.<br/>
-from your windows Administrator shell, and your project folder(cd C:\\work\\java\\eclipse-workspace2\\AWS-lambda-assessment)<br/>
-for one time only, type: sam build<br/>
-after every compile(if needed), command is: sam local start-api --docker-network VA-assessment<br/>
+From your windows Administrator shell, cd to your project folder(cd C:\work\java\eclipse-workspace2\AWS-lambda-assessment)<br/>
+The build is done from project file template.yaml, and it must contain the full path to your project folder.<br/>
+Your JAVA_HOME and path(windows Environment variables) must be set to JAVA 21<br/>
+To Begin, type: sam build --debug <br/>
+To validate you should see new files in your build folder of directory .aws-sam<br/>
+If you make project changes remove the build folder and again run sam build --debug
+To start the app, the command is: sam local start-api --docker-network VA-assessment<br/>
 Ctrl-C to exit the App
 
 #Start Testing
