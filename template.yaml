@@ -31,6 +31,11 @@ Resources:
           Properties:
             Path: /v1/findByNotificationId/{id}
             Method: get
+        ShutdownHook:
+          Type: Api
+          Properties:
+            Path: /v1/shutdown
+            Method: get
   TemplateFunction:
     Type: AWS::Serverless::Function
     Properties:
