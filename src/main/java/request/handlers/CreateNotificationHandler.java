@@ -79,7 +79,7 @@ public class CreateNotificationHandler
 				retVar = findById(input, notificationService, requestValidationErrorsContainer,
 						stringBuilderContainer, requestOrigin);
 		        break;
-		    case "/v1/shutdown":
+		    case "/v1/notification/shutdown":
 				retVar = shutdownHook(requestOrigin);
 		        break;
 		}		
@@ -230,8 +230,8 @@ public class CreateNotificationHandler
 	{
 		APIGatewayProxyResponseEvent retVar = null;
 		
-//        System.out.println("[runtime] Hibernate ShutdownHook triggered");
-//        System.out.println("[runtime] Cleaning up");
+//        System.out.println("[runtime] Notification ShutdownHook triggered");
+//        System.out.println("[runtime] Notification Clean up");
         
         // perform actual clean up work here.
         boolean shutdownFailed = false;
@@ -241,13 +241,13 @@ public class CreateNotificationHandler
         	shutdownFailed = true; 
          }
 
-        String outputMessage = "Hibernate ShutdownHook triggered. Now Enter the Ctrl-C";
+        String outputMessage = "Notificaton ShutdownHook triggered.";
         String outputStatus;
         
         if (!shutdownFailed) {
         	outputStatus = "OK";
         } else {
-        	outputStatus = "HIBERNATE_SHUTDOWN_FAILED";
+        	outputStatus = "NOTIFICATION_SHUTDOWN_FAILED";
         }
 
 		retVar = handleShutdownException(new ShutdownException(outputMessage, outputStatus, requestOrigin), mapper);

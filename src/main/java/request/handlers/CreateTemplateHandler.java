@@ -28,6 +28,7 @@ import services.validation.request.RequestValidationService;
 import software.amazon.awssdk.http.HttpStatusCode;
 import validation.exceptions.DatabaseRowNotFoundException;
 import validation.exceptions.RequestValidationException;
+import validation.exceptions.ShutdownException;
 
 public class CreateTemplateHandler
 	extends RequestHandlerBase
@@ -80,6 +81,9 @@ public class CreateTemplateHandler
 		    case "/v1/updateTemplate":
 				retVar = update(input, templateService, requestValidationErrorsContainer,
 						stringBuilderContainer, requestOrigin);
+		        break;
+		    case "/v1/template/shutdown":
+				retVar = shutdownHook(requestOrigin);
 		        break;
 		}		
 		
@@ -239,6 +243,38 @@ public class CreateTemplateHandler
 			}
 		}
 		
+		return retVar;
+	}
+	
+    // Really the only way to do this because of the limitation
+	// being created by the SIGKILL or SIGINT not being sent by Ctrl-C from sam.cmd
+    // The only other possible way would be a modification of sam.cmd which uses python.exe
+	// The sam.cmd would have to start using pythonw.exe, not going there
+	protected APIGatewayProxyResponseEvent shutdownHook(String requestOrigin)
+	{
+		APIGatewayProxyResponseEvent retVar = null;
+		
+//        System.out.println("[runtime] Template ShutdownHook triggered");
+//        System.out.println("[runtime] Template Clean up");
+        
+        // perform actual clean up work here.
+        boolean shutdownFailed = false;
+        try {
+        	HibernateUtil.shutdown();
+         } catch (Exception e) {
+        	shutdownFailed = true; 
+         }
+
+        String outputMessage = "Template ShutdownHook triggered.";
+        String outputStatus;
+        
+        if (!shutdownFailed) {
+        	outputStatus = "OK";
+        } else {
+        	outputStatus = "TEMPLATE_SHUTDOWN_FAILED";
+        }
+
+		retVar = handleShutdownException(new ShutdownException(outputMessage, outputStatus, requestOrigin), mapper);
 		return retVar;
 	}
 	
