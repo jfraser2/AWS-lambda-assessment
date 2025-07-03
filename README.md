@@ -43,9 +43,10 @@ To Begin, type: sam build <br/>
 To validate you should see new files in your build folder of directory .aws-sam<br/>
 If you make project changes remove the build folder and again run sam build<br/>
 To start the app, the command is: sam local start-api --docker-network VA-assessment<br/>
-Before any Ctrl-C to exit the App, a person should run "curl localhost:3000/v1/shutdown"<br/>
-this will clean up the Hikari connection pool. If you forget you could stop and start postgres<br/>
-in DockerDesktop.<br/>
+Before any Ctrl-C to exit the App, a person should run two shutdowns.<br/>
+ "curl localhost:3000/v1/notification/shutdown" and "curl localhost:3000/v1/template/shutdown"<br/>
+this will clean up the Hikari connection pool. Each Function has its own connection pool. <br/>
+If you forget you could stop and start postgres in DockerDesktop.<br/>
 
 #Start Testing
 
