@@ -39,11 +39,13 @@ now you can open your windows Administrator shell, and cd to the project install
 From your windows Administrator shell, cd to your project folder(cd C:\work\java\eclipse-workspace2\AWS-lambda-assessment)<br/>
 The build is done from project file template.yaml, and it must contain the full path to your project folder.<br/>
 Your JAVA_HOME and path(windows Environment variables) must be set to JAVA 21<br/>
-To Begin, type: sam build --debug <br/>
+To Begin, type: sam build <br/>
 To validate you should see new files in your build folder of directory .aws-sam<br/>
-If you make project changes remove the build folder and again run sam build --debug
+If you make project changes remove the build folder and again run sam build<br/>
 To start the app, the command is: sam local start-api --docker-network VA-assessment<br/>
-Ctrl-C to exit the App
+Before any Ctrl-C to exit the App, a person should run "curl localhost:3000/v1/shutdown"<br/>
+this will clean up the Hikari connection pool. If you forget you could stop and start postgres<br/>
+in DockerDesktop.<br/>
 
 #Start Testing
 

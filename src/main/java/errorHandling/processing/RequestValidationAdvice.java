@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 import validation.exceptions.DatabaseRowNotFoundException;
 import validation.exceptions.RequestValidationException;
+import validation.exceptions.ShutdownException;
 import errorHandling.helpers.ApiError;
 
 import software.amazon.awssdk.http.HttpStatusCode;
@@ -91,6 +92,21 @@ public abstract class RequestValidationAdvice
         return buildResponseEntity(json, HttpStatusCode.OK, ex.getRequestOrigin());
     }
 	 
+    public APIGatewayProxyResponseEvent handleShutdownException(
+        ShutdownException ex, ObjectMapper mapper)
+    {
+		ApiError apiError = new ApiError();
+		apiError.setStatus(ex.getStatus());
+		
+		String error = ex.getMessage();
+        apiError.setMessage(error);
+   
+		String json = convertApiErrorToJson(apiError, mapper);
+		apiError = null;
+        
+        return buildResponseEntity(json, HttpStatusCode.OK, ex.getRequestOrigin());
+    }
+    
 	public APIGatewayProxyResponseEvent buildResponseEntity(String json, int aStatus, String requestOrigin)
 	{
 		APIGatewayProxyResponseEvent retVar = new APIGatewayProxyResponseEvent();
