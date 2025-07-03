@@ -53,10 +53,13 @@ public class CreateTemplateHandler
 	    
 	    templateService = new TemplateImpl(sessionFactory); //one per Class
 	    
+	    // only executed on SIGKILL or SIGINT sent by Ctrl-C in startLocalLambda.bash
+	    // really no way to do this in windows without using pythonw.exe in sam.cmd
+	    // which would be a modification of sam.cmd which uses python.exe
 	    Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                System.out.println("[runtime] ShutdownHook triggered");
+                System.out.println("[runtime] Template ShutdownHook triggered");
 
                 System.out.println("[runtime] Cleaning up");
                 // perform actual clean up work here.
