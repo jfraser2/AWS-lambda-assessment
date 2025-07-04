@@ -14,10 +14,10 @@ public class TemplateEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "int")
-    private Long id;
+    protected Long id;
 
     @Column(name = "body", columnDefinition = "VARCHAR(200)", nullable = false)
-    private String body;
+    protected String body;
 
 	public Long getId() {
 		return id;

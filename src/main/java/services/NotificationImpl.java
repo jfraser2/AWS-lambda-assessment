@@ -19,13 +19,13 @@ import services.interfaces.Notification;
 public class NotificationImpl
 	implements Notification
 {
-	private static final String SUBSTITUTION_TEXT = "(personal)";
-	private static final String REGEX_SUBSTITUTION_TEXT = "\\(personal\\)";
+	protected static final String SUBSTITUTION_TEXT = "(personal)";
+	protected static final String REGEX_SUBSTITUTION_TEXT = "\\(personal\\)";
 	
-	private final Session session;
+	protected  Session session;
 	
-	private final NotificationDao notificationDao;
-	private final TemplateDao templateDao;
+	protected final NotificationDao notificationDao;
+	protected final TemplateDao templateDao;
 	
 	public NotificationImpl(SessionFactory sessionFactory) {
 		this.notificationDao = new NotificationDao();
@@ -163,6 +163,14 @@ public class NotificationImpl
 		retVar.add(theError);
 		
 		return retVar;
+	}
+
+	public Session getSession() {
+		return session;
+	}
+
+	public void setSession(Session session) {
+		this.session = session;
 	}
 	
 }

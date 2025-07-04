@@ -10,9 +10,9 @@ public class RequestValidationException
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -3967697713578441774L;
-	private List<ApiValidationError> subErrorList;
-	private String requestOrigin; //support CORS
+	protected static final long serialVersionUID = -3967697713578441774L;
+	protected List<ApiValidationError> subErrorList;
+	protected String requestOrigin; //support CORS
 	
 	public RequestValidationException(List<ApiValidationError> requestErrorList, String requestOrigin)
 	{

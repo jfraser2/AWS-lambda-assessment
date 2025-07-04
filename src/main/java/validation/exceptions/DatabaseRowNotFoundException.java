@@ -6,10 +6,9 @@ public class DatabaseRowNotFoundException
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -5601843022086989457L;
-	private Long rowId;
-	private String requestOrigin; //support CORS
-	
+	protected static final long serialVersionUID = -5601843022086989457L;
+	protected Long rowId;
+	protected String requestOrigin; //support CORS
 	
 	public DatabaseRowNotFoundException(String exceptionText, String requestOrigin) {
 		super(exceptionText);

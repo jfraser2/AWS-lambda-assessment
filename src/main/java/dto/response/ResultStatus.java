@@ -2,7 +2,7 @@ package dto.response;
 
 public class ResultStatus {
 	
-	private String status;
+	protected String status;
 	
 	public ResultStatus() {
 		

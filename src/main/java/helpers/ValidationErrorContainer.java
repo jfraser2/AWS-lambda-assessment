@@ -8,7 +8,7 @@ import errorHandling.helpers.ApiValidationError;
 
 public class ValidationErrorContainer {
 	
-	private List<ApiValidationError> errorList;
+	protected List<ApiValidationError> errorList;
 	
 	public  ValidationErrorContainer()
 	{

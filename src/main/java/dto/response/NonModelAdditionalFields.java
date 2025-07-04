@@ -2,7 +2,7 @@ package dto.response;
 
 public class NonModelAdditionalFields {
 	
-	private String content;
+	protected String content;
 
 	public NonModelAdditionalFields() {
 		super();

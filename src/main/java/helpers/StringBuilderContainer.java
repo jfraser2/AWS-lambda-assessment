@@ -2,7 +2,7 @@ package helpers;
 
 public class StringBuilderContainer {
 	
-	private StringBuilder stringBuilder;
+	protected StringBuilder stringBuilder;
 	
 	public StringBuilderContainer()
 	{
