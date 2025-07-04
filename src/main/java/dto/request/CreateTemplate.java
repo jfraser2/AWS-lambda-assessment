@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 public class CreateTemplate {
 	@NotBlank(message = "The template text must not be blank")
 	@Size(max = 200, message="Max Length is 200 characters")
-	private String templateText;
+	protected String templateText;
 	
 	public CreateTemplate()
 	{

@@ -7,7 +7,7 @@ public class GetById {
 	
 	@NotBlank(message = "Id must not be blank")
 	@Pattern(regexp = "[0-9]+", message = "Invalid Id. Only Numbers allowed")
-	private String id;
+	protected String id;
 
 	public GetById(String id) {
 		super();

@@ -6,13 +6,13 @@ public class ApiValidationError
 	extends ApiSubError
 {
 	@JsonSerialize(using = StringConverter.class)
-	private String object;
+	protected String object;
 	@JsonSerialize(using = StringConverter.class)
-	private String field;
+	protected String field;
 	@JsonSerialize(using = RejectedValueConverter.class)
-	private Object rejectedValue;
+	protected Object rejectedValue;
 	@JsonSerialize(using = StringConverter.class)
-	private String message;
+	protected String message;
 
 	public ApiValidationError(String object, String message) {
 	    this.object = object;

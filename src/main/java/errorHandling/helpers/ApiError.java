@@ -9,16 +9,16 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class ApiError
 {
-	private String status; //HttpStatus as Text
+	protected String status; //HttpStatus as Text
 	   
 	@JsonSerialize(using = DateConverter.class)
 //	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy HH:mm:ss")
-	private Date timestamp;
+	protected Date timestamp;
 	   
-	private String message;
-	private String debugMessage;
+	protected String message;
+	protected String debugMessage;
 	@JsonSerialize(using = ListApiValidationErrorConverter.class)
-	private List<ApiValidationError> subErrors;
+	protected List<ApiValidationError> subErrors;
 
 	public ApiError() {
 		setTimestamp(new Date());

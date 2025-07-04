@@ -9,17 +9,17 @@ public class NotificationEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "int")
-    private Long id;
+    protected Long id;
 	
     @Column(name = "phone_number", columnDefinition = "VARCHAR(20)", nullable = false)
-    private String phoneNumber;
+    protected String phoneNumber;
     
     @Column(name = "personalization", columnDefinition = "VARCHAR(25)", nullable = true)
-    private String personalization;
+    protected String personalization;
 
     @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "template_id", referencedColumnName = "id", nullable = false)
-    private TemplateEntity templateEntity;
+    protected TemplateEntity templateEntity;
     
 	public Long getId() {
 		return this.id;

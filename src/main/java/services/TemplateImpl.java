@@ -14,8 +14,8 @@ import services.interfaces.Template;
 public class TemplateImpl
 	implements Template
 {
-	private final Session session;
-	private final TemplateDao templateDao;
+	protected Session session;
+	protected final TemplateDao templateDao;
 	
 	public TemplateImpl(SessionFactory sessionFactory) {
 		this.templateDao = new TemplateDao();
@@ -98,4 +98,12 @@ public class TemplateImpl
 		return retVar;
 	}
 
+	public Session getSession() {
+		return session;
+	}
+
+	public void setSession(Session session) {
+		this.session = session;
+	}
+	
 }

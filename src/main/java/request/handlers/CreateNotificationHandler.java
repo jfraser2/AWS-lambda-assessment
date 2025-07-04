@@ -36,11 +36,11 @@ public class CreateNotificationHandler
 	extends RequestHandlerBase
 	implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> 
 {
-	static ObjectMapper mapper;
-	static Gson gsonWithSerializeNullsAndPrettyPrint;
-	static Gson gsonWithSerializeNulls;
-	static Notification notificationService;
-	static SessionFactory sessionFactory;
+	protected static ObjectMapper mapper;
+	protected static Gson gsonWithSerializeNullsAndPrettyPrint;
+	protected static Gson gsonWithSerializeNulls;
+	protected static Notification notificationService;
+	protected static SessionFactory sessionFactory;
 	
 	static {
 		

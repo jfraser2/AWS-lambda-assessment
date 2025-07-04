@@ -8,16 +8,16 @@ public class CreateNotification {
 	@NotBlank(message = "Notification phone number must not be blank")
 	@Pattern(regexp = "^\\d{3}[- .]?\\d{3}[- .]?\\d{4}$", message = "Invalid Phone Number Format.")
 	@Size(max = 20, message="Max Length is 20 characters")
-	private String phoneNumber;
+	protected String phoneNumber;
 	
 	@Size(min = 0, max = 25, message="Max Length is 25 characters")
-    private String personalization;
+    protected String personalization;
 	
 	@Pattern(regexp = "[0-9]*", message = "Invalid Template Id. Only Numbers allowed")
-	private String templateId;
+	protected String templateId;
 	
 	@Size(min = 0, max = 200, message="Max Length is 200 characters")
-	private String templateText;
+	protected String templateText;
 	
     
     public CreateNotification()
