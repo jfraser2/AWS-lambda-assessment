@@ -1,0 +1,10 @@
+.git
+.gitignore
+.project
+.aws-sam
+.settings
+createPostgresInDocker
+dockerPsqlCreateTables
+README.md
+Requirements.md
+target

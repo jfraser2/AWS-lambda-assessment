@@ -1,20 +1,39 @@
-
 Globals:
     Function:
         Timeout: 120
-        MemorySize: 1024
+        MemorySize: 4096
         Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
           Variables:
             DB_URL: jdbc:postgresql://postgres/postgres
             DB_USER: postgres
             DB_PASSWORD: sa
+
+Parameters:
+  DockerTag:
+    Type: String
+    Default: rapid-x86_64
+  NotificationInvokeParam:
+    Type: String
+    Default: request.handlers.CreateNotificationHandler::handleRequest
+  TemplateInvokeParam:
+    Type: String
+    Default: request.handlers.CreateTemplateHandler::handleRequest
+
 Resources:
   NotificationFunction:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: NotificationFunction
+      PackageType: Image
+      ImageUri: notificationLambda:rapid-x86_64
       CodeUri: C:\work\java\eclipse-workspace2\AWS-lambda-assessment
       Handler: request.handlers.CreateNotificationHandler::handleRequest
+      Architectures:
+        - x86_64
+      ReservedConcurrentExecutions: 1
       Runtime: java21
+      Timeout: 120
+      MemorySize: 4096
       Events:
         CreateNotification:
           Type: Api 
@@ -36,12 +55,24 @@ Resources:
           Properties:
             Path: /v1/notification/shutdown
             Method: get
+    Metadata:  # <--- Metadata section to help SAM manage container images
+      DockerTag: rapid-x86_64
+      DockerContext: .  # <--- Points to the directory with your Dockerfile
+      Dockerfile: notificationDockerfile  # <--- Name of the Dockerfile
   TemplateFunction:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: TemplateFunction
+      PackageType: Image
+      ImageUri: templateLambda:rapid-x86_64
       CodeUri: C:\work\java\eclipse-workspace2\AWS-lambda-assessment
       Handler: request.handlers.CreateTemplateHandler::handleRequest
+      Architectures:
+        - x86_64
+      ReservedConcurrentExecutions: 1
       Runtime: java21
+      Timeout: 120
+      MemorySize: 4096
       Events:
         CreateTemplate:
           Type: Api 
@@ -68,3 +99,7 @@ Resources:
           Properties:
             Path: /v1/template/shutdown
             Method: get
+    Metadata:  # <--- Metadata section to help SAM manage container images
+      DockerTag: rapid-x86_64
+      DockerContext: .  # <--- Points to the directory with your Dockerfile
+      Dockerfile: templateDockerfile  # <--- Name of the Dockerfile

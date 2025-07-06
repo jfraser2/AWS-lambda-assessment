@@ -140,7 +140,9 @@ public abstract class RequestValidationAdvice
 		// support CORS
 //		System.out.println("Access-Control-Allow-Origin is: " + requestOrigin);
 		Map<String, String> aResponseHeader = new HashMap<String, String>();
-		aResponseHeader.put("Access-Control-Allow-Origin", requestOrigin);
+		if (null != requestOrigin) {
+			aResponseHeader.put("Access-Control-Allow-Origin", requestOrigin);
+		}	
 //		aResponseHeader.put("Access-Control-Allow-Origin", "*");
 		aResponseHeader.put("Content-Type", "application/json");
 		

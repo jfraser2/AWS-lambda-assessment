@@ -9,6 +9,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -47,9 +48,10 @@ public class CreateTemplateHandler
 		
 	    // update (de)serializationConfig or other properties
 	    mapper = new ObjectMapper();
+	    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 	    
-	    gsonWithSerializeNullsAndPrettyPrint = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
-	    gsonWithSerializeNulls = new GsonBuilder().serializeNulls().create();
+	    gsonWithSerializeNullsAndPrettyPrint = new GsonBuilder().setPrettyPrinting().create();
+	    gsonWithSerializeNulls = new GsonBuilder().create();
 	    sessionFactory = HibernateUtil.getSessionFactory();
 	    
 	    templateService = new TemplateImpl(sessionFactory); //one per Class
