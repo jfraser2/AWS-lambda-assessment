@@ -1,5 +1,5 @@
 # configure the build environment
-FROM maven:3.9.10-eclipse-temurin-21 AS build
+FROM public.ecr.aws/sam/build-java21:latest  AS build
 
 ADD ./aws-lambda-rie-x86_64 /var/rapid/aws-lambda-rie
 
@@ -19,15 +19,16 @@ RUN mvn clean package
 RUN mkdir -p ./target/dependency
 RUN mvn dependency:go-offline dependency:copy-dependencies
 
-RUN file="$(ls -1a ./target)" && echo $file
-RUN file2="$(ls -1a ./target/dependency)" && echo $file2
+#RUN file="$(ls -1a ./target)" && echo $file
+#RUN file2="$(ls -1a ./target/dependency)" && echo $file2
 
-FROM public.ecr.aws/amazoncorretto/amazoncorretto:21 AS deploy
+
+FROM public.ecr.aws/sam/build-java21:latest  AS deploy
 
 COPY --from=build /var/rapid/aws-lambda-rie /var/rapid/aws-lambda-rie
 WORKDIR /deployment
 
-#COPY --from=build /app/template.yaml .
+COPY --from=build /app/template.yaml .
 COPY --from=build /app/target/dependency/*.jar ./
 COPY --from=build /app/target/AWS-lambda-assessment-0.0.1-SNAPSHOT.jar ./app.jar
 #COPY --from=build /app/target/*.jar ./
@@ -37,9 +38,9 @@ COPY --from=build /app/target/AWS-lambda-assessment-0.0.1-SNAPSHOT.jar ./app.jar
 RUN echo "JAVA_HOME is set to: ${JAVA_HOME}"
 
 # Set runtime interface client as default command for the container runtime
-#ENTRYPOINT ["/usr/lib/jvm/java-21-amazon-corretto/bin/java", "-cp", "./*", "com.amazonaws.services.lambda.runtime.api.client.AWSLambda" ]
+#ENTRYPOINT ["/var/lang/bin/java", "-cp", "./*", "com.amazonaws.services.lambda.runtime.api.client.AWSLambda" ]
 
-ENTRYPOINT [ "/usr/lib/jvm/java-21-amazon-corretto/bin/java", "-cp", " \
+ENTRYPOINT [ "/var/lang/bin/java", "-cp", " \
   ./angus-activation-2.0.0.jar: \
   ./annotations-2.28.29.jar: \
   ./antlr4-runtime-4.13.0.jar: \
