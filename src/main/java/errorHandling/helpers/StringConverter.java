@@ -13,7 +13,9 @@ public class StringConverter
 	public void serialize(String value, JsonGenerator jgen, SerializerProvider serializers)
 			throws IOException
 	{
-		jgen.writeString(value);
+		if (null != value) {
+			jgen.writeString(value);
+		}	
 	}
 
 }

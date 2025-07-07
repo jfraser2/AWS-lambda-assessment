@@ -14,7 +14,9 @@ public class RejectedValueConverter
 	public void serialize(Object value, JsonGenerator jgen, SerializerProvider serializers)
 			throws IOException
 	{
-		jgen.writeString(value.toString());
+		if (null != value) {
+			jgen.writeString(value.toString());
+		}	
 	}
 
 }

@@ -232,7 +232,11 @@ public abstract class RequestHandlerBase
 		// support CORS
 //		System.out.println("Access-Control-Allow-Origin is: " + request.getHeader("Origin"));
 		Map<String, String> aResponseHeader = new HashMap<String, String>();
-		aResponseHeader.put("Access-Control-Allow-Origin", getRequestOrigin(request));
+		
+		String requestOrigin = getRequestOrigin(request);
+		if (null != requestOrigin) {
+			aResponseHeader.put("Access-Control-Allow-Origin", getRequestOrigin(request));
+		}	
 //		aResponseHeader.put("Access-Control-Allow-Origin", "*");
 		aResponseHeader.put("Content-Type", "application/json");
 		

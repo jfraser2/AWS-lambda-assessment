@@ -36,6 +36,11 @@ now you can open your windows Administrator shell, and cd to the project install
 
 #Building the Lambda Functions(do this fourth)
 
+You do have to have a DockerHub Account. The good news is the free one is fine. The signup url is: https://app.docker.com/<br/>
+The reason for this is, to create a Docker Image the Dockerfile uses maven:3.9.10-eclipse-temurin-21. This lives in DockerHub<br/>
+Again, it is in the free space(Yea!!). The two Dockerfiles in the project are: notificationDockerfile and templateDockerfile.<br/>
+The images they create in DockerDestop are: notificationfunction and templatefunction<br/>
+
 From your windows Administrator shell, cd to your project folder(cd C:\work\java\eclipse-workspace2\AWS-lambda-assessment)<br/>
 The build is done from project file template.yaml, and it must contain the full path to your project folder.<br/>
 Your JAVA_HOME and path(windows Environment variables) must be set to JAVA 21<br/>
