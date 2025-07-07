@@ -23,9 +23,6 @@ Resources:
   NotificationFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: NotificationFunction
-      PackageType: Image
-      ImageUri: notificationLambda:rapid-x86_64
       CodeUri: C:\work\java\eclipse-workspace2\AWS-lambda-assessment
       Handler: request.handlers.CreateNotificationHandler::handleRequest
       Architectures:
@@ -55,16 +52,9 @@ Resources:
           Properties:
             Path: /v1/notification/shutdown
             Method: get
-    Metadata:  # <--- Metadata section to help SAM manage container images
-      DockerTag: rapid-x86_64
-      DockerContext: .  # <--- Points to the directory with your Dockerfile
-      Dockerfile: notificationDockerfile  # <--- Name of the Dockerfile
   TemplateFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: TemplateFunction
-      PackageType: Image
-      ImageUri: templateLambda:rapid-x86_64
       CodeUri: C:\work\java\eclipse-workspace2\AWS-lambda-assessment
       Handler: request.handlers.CreateTemplateHandler::handleRequest
       Architectures:
@@ -99,7 +89,3 @@ Resources:
           Properties:
             Path: /v1/template/shutdown
             Method: get
-    Metadata:  # <--- Metadata section to help SAM manage container images
-      DockerTag: rapid-x86_64
-      DockerContext: .  # <--- Points to the directory with your Dockerfile
-      Dockerfile: templateDockerfile  # <--- Name of the Dockerfile
