@@ -4,6 +4,8 @@ import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.text.StringEscapeUtils;
+
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,7 +33,7 @@ import software.amazon.awssdk.http.HttpStatusCode;
 //@Order(Ordered.HIGHEST_PRECEDENCE)
 public abstract class RequestValidationAdvice
 {
-
+	
 	//other exception handlers or handler overrides below
 	
     public APIGatewayProxyResponseEvent handleAccessDeniedException(
@@ -125,7 +127,8 @@ public abstract class RequestValidationAdvice
 		String json = null;
 		try {
 			ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-			json = ow.writeValueAsString(apiError);
+			String tempString = ow.writeValueAsString(apiError);
+			json = StringEscapeUtils.escapeJson(tempString);
 		}
 		catch(JsonProcessingException jpe)
 		{

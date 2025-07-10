@@ -12,22 +12,20 @@ Parameters:
   DockerTag:
     Type: String
     Default: rapid-x86_64
-  NotificationInvokeParam:
+  HandlersInvokeParam:
     Type: String
-    Default: request.handlers.CreateNotificationHandler::handleRequest
-  TemplateInvokeParam:
-    Type: String
-    Default: request.handlers.CreateTemplateHandler::handleRequest
+    Default: request.handlers.NotificationAndTemplateHandler::handleRequest
 
 Resources:
-  NotificationFunction:
+  NotificationAndTemplate:
     Type: AWS::Serverless::Function
     Properties:
+      PackageType: Image
+      ImageUri: lambdaImage:rapid-x86_64
       CodeUri: C:\work\java\eclipse-workspace2\AWS-lambda-assessment
-      Handler: request.handlers.CreateNotificationHandler::handleRequest
+      Handler: request.handlers.NotificationAndTemplateHandler::handleRequest
       Architectures:
         - x86_64
-      ReservedConcurrentExecutions: 1
       Runtime: java21
       Timeout: 120
       MemorySize: 4096
@@ -47,23 +45,6 @@ Resources:
           Properties:
             Path: /v1/findByNotificationId/{id}
             Method: get
-        NotificationShutdownHook:
-          Type: Api
-          Properties:
-            Path: /v1/notification/shutdown
-            Method: get
-  TemplateFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: C:\work\java\eclipse-workspace2\AWS-lambda-assessment
-      Handler: request.handlers.CreateTemplateHandler::handleRequest
-      Architectures:
-        - x86_64
-      ReservedConcurrentExecutions: 1
-      Runtime: java21
-      Timeout: 120
-      MemorySize: 4096
-      Events:
         CreateTemplate:
           Type: Api 
           Properties:
@@ -84,8 +65,12 @@ Resources:
           Properties:
             Path: /v1/updateTemplate
             Method: patch
-        TemplateShutdownHook:
+        ShutdownHook:
           Type: Api
           Properties:
-            Path: /v1/template/shutdown
+            Path: /v1/shutdown
             Method: get
+    Metadata:  # <--- Metadata section to help SAM manage container images
+      DockerTag: rapid-x86_64
+      DockerContext: .  # <--- Points to the directory with your Dockerfile
+      Dockerfile: Dockerfile  # <--- Name of the Docker			

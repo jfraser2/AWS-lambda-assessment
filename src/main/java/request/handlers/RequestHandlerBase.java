@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.text.StringEscapeUtils;
+
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,7 +29,7 @@ public abstract class RequestHandlerBase
 	protected static final String GODD_RESPONSE_SUFFIX = "}";
 	protected static final String JSON_FIELD_SEPARATOR = ",";
 	
-	private String generateGoodResponsePrefix(Object databaseEntityObject, ObjectMapper mapper) {
+	protected String generateGoodResponsePrefix(Object databaseEntityObject, ObjectMapper mapper) {
 		
 		ResultStatus statusObject = new ResultStatus("OK");
 		String tempJson = convertToJsonNoPrettyPrint(statusObject, mapper);
@@ -38,7 +40,7 @@ public abstract class RequestHandlerBase
 		return (statusJson + "\"" + entityName + "\": ");
 	}
 	
-	private String removeObjectBeginAndEnd(String objectString) {
+	protected String removeObjectBeginAndEnd(String objectString) {
 		
 		String retVar = null;
 		
@@ -49,7 +51,7 @@ public abstract class RequestHandlerBase
 		return retVar;
 	}
 	
-	private String gsonConvertRawJsonToPrettyPrint(String rawJsonString, Gson gsonWithSerializeNullsAndPrettyPrint)
+	protected String gsonConvertRawJsonToPrettyPrint(String rawJsonString, Gson gsonWithSerializeNullsAndPrettyPrint)
 	{
 		String jsonString = null;
 		
@@ -71,7 +73,7 @@ public abstract class RequestHandlerBase
 		
 	}
 	
-	private String convertListToJson(List<Object> anObjectList, Gson gsonWithSerializeNullsAndPrettyPrint)
+	protected String convertListToJson(List<Object> anObjectList, Gson gsonWithSerializeNullsAndPrettyPrint)
 	{
 		String jsonString = null;
 		
@@ -91,7 +93,7 @@ public abstract class RequestHandlerBase
 		
 	}
 	
-	private String convertListToJsonNoPrettyPrint(List<Object> anObjectList, Gson gsonWithSerializeNulls)
+	protected String convertListToJsonNoPrettyPrint(List<Object> anObjectList, Gson gsonWithSerializeNulls)
 	{
 		String jsonString = null;
 		
@@ -110,7 +112,7 @@ public abstract class RequestHandlerBase
 		
 	}
 
-	private String convertToPrettyPrintJson(String rawJsonString, ObjectMapper mapper)
+	protected String convertToPrettyPrintJson(String rawJsonString, ObjectMapper mapper)
 	{
 		String outputString = null;
 		
@@ -129,7 +131,7 @@ public abstract class RequestHandlerBase
 		return outputString;
 	}
 
-	private String convertToJsonPrettyPrint(Object anObject, ObjectMapper mapper)
+	protected String convertToJsonPrettyPrint(Object anObject, ObjectMapper mapper)
 	{
 		String jsonString = null;
 		
@@ -149,7 +151,7 @@ public abstract class RequestHandlerBase
 		return jsonString;
 	}
 	
-	private String convertToJsonNoPrettyPrint(Object anObject, ObjectMapper mapper)
+	protected String convertToJsonNoPrettyPrint(Object anObject, ObjectMapper mapper)
 	{
 		String jsonString = null;
 		
@@ -192,8 +194,8 @@ public abstract class RequestHandlerBase
 		
 //		System.out.println("raw json is: " + rawJson);
 		
-		
-		return convertToPrettyPrintJson(rawJson, mapper);
+		String tempString = StringEscapeUtils.escapeJson(rawJson);
+		return convertToPrettyPrintJson(tempString, mapper);
 	}
 	
 	protected String goodResponseList(List<Object> anObject, StringBuilderContainer aContainer, Gson gson, ObjectMapper mapper)
@@ -213,7 +215,8 @@ public abstract class RequestHandlerBase
 
 //		System.out.println("raw json is: " + rawJson);
 		
-		return gsonConvertRawJsonToPrettyPrint(rawJson, gson);
+		String tempString = StringEscapeUtils.escapeJson(rawJson);
+		return gsonConvertRawJsonToPrettyPrint(tempString, gson);
 	}
 
 	protected String getRequestOrigin(APIGatewayProxyRequestEvent request)

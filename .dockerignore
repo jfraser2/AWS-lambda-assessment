@@ -7,4 +7,3 @@ createPostgresInDocker
 dockerPsqlCreateTables
 README.md
 Requirements.md
-target
