@@ -1,0 +1,39 @@
+<Configuration>
+  <Appenders>
+    <Lambda name="Lambda" format="${env:AWS_LAMBDA_LOG_FORMAT:-TEXT}">
+       <LambdaTextFormat>
+         <PatternLayout>
+             <pattern>%d{yyyy-MM-dd HH:mm:ss} %X{AWSRequestId} %-5p %c{1} - %m%n </pattern>
+         </PatternLayout>
+       </LambdaTextFormat>
+       <LambdaJSONFormat>
+         <JsonTemplateLayout eventTemplateUri="classpath:LambdaLayout.json" />
+       </LambdaJSONFormat>
+     </Lambda>
+     <Console name="ConsoleAppender" target="SYSTEM_OUT">
+        <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+     </Console>
+  </Appenders>
+  <Loggers>
+     <Root>
+ <!-- The level set on a Appender is a filter, if omitted it means no filter or all -->   
+       <AppenderRef ref="ConsoleAppender" level="DEBUG"/>
+       <AppenderRef ref="Lambda" level="${env:AWS_LAMBDA_LOG_LEVEL:-INFO}"/>
+     </Root>
+ <!-- The level set on a Logger the minimum threshold filter, for the given package name -->   
+	 <logger name="request.handlers" additivity="false">
+     	<level value="DEBUG"/>
+    	<appender-ref ref="ConsoleAppender" />
+    	<appender-ref ref="Lambda" />
+	 </logger>
+	 <logger name="software.amazon.awssdk.request" additivity="false">
+     	<level value="DEBUG"/>
+    	<appender-ref ref="Lambda" />
+	 </logger>
+	 <logger name="software.amazon.awssdk" additivity="false">
+     	<level value="WARN"/>
+    	<appender-ref ref="Lambda" />
+	 </logger>
+  </Loggers>
+   
+ </Configuration>
