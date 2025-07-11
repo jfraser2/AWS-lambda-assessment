@@ -35,6 +35,7 @@ WORKDIR /deployment
 
 RUN chmod -R 0777 .
 
+COPY --from=build /app/src/main/resources/log4j2.xml ./resources/log4j2.xml
 COPY --from=build /app/template.yaml .
 COPY --from=build /app/entrypoint.sh .
 #COPY --from=build /app/target/classes ${LAMBDA_TASK_ROOT}
@@ -54,6 +55,11 @@ ENV PATH=${PATH}:/deployment/classes/dao:/deployment/classes/dto/request:/deploy
 
 RUN export PATH
 RUN echo "runtime PATH is set to: ${PATH}"
+
+ENV CLASSPATH=/development/resources
+RUN export CLASSPATH
+RUN echo "CLASSPATH is set to: ${CLASSPATH}"
+
 
 ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/deployment/lib
 RUN export LD_LIBRARY_PATH
