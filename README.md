@@ -49,7 +49,7 @@ To validate you should see new files in your project folder called .aws-sam<br/>
 If you make project changes remove the project folder .aws-sam Then delete the DockerDesktop Images and/or any Containers.<br/>
 Again run sam build --no-cached. To start the curl request listener, the command is: <br/>
 sam local start-api --docker-network VA-assessment --warm-containers EAGER -p 9000 -d 8080 which will start a container for the image<br/>
-This container will be used over and over again on each request. This is need because a connection pool runs in the container</br>
+This container will be used over and over again on each request. This is needed because a connection pool runs in the container</br>
 Before any Ctrl-C to exit the listener, a person should run a shutdown. "curl localhost:9000/v1/shutdown"<br/>
 The idea of running a shutdown is to clean up the Hikari connection pool. The Handler Function creates connection pool. <br/>
 If you forget you could stop and start postgres in DockerDesktop.<br/>
