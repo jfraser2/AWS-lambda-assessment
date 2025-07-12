@@ -41,7 +41,7 @@ public class ValidationErrorContainer {
     	// give Memory Back to the JVM, when the Request is over
     	clearValidationErrors();
     	this.errorList = null;
-        System.out.println("ValidationError Container is destroyed!!!");
+        System.err.println("ValidationError Container is destroyed!!!");
     }    
 
 }

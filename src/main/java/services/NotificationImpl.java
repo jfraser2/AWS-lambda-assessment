@@ -86,7 +86,7 @@ public class NotificationImpl
 				retVar = notificationEntity;
 			}	
 		} catch (Exception e) {
-//			System.out.println("Exception is: " + e.getMessage());
+//			System.err.println("Exception is: " + e.getMessage());
 			retVar = null;
 		}
 		

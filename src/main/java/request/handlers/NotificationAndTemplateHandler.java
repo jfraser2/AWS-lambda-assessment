@@ -117,7 +117,7 @@ public class NotificationAndTemplateHandler
 		requestValidationErrorsContainer.onDestroy();
 		
         logger.debug("This is the json Being returned from NotificationAndTemplate: " + retVar.getBody());
-//        System.out.println("This is the json Being returned from NotificationAndTemplate: " + retVar.getBody());
+//        System.err.println("This is the json Being returned from NotificationAndTemplate: " + retVar.getBody());
 		
 		return retVar;
 	}	
@@ -140,7 +140,7 @@ public class NotificationAndTemplateHandler
 		
 		if (errorList.size() > 0)
 		{
-//			System.out.println("Right before the throw");
+//			System.err.println("Right before the throw");
 			retVar = handleRequestValidationException(new RequestValidationException(errorList, requestOrigin), mapper);
 			gotError = true;
 		} else if (!notificationService.validateTemplateFields(createNotification)) { // multiple field validation
@@ -163,7 +163,7 @@ public class NotificationAndTemplateHandler
 			
 			if (!buildOk) {
 				retVar = handleDatabaseRowNotFoundException(new DatabaseRowNotFoundException(failureMessage, requestOrigin), mapper);
-				System.out.println("!!!! returning Json is: " + retVar.getBody() + " !!!!");
+//				System.err.println("!!!! returning Json is: " + retVar.getBody() + " !!!!");
 			} else {
 				String jsonString = goodResponse(ne, stringBuilderContainer, null, mapper);
 				// support CORS
@@ -223,7 +223,7 @@ public class NotificationAndTemplateHandler
 		
 		if (errorList.size() > 0)
 		{
-//			System.out.println("Right before the throw");
+//			System.err.println("Right before the throw");
 			retVar = handleRequestValidationException(new RequestValidationException(errorList, requestOrigin), mapper);
 			gotError = true;
 		}
@@ -273,7 +273,7 @@ public class NotificationAndTemplateHandler
 		
 		if (errorList.size() > 0)
 		{
-//				System.out.println("Right before the throw");
+//				System.err.println("Right before the throw");
 			retVar = handleRequestValidationException(new RequestValidationException(errorList, requestOrigin), mapper);
 			gotError = true;
 		}
@@ -339,7 +339,7 @@ public class NotificationAndTemplateHandler
 		
 		if (errorList.size() > 0)
 		{
-//			System.out.println("Right before the throw");
+//			System.err.println("Right before the throw");
 			retVar = handleRequestValidationException(new RequestValidationException(errorList, requestOrigin), mapper);
 			gotError = true;
 		}
@@ -381,7 +381,7 @@ public class NotificationAndTemplateHandler
 		
 		if (errorList.size() > 0)
 		{
-//				System.out.println("Right before the throw");
+//				System.err.println("Right before the throw");
 			retVar = handleRequestValidationException(new RequestValidationException(errorList, requestOrigin), mapper);
 			gotError = true;
 		}
@@ -416,8 +416,8 @@ public class NotificationAndTemplateHandler
 	{
 		APIGatewayProxyResponseEvent retVar = null;
 		
-//        System.out.println("[runtime] Notification ShutdownHook triggered");
-//        System.out.println("[runtime] Notification Clean up");
+//        System.err.println("[runtime] Notification ShutdownHook triggered");
+//        System.err.println("[runtime] Notification Clean up");
         
         // perform actual clean up work here.
         boolean shutdownFailed = false;

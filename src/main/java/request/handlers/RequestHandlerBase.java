@@ -192,7 +192,7 @@ public abstract class RequestHandlerBase
 		aBuilder.append(GODD_RESPONSE_SUFFIX);
 		String rawJson = aBuilder.toString();
 		
-//		System.out.println("raw json is: " + rawJson);
+//		System.err.println("raw json is: " + rawJson);
 		
 		String tempString = StringEscapeUtils.escapeJson(rawJson);
 		return convertToPrettyPrintJson(tempString, mapper);
@@ -213,7 +213,7 @@ public abstract class RequestHandlerBase
 		aBuilder.append(GODD_RESPONSE_SUFFIX);
 		String rawJson = aBuilder.toString();
 
-//		System.out.println("raw json is: " + rawJson);
+//		System.err.println("raw json is: " + rawJson);
 		
 		String tempString = StringEscapeUtils.escapeJson(rawJson);
 		return gsonConvertRawJsonToPrettyPrint(tempString, gson);
@@ -233,7 +233,7 @@ public abstract class RequestHandlerBase
 	protected Map<String, String> createResponseHeader(APIGatewayProxyRequestEvent request)
 	{
 		// support CORS
-//		System.out.println("Access-Control-Allow-Origin is: " + request.getHeader("Origin"));
+//		System.err.println("Access-Control-Allow-Origin is: " + request.getHeader("Origin"));
 		Map<String, String> aResponseHeader = new HashMap<String, String>();
 		
 		String requestOrigin = getRequestOrigin(request);

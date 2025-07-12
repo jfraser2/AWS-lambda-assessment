@@ -24,21 +24,21 @@ public class ListApiValidationErrorConverter
 		        jgen.writeStartArray(); // [
 	        
 		        ApiValidationError fooRec = fooList.get(0);
-//		        System.out.println("fooRec is: " + fooRec.toString());
+//		        System.err.println("fooRec is: " + fooRec.toString());
 	            jgen.writeObject(fooRec);
 	       
 		        for (int i = 1; i < fooList.size(); i++)
 		        {
 		            fooRec = fooList.get(i);
 		            jgen.writeObject(fooRec);
-//			        System.out.println("fooRec is: " + fooRec.toString());
+//			        System.err.println("fooRec is: " + fooRec.toString());
 		        }
 		        jgen.writeEndArray(); //]
 			}
 		}
 		catch (IOException ioe)
 		{
-			System.out.println("Couldn't Serialize Array");
+			System.err.println("Couldn't Serialize Array");
 		}
 		return;
 	}

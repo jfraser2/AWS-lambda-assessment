@@ -24,7 +24,7 @@ public class StringBuilderContainer {
     	// give Memory Back to the JVM, when the Request is over
     	clearStringBuffer();
     	this.stringBuilder = null;
-        System.out.println("StringBuilder Container is destroyed!!!");
+        System.err.println("StringBuilder Container is destroyed!!!");
     }    
 	
 }
