@@ -1,0 +1,13 @@
+version=0.1
+[default.build.parameters]
+use_container = true
+no_cached = true
+docker_network = "VA-assessment"
+[default.local_start_api.parameters]
+docker_network = "VA-assessment"
+port = 9000
+debug_port = 8080
+host_container = "host.docker.internal"
+container_host_interface = "0.0.0.0"
+profile = "my-local-dev"
+add_host = "host.docker.internal:host-gateway"
