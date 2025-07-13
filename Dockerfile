@@ -2,7 +2,7 @@
 FROM public.ecr.aws/sam/build-java21:latest  AS build
 
 
-ADD ./aws-lambda-rie /var/rapid/aws-lambda-rie
+ADD ./aws-lambda-rie-x86_64 /var/rapid/aws-lambda-rie
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -67,7 +67,7 @@ RUN echo "LD_LIBRARY_PATH is set to: ${LD_LIBRARY_PATH}"
 
 # entry point of the container
 #ENTRYPOINT ["./entrypoint.sh"]
-ENTRYPOINT ["/usr/local/bin/aws-lambda-rie"]
+ENTRYPOINT ["/var/rapid/aws-lambda-rie"]
 
 # Pass the name of the function handler as an argument to the runtime com.amazonaws.services.lambda.runtime.api.client.AWSLambda
 CMD ["request.handlers.NotificationAndTemplateHandler::handleRequest" ]

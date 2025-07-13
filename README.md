@@ -58,7 +58,7 @@ The first is to figure out is the container-host, this is the first of two setti
 In a windows shell type"docker context ls" look for keywords like docker or npipe, in the response listing for<br/>
 Current DOCKER_HOST based configuration, those are the values for container-host. The second one that changes is --profile<br/>
 --profile is discussed in the Testing Installs section. If you do change other values you will get wired errors.<br/>
-OMG this sam local start-api command was hard to figure out and I had to read lots of articles
+OMG this sam local start-api command was very hard to figure out and I had to read lots of articles
 
 From your windows Administrator shell, cd to your project folder(cd C:\work\java\eclipse-workspace2\AWS-lambda-assessment)<br/>
 The build is done from project file template.yaml, and it must contain the full path to your project folder.<br/>
@@ -68,7 +68,8 @@ To validate you should see new files in your project folder called .aws-sam<br/>
 If you make project changes remove the project folder .aws-sam Then delete the DockerDesktop Images and/or any Containers.<br/>
 Again run sam build --no-cached  --docker-network VA-assessment --use-container.<br/>
 To start the local Http Server to handle curl requests, and a container for your build image, the command is: <br/>
-sam local start-api --docker-network VA-assessment --warm-containers EAGER -p 9000 -d 8080 --container-host 127.0.0.1 --container-host-interface 0.0.0.0  --profile my-local-dev<br/>
+sam local start-api --docker-network VA-assessment --warm-containers EAGER -p 9000 -d 8080 --container-host-interface 0.0.0.0<br/>
+ --profile my-local-dev --add-host host.docker.internal:host-gateway<br/>
 
 In the above command, 0.0.0.0 means bind to any interface. The command above will start a container for the image in Docker Desktop<br/>
 In the new container after a request is made, you will see a port mapping of 8080:8080. This map is for connecting an exteral debugger.<br/>
