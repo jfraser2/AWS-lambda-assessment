@@ -163,6 +163,7 @@ class Container:
         
         self.use_npipe = False
         self.use_socket = False
+        self.use_socat = False
         self.rapid_port_host = 0
         
         docker_host = os.environ.get('DOCKER_HOST')
@@ -184,9 +185,10 @@ class Container:
             elif_host_name, elif_host_port = self._container_host.split(elif_delimiter, 2)
             self._container_host = elif_host_name
             self.rapid_port_host = 2375
-            self.use_socket = True
+            self.use_socat = True
+            LOG.debug("Socat is being used: %s:%d", self._container_host, self.rapid_port_host)
             
-        if not self.use_socket and not self.use_npipe :
+        if not self.use_socket and not self.use_npipe and not self.use_socat :
             try:
                 self.rapid_port_host = find_free_port(
                     network_interface=self._container_host_interface, start=self._start_port_range, end=self._end_port_range
@@ -449,21 +451,30 @@ class Container:
         # NOTE(sriram-mv): There is a connection timeout set on the http call to `aws-lambda-rie`, however there is not
         # a read time out for the response received from the server.
 
+        data = event.encode("utf-8")
+        if not self.use_socat :
         # generate a lock key with host-port combination which is unique per function
-        lock_key = f"{self._container_host}-{self.rapid_port_host}"
-        LOG.debug("Getting lock for the key %s", lock_key)
-        with CONCURRENT_CALL_MANAGER_LOCK:
-            lock = CONCURRENT_CALL_MANAGER.get(lock_key)
-            if not lock:
-                lock = threading.Lock()
-                CONCURRENT_CALL_MANAGER[lock_key] = lock
-        LOG.debug("Waiting to retrieve the lock (%s) to start invocation", lock_key)
-        with lock:
+            lock_key = f"{self._container_host}-{self.rapid_port_host}"
+            LOG.debug("Getting lock for the key %s", lock_key)
+            with CONCURRENT_CALL_MANAGER_LOCK:
+                lock = CONCURRENT_CALL_MANAGER.get(lock_key)
+                if not lock:
+                    lock = threading.Lock()
+                    CONCURRENT_CALL_MANAGER[lock_key] = lock
+            LOG.debug("Waiting to retrieve the lock (%s) to start invocation", lock_key)
+            with lock:
+                resp = requests.post(
+                    self.URL.format(host=self._container_host, port=self.rapid_port_host, function_name="function"),
+                    data,
+                    timeout=(self.RAPID_CONNECTION_TIMEOUT, None),
+                )
+        else :
             resp = requests.post(
                 self.URL.format(host=self._container_host, port=self.rapid_port_host, function_name="function"),
-                data=event.encode("utf-8"),
+                data,
                 timeout=(self.RAPID_CONNECTION_TIMEOUT, None),
             )
+            
 
         try:
             # if response is an image then json.loads/dumps will throw a UnicodeDecodeError so return raw content
@@ -561,7 +572,7 @@ class Container:
         Waits for a successful connection to the socket used to communicate with Docker.
         """
         
-        if self.use_npipe :
+        if self.use_npipe or self.use_socat :
             return
         else :
             LOG.debug("About to try connecting to container-host and port: %s:%d", self._container_host, self.rapid_port_host)

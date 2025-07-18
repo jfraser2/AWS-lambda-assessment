@@ -69,8 +69,7 @@ To validate you should see new files in your project folder called .aws-sam<br/>
 If you make project changes remove the project folder .aws-sam Then delete the DockerDesktop Images and/or any Containers.<br/>
 Again run sam build --no-cached  --docker-network VA-assessment --use-container --profile my-local-dev .<br/>
 To start the local Http Server to handle curl requests, and a container for your build image, the command is: <br/>
-sam local start-api --docker-network VA-assessment --warm-containers EAGER -p 9000 -d 8080 --container-host-interface 0.0.0.0
- --profile my-local-dev --add-host host.docker.internal:host-gateway<br/>
+sam local start-api --docker-network VA-assessment --warm-containers EAGER -p 9000 -d 8080 --profile my-local-dev --add-host host.docker.internal:host-gateway --host localhost --debug<br/> 
 
 In the above command, 0.0.0.0 means bind to any interface. The command above will start a container for the image in Docker Desktop<br/>
 In the new container after a request is made, you will see a port mapping of 8080:8080. This map is for connecting an exteral debugger.<br/>
@@ -99,6 +98,9 @@ curl localhost:9000/v1/all/templates<br/>
 result is the same<br/>
 
 All possible curl tests are in file template.yaml<br/>
+
+Second way for local testing, remove the DOCKER_HOST windows environment variable(set DOCKER_HOST=) and then run the commands below<br/>
+sam local invoke NotificationAndTemplate --docker-network VA-assessment -d 8080 --container-host localhost:2375 --profile my-local-dev --add-host host.docker.internal:host-gateway --debug --event src/test/resources/AllNotificationsEvent.json<br/>
 
 
 
