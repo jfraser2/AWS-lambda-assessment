@@ -33,6 +33,7 @@ import software.amazon.awssdk.http.HttpStatusCode;
 //@Order(Ordered.HIGHEST_PRECEDENCE)
 public abstract class RequestValidationAdvice
 {
+	protected static final String UNEXPECTED_PROCESSING_ERROR = "{\"message\": \"Object could not convert to json\"}";
 	
 	//other exception handlers or handler overrides below
 	
@@ -115,6 +116,7 @@ public abstract class RequestValidationAdvice
 		// support CORS
 		Map<String, String> aResponseHeader = createResponseHeader(requestOrigin);
 		
+		retVar.setIsBase64Encoded(false);
 		retVar.setHeaders(aResponseHeader);
 		retVar.setStatusCode(aStatus);
 		retVar.setBody(json);
@@ -132,7 +134,7 @@ public abstract class RequestValidationAdvice
 		}
 		catch(JsonProcessingException jpe)
 		{
-			json = null;
+			json = StringEscapeUtils.escapeJson(UNEXPECTED_PROCESSING_ERROR);
 		}
 		
 		return json;

@@ -7,4 +7,5 @@ createPostgresInDocker
 dockerPsqlCreateTables
 README.md
 Requirements.md
-samconfig.toml
+container.py
+src/test/resources

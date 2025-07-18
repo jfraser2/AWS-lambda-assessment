@@ -10,20 +10,43 @@
          <JsonTemplateLayout eventTemplateUri="classpath:LambdaLayout.json" />
        </LambdaJSONFormat>
      </Lambda>
-     <Console name="ConsoleAppender" target="SYSTEM_OUT">
-        <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+     <Console name="ConsoleAppender" target="System.out">
+	    <PatternLayout>
+	        <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %m%n</Pattern>
+	    </PatternLayout>
      </Console>
+     <RollingFile name           ="LambdaFunctionAppender"
+           fileName       ="/tmp/lambdaFunction.log"
+      	   filePattern="${LOG_DIR}/application.%i.log.gz"
+      	   ignoreExceptions="false"
+      	   immediateFlush ="true"
+           append         ="true">
+	    <PatternLayout>
+	        <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %m%n</Pattern>
+	    </PatternLayout>
+	    <Policies>
+	        <SizeBasedTriggeringPolicy size="10MB" />
+	    </Policies>
+	    <DefaultRolloverStrategy max="5">
+	        <Delete basePath="${LOG_DIR}" maxDepth="2">
+	          <IfFileName glob="*/app-*.log.gz" />
+	          <IfLastModified age="P30D" />
+	        </Delete>
+	    </DefaultRolloverStrategy>
+     </RollingFile>
   </Appenders>
   <Loggers>
      <Root>
  <!-- The level set on a Appender is a filter, if omitted it means no filter or all -->   
-       <AppenderRef ref="ConsoleAppender" level="DEBUG"/>
+       <AppenderRef ref="ConsoleAppender"/>
+       <AppenderRef ref="LambdaFunctionAppender"/>
        <AppenderRef ref="Lambda" level="${env:AWS_LAMBDA_LOG_LEVEL:-INFO}"/>
      </Root>
  <!-- The level set on a Logger the minimum threshold filter, for the given package name -->   
 	 <logger name="request.handlers" additivity="false">
-     	<level value="DEBUG"/>
+     	<level value="ERROR"/>
     	<appender-ref ref="ConsoleAppender" />
+    	<appender-ref ref="LambdaFunctionAppender" />
     	<appender-ref ref="Lambda" />
 	 </logger>
 	 <logger name="software.amazon.awssdk.request" additivity="false">

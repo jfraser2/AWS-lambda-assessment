@@ -54,7 +54,8 @@ You may delete the dangling Images in DockerDesktop, created by the build.<br/>
 A single dangling image is created after every run. A dangling Image, always says none, none.<br/>
 You may also delete the notificationandtemplate image and/or container if you change the code<br/>
 
-The first is to figure out is the container-host, this is the first of two settings that ever change in the sam local start-api<br/>
+The first is to figure out is the container-host, this is the first of two settings that change in the sam local start-api<br/>
+wsl -d docker-desktop hostname -i<br/>
 In a windows shell type"docker context ls" look for keywords like docker or npipe, in the response listing for<br/>
 Current DOCKER_HOST based configuration, those are the values for container-host. The second one that changes is --profile<br/>
 --profile is discussed in the Testing Installs section. If you do change other values you will get wired errors.<br/>
@@ -63,12 +64,12 @@ OMG this sam local start-api command was very hard to figure out and I had to re
 From your windows Administrator shell, cd to your project folder(cd C:\work\java\eclipse-workspace2\AWS-lambda-assessment)<br/>
 The build is done from project file template.yaml, and it must contain the full path to your project folder.<br/>
 Your JAVA_HOME and path(windows Environment variables) must be set to JAVA 21<br/>
-To Begin, type: sam build --docker-network VA-assessment --use-container <br/>
+To Begin, type: sam build --docker-network VA-assessment --use-container --profile my-local-dev<br/>
 To validate you should see new files in your project folder called .aws-sam<br/>
 If you make project changes remove the project folder .aws-sam Then delete the DockerDesktop Images and/or any Containers.<br/>
-Again run sam build --no-cached  --docker-network VA-assessment --use-container.<br/>
+Again run sam build --no-cached  --docker-network VA-assessment --use-container --profile my-local-dev .<br/>
 To start the local Http Server to handle curl requests, and a container for your build image, the command is: <br/>
-sam local start-api --docker-network VA-assessment --warm-containers EAGER -p 9000 -d 8080 --container-host-interface 0.0.0.0<br/>
+sam local start-api --docker-network VA-assessment --warm-containers EAGER -p 9000 -d 8080 --container-host-interface 0.0.0.0
  --profile my-local-dev --add-host host.docker.internal:host-gateway<br/>
 
 In the above command, 0.0.0.0 means bind to any interface. The command above will start a container for the image in Docker Desktop<br/>
