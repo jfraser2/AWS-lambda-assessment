@@ -37,6 +37,8 @@ from samcli.local.docker.exceptions import (
     PortAlreadyInUse,
 )
 from samcli.local.docker.utils import NoFreePortsError, find_free_port, to_posix_path
+from botocore.config import Config
+from botocore import UNSIGNED
 
 LOG = logging.getLogger(__name__)
 
@@ -146,7 +148,6 @@ class Container:
     
         # Use the given Docker client or create new one
         self.docker_client = docker_client or docker.from_env(version=DOCKER_MIN_API_VERSION)
-        self.lambda_client = boto3.client('lambda')
     
         # Runtime properties of the container. They won't have value until container is created or started
         self.id: Optional[str] = None
@@ -488,14 +489,24 @@ class Container:
 # the name param is the AWS::Serverless::Function name from template.yaml    
         try :
 #            LOG.debug("Passed param values name: %s event: %s", name, event)
-#            data_to_pass = event.encode("utf-8")
-#            containers = self.docker_client.containers.list()
-#            for container in containers :
-#                LOG.debug("Container ID: %s Name: %s Status: %s", container.id, container.name, container.status)
-            response = self.lambda_client.invoke(
+            data_to_pass = event.encode("utf-8")
+    
+            lambda_client_url = "http://" + self._container_host + ":" + str(self.rapid_port_host)
+            LOG.debug("About to invoke function: %s with url: %s", name, lambda_client_url)
+            lambda_client = boto3.client('lambda',
+                endpoint_url = lambda_client_url,
+                use_ssl = False,
+                verify = False,
+                config = Config(signature_version=UNSIGNED,
+                    read_timeout = 1,
+                    retries = {'max_attempts': 0}
+                )
+            )
+            
+            response = lambda_client.invoke(
                 FunctionName = name,
                 InvocationType = 'RequestResponse', # Or 'Event' for asynchronous
-                Payload = event
+                Payload = data_to_pass
             )  
             
             final_result = None
