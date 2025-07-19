@@ -10,14 +10,6 @@ Globals:
             SAM_CLI_CONTAINER_CONNECTION_TIMEOUT: 120
             DOCKER_HOST: tcp://127.0.0.1:2375
 
-Parameters:
-  DockerTag:
-    Type: String
-    Default: rapid-x86_64
-  HandlersInvokeParam:
-    Type: String
-    Default: request.handlers.NotificationAndTemplateHandler::handleRequest
-
 Resources:
   NotificationAndTemplate:
     Type: AWS::Serverless::Function
@@ -25,10 +17,8 @@ Resources:
       PackageType: Image
       ImageUri: lambdaImage:rapid-x86_64
       CodeUri: C:\work\java\eclipse-workspace2\AWS-lambda-assessment
-      Handler: request.handlers.NotificationAndTemplateHandler::handleRequest
       Architectures:
         - x86_64
-      Runtime: java21
       Timeout: 120
       MemorySize: 4096
       Events:
