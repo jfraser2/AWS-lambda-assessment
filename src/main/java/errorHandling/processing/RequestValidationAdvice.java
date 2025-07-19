@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.text.StringEscapeUtils;
 
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -37,7 +37,7 @@ public abstract class RequestValidationAdvice
 	
 	//other exception handlers or handler overrides below
 	
-    public APIGatewayProxyResponseEvent handleAccessDeniedException(
+    public APIGatewayV2HTTPResponse handleAccessDeniedException(
     		AccessDeniedException ex, String requestOrigin, ObjectMapper mapper)
     {
 		ApiError apiError = new ApiError();
@@ -52,7 +52,7 @@ public abstract class RequestValidationAdvice
         return buildResponseEntity(json, HttpStatusCode.OK, requestOrigin);
     }
 	
-    public APIGatewayProxyResponseEvent handleIllegalArgumentException(
+    public APIGatewayV2HTTPResponse handleIllegalArgumentException(
     		IllegalArgumentException ex, String requestOrigin, ObjectMapper mapper)
     {
 		ApiError apiError = new ApiError();
@@ -66,7 +66,7 @@ public abstract class RequestValidationAdvice
         return buildResponseEntity(json, HttpStatusCode.OK, requestOrigin);
     }
     
-    public APIGatewayProxyResponseEvent handleDatabaseRowNotFoundException(DatabaseRowNotFoundException ex, ObjectMapper mapper)
+    public APIGatewayV2HTTPResponse handleDatabaseRowNotFoundException(DatabaseRowNotFoundException ex, ObjectMapper mapper)
     {
 		ApiError apiError = new ApiError();
 		apiError.setStatus("NO_CONTENT");
@@ -79,7 +79,7 @@ public abstract class RequestValidationAdvice
         return buildResponseEntity(json, HttpStatusCode.OK, ex.getRequestOrigin());
     }
     
-    public APIGatewayProxyResponseEvent handleRequestValidationException(
+    public APIGatewayV2HTTPResponse handleRequestValidationException(
     	RequestValidationException ex, ObjectMapper mapper)
     {
 		ApiError apiError = new ApiError();
@@ -95,7 +95,7 @@ public abstract class RequestValidationAdvice
         return buildResponseEntity(json, HttpStatusCode.OK, ex.getRequestOrigin());
     }
 	 
-    public APIGatewayProxyResponseEvent handleShutdownException(
+    public APIGatewayV2HTTPResponse handleShutdownException(
         ShutdownException ex, ObjectMapper mapper)
     {
 		ApiError apiError = new ApiError();
@@ -110,9 +110,9 @@ public abstract class RequestValidationAdvice
         return buildResponseEntity(json, HttpStatusCode.OK, ex.getRequestOrigin());
     }
     
-	public APIGatewayProxyResponseEvent buildResponseEntity(String json, int aStatus, String requestOrigin)
+	public APIGatewayV2HTTPResponse buildResponseEntity(String json, int aStatus, String requestOrigin)
 	{
-		APIGatewayProxyResponseEvent retVar = new APIGatewayProxyResponseEvent();
+		APIGatewayV2HTTPResponse retVar = new APIGatewayV2HTTPResponse();
 		// support CORS
 		Map<String, String> aResponseHeader = createResponseHeader(requestOrigin);
 		

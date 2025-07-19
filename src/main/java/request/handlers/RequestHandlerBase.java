@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.text.StringEscapeUtils;
 
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -219,7 +219,7 @@ public abstract class RequestHandlerBase
 		return gsonConvertRawJsonToPrettyPrint(tempString, gson);
 	}
 
-	protected String getRequestOrigin(APIGatewayProxyRequestEvent request)
+	protected String getRequestOrigin(APIGatewayV2HTTPEvent  request)
 	{
 		String retVar = null;
 		
@@ -230,7 +230,7 @@ public abstract class RequestHandlerBase
 		return retVar;
 	}
 	
-	protected Map<String, String> createResponseHeader(APIGatewayProxyRequestEvent request)
+	protected Map<String, String> createResponseHeader(APIGatewayV2HTTPEvent request)
 	{
 		// support CORS
 //		System.err.println("Access-Control-Allow-Origin is: " + request.getHeader("Origin"));

@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -41,7 +41,7 @@ import validation.exceptions.ShutdownException;
 
 public class NotificationAndTemplateHandler
 	extends RequestHandlerBase
-	implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> 
+	implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> 
 {
 	protected static ObjectMapper mapper;
 	protected static Gson gsonWithSerializeNullsAndPrettyPrint;
@@ -71,14 +71,14 @@ public class NotificationAndTemplateHandler
 	}
 	
 	@Override
-	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
+	public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent input, Context context) {
 		String requestOrigin = getRequestOrigin(input);
 		StringBuilderContainer stringBuilderContainer = new StringBuilderContainer(); // request Scope
 		ValidationErrorContainer requestValidationErrorsContainer = new ValidationErrorContainer(); //request Scope
 		
-		APIGatewayProxyResponseEvent retVar = null;
+		APIGatewayV2HTTPResponse retVar = null;
 		
-		switch (input.getResource()) {
+		switch (input.getRawPath()) {
 		    case "/v1/createNotification":
 				retVar = creation(input, notificationService, requestValidationErrorsContainer,
 					stringBuilderContainer, requestOrigin);
@@ -121,11 +121,11 @@ public class NotificationAndTemplateHandler
 		return retVar;
 	}	
 	
-	protected APIGatewayProxyResponseEvent creation(APIGatewayProxyRequestEvent input, Notification notificationService,
+	protected APIGatewayV2HTTPResponse creation(APIGatewayV2HTTPEvent input, Notification notificationService,
 		ValidationErrorContainer requestValidationErrorsContainer, StringBuilderContainer stringBuilderContainer,
 		String requestOrigin)
 	{
-		APIGatewayProxyResponseEvent retVar = null;
+		APIGatewayV2HTTPResponse retVar = null;
 		RequestValidation<CreateNotification> createNotificationValidation = 
 				new RequestValidationService<CreateNotification>(); // request Scope
 		
@@ -166,7 +166,7 @@ public class NotificationAndTemplateHandler
 			} else {
 				String jsonString = goodResponse(ne, stringBuilderContainer, null, mapper);
 				// support CORS
-				retVar = new APIGatewayProxyResponseEvent();
+				retVar = new APIGatewayV2HTTPResponse ();
 				retVar.setIsBase64Encoded(false);
 				retVar.setHeaders(createResponseHeader(input));
 				retVar.setStatusCode(HttpStatusCode.CREATED);
@@ -177,11 +177,11 @@ public class NotificationAndTemplateHandler
 		return retVar;
 	}
 
-	protected APIGatewayProxyResponseEvent findAll(APIGatewayProxyRequestEvent input, Notification notificationService,
+	protected APIGatewayV2HTTPResponse findAll(APIGatewayV2HTTPEvent input, Notification notificationService,
 			ValidationErrorContainer requestValidationErrorsContainer, StringBuilderContainer stringBuilderContainer,
 			String requestOrigin)
 	{
-		APIGatewayProxyResponseEvent retVar = null;
+		APIGatewayV2HTTPResponse retVar = null;
 
 		List<NotificationEntity> aList = notificationService.findAll();
 		boolean isEmpty = true;
@@ -196,7 +196,7 @@ public class NotificationAndTemplateHandler
 			String jsonString = goodResponseList(objectList, stringBuilderContainer, gsonWithSerializeNullsAndPrettyPrint, mapper);
 			
 			// support CORS
-			retVar = new APIGatewayProxyResponseEvent();
+			retVar = new APIGatewayV2HTTPResponse ();
 			retVar.setIsBase64Encoded(false);
 			retVar.setHeaders(createResponseHeader(input));
 			retVar.setStatusCode(HttpStatusCode.OK);
@@ -206,11 +206,11 @@ public class NotificationAndTemplateHandler
 		return retVar;
 	}
 	
-	protected APIGatewayProxyResponseEvent findById(APIGatewayProxyRequestEvent input, Notification notificationService,
+	protected APIGatewayV2HTTPResponse findById(APIGatewayV2HTTPEvent input, Notification notificationService,
 			ValidationErrorContainer requestValidationErrorsContainer, StringBuilderContainer stringBuilderContainer,
 			String requestOrigin)
 	{
-		APIGatewayProxyResponseEvent retVar = null;
+		APIGatewayV2HTTPResponse retVar = null;
 		RequestValidation<GetById> getByIdValidation = 
 				new RequestValidationService<GetById>(); // request Scope
 		
@@ -246,7 +246,7 @@ public class NotificationAndTemplateHandler
 					jsonString = goodResponse(record, stringBuilderContainer, null, mapper);			
 				}
 				// support CORS
-				retVar = new APIGatewayProxyResponseEvent();
+				retVar = new APIGatewayV2HTTPResponse ();
 				retVar.setIsBase64Encoded(false);
 				retVar.setHeaders(createResponseHeader(input));
 				retVar.setStatusCode(HttpStatusCode.OK);
@@ -257,11 +257,11 @@ public class NotificationAndTemplateHandler
 		return retVar;
 	}
 	
-	protected APIGatewayProxyResponseEvent creation(APIGatewayProxyRequestEvent input, Template templateService,
+	protected APIGatewayV2HTTPResponse creation(APIGatewayV2HTTPEvent input, Template templateService,
 			ValidationErrorContainer requestValidationErrorsContainer, StringBuilderContainer stringBuilderContainer,
 			String requestOrigin)
 	{
-		APIGatewayProxyResponseEvent retVar = null;
+		APIGatewayV2HTTPResponse retVar = null;
 		RequestValidation<CreateTemplate> createTemplateValidation = 
 				new RequestValidationService<CreateTemplate>(); // request Scope
 		
@@ -286,7 +286,7 @@ public class NotificationAndTemplateHandler
 			
 			String jsonString = goodResponse(savedEntity, stringBuilderContainer, null, mapper);
 			// support CORS
-			retVar = new APIGatewayProxyResponseEvent();
+			retVar = new APIGatewayV2HTTPResponse ();
 			retVar.setIsBase64Encoded(false);
 			retVar.setHeaders(createResponseHeader(input));
 			retVar.setStatusCode(HttpStatusCode.CREATED);
@@ -296,11 +296,11 @@ public class NotificationAndTemplateHandler
 		return retVar;
 	}
 	
-	protected APIGatewayProxyResponseEvent findAll(APIGatewayProxyRequestEvent input, Template templateService,
+	protected APIGatewayV2HTTPResponse findAll(APIGatewayV2HTTPEvent input, Template templateService,
 			ValidationErrorContainer requestValidationErrorsContainer, StringBuilderContainer stringBuilderContainer,
 			String requestOrigin)
 	{
-		APIGatewayProxyResponseEvent retVar = null;
+		APIGatewayV2HTTPResponse retVar = null;
 
 		List<TemplateEntity> aList = templateService.findAll();
 		boolean isEmpty = true;
@@ -315,7 +315,7 @@ public class NotificationAndTemplateHandler
 			String jsonString = goodResponseList(objectList, stringBuilderContainer, gsonWithSerializeNullsAndPrettyPrint, mapper);
 			
 			// support CORS
-			retVar = new APIGatewayProxyResponseEvent();
+			retVar = new APIGatewayV2HTTPResponse ();
 			retVar.setIsBase64Encoded(false);
 			retVar.setHeaders(createResponseHeader(input));
 			retVar.setStatusCode(HttpStatusCode.OK);
@@ -325,11 +325,11 @@ public class NotificationAndTemplateHandler
 		return retVar;
 	}
 	
-	protected APIGatewayProxyResponseEvent findById(APIGatewayProxyRequestEvent input, Template templateService,
+	protected APIGatewayV2HTTPResponse findById(APIGatewayV2HTTPEvent input, Template templateService,
 			ValidationErrorContainer requestValidationErrorsContainer, StringBuilderContainer stringBuilderContainer,
 			String requestOrigin)
 	{
-		APIGatewayProxyResponseEvent retVar = null;
+		APIGatewayV2HTTPResponse retVar = null;
 		RequestValidation<GetById> getByIdValidation = 
 				new RequestValidationService<GetById>(); // request Scope
 		
@@ -357,7 +357,7 @@ public class NotificationAndTemplateHandler
 			} else {
 				String jsonString = goodResponse(record, stringBuilderContainer, null, mapper);
 				// support CORS
-				retVar = new APIGatewayProxyResponseEvent();
+				retVar = new APIGatewayV2HTTPResponse ();
 				retVar.setIsBase64Encoded(false);
 				retVar.setHeaders(createResponseHeader(input));
 				retVar.setStatusCode(HttpStatusCode.OK);
@@ -368,11 +368,11 @@ public class NotificationAndTemplateHandler
 		return retVar;
 	}
 	
-	protected APIGatewayProxyResponseEvent update(APIGatewayProxyRequestEvent input, Template templateService,
+	protected APIGatewayV2HTTPResponse update(APIGatewayV2HTTPEvent input, Template templateService,
 			ValidationErrorContainer requestValidationErrorsContainer, StringBuilderContainer stringBuilderContainer,
 			String requestOrigin)
 	{
-		APIGatewayProxyResponseEvent retVar = null;
+		APIGatewayV2HTTPResponse retVar = null;
 		RequestValidation<UpdateTemplate> updateTemplateValidation = 
 				new RequestValidationService<UpdateTemplate>(); // request Scope
 		
@@ -403,7 +403,7 @@ public class NotificationAndTemplateHandler
 				
 				String jsonString = goodResponse(updatedEntity, stringBuilderContainer, null, mapper);
 				// support CORS
-				retVar = new APIGatewayProxyResponseEvent();
+				retVar = new APIGatewayV2HTTPResponse ();
 				retVar.setIsBase64Encoded(false);
 				retVar.setHeaders(createResponseHeader(input));
 				retVar.setStatusCode(HttpStatusCode.OK);
@@ -418,9 +418,9 @@ public class NotificationAndTemplateHandler
 	// being created by the SIGKILL or SIGINT not being sent by Ctrl-C from sam.cmd
     // The only other possible way would be a modification of sam.cmd which uses python.exe
 	// The sam.cmd would have to start using pythonw.exe, not going there
-	protected APIGatewayProxyResponseEvent shutdownHook(String requestOrigin)
+	protected APIGatewayV2HTTPResponse shutdownHook(String requestOrigin)
 	{
-		APIGatewayProxyResponseEvent retVar = null;
+		APIGatewayV2HTTPResponse retVar = null;
 		
 //        System.err.println("[runtime] Notification ShutdownHook triggered");
 //        System.err.println("[runtime] Notification Clean up");
