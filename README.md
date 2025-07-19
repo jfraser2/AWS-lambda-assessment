@@ -118,6 +118,19 @@ You should see the following result After a wait:<br/>
 
 As of this writing I do have to make for events<br/>
 
+Another way to test is to use curl. The curl commands can be run after<br/>
+the sam local start-api as described above. Some examples are below<br/>
+You do not need to build events this way, but you do have to<br/>
+add parameters on methods that need them<br/>
+
+curl localhost:9000/v1/all/notifications
+curl localhost:9000/v1/findByNotificationId/0
+
+curl localhost:9000/v1/all/templates
+curl localhost:9000/v1/findByTemplateId/0
+
+curl localhost:9000/v1/shutdown
+
 
 
 

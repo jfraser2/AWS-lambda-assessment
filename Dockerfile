@@ -62,7 +62,7 @@ RUN echo "JAVA_HOME is set to: ${JAVA_HOME}"
 RUN export PATH
 RUN echo "runtime PATH is set to: ${PATH}"
 
-ENV CLASSPATH=/development/resources
+ENV CLASSPATH=/development/resources/log4j2.xml:app.jar
 RUN export CLASSPATH
 RUN echo "CLASSPATH is set to: ${CLASSPATH}"
 
@@ -76,7 +76,7 @@ EXPOSE 2375/tcp
 # entry point of the container
 #ENTRYPOINT ["./entrypoint.sh"]
 #ENTRYPOINT ["/var/rapid/aws-lambda-rie"]
-ENTRYPOINT ["/var/lang/bin/java", "-cp", "app.jar", "com.amazonaws.services.lambda.runtime.api.client.AWSLambda" ]
+ENTRYPOINT ["/var/lang/bin/java", "-cp", "${CLASSPATH}", "com.amazonaws.services.lambda.runtime.api.client.AWSLambda" ]
 
 # Pass the name of the function handler as an argument to the runtime com.amazonaws.services.lambda.runtime.api.client.AWSLambda
 CMD ["request.handlers.NotificationAndTemplateHandler::handleRequest" ]
