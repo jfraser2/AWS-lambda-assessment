@@ -1,14 +1,6 @@
-Globals:
-    Function:
-        Timeout: 120
-        MemorySize: 4096
-        Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
-          Variables:
-            DB_URL: jdbc:postgresql://postgres/postgres
-            DB_USER: postgres
-            DB_PASSWORD: sa
-            SAM_CLI_CONTAINER_CONNECTION_TIMEOUT: 120
-            DOCKER_HOST: tcp://127.0.0.1:2375
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Assessment Serverless Function
 
 Resources:
   NotificationAndTemplate:
