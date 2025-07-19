@@ -107,7 +107,7 @@ The test has to use invoke, because it does not go thru the gateway. Invoke was 
 forcing it too, because when you check the Expose daemon on ..., it is creating a listener on 2375 which is direct. <br/>
 Open a new windows Administrator Shell and run the command<br/>
 
-sam local invoke NotificationAndTemplate --docker-network VA-assessment -d 8080 --container-host localhost:2375 --profile my-local-dev --add-host host.docker.internal:host-gateway --debug --event src/test/resources/AllNotificationsEvent.json<br/>
+sam local invoke NotificationAndTemplate --docker-network VA-assessment -d 8080 --profile my-local-dev --add-host host.docker.internal:host-gateway --debug --event src/test/resources/AllNotificationsEvent.json<br/>
 
 You should see the following result After a wait:<br/>
 {<br/>
