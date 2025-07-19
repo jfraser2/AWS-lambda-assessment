@@ -71,6 +71,8 @@ ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/deployment/lib
 RUN export LD_LIBRARY_PATH
 RUN echo "LD_LIBRARY_PATH is set to: ${LD_LIBRARY_PATH}"
 
+EXPOSE 2375/tcp
+
 # entry point of the container
 #ENTRYPOINT ["./entrypoint.sh"]
 #ENTRYPOINT ["/var/rapid/aws-lambda-rie"]
