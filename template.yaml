@@ -8,7 +8,7 @@ Globals:
             DB_USER: postgres
             DB_PASSWORD: sa
             SAM_CLI_CONTAINER_CONNECTION_TIMEOUT: 120
-            DOCKER_HOST: npipe:////./pipe/docker_engine
+            DOCKER_HOST: tcp://127.0.0.1:2375
 
 Parameters:
   DockerTag:

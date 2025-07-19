@@ -64,29 +64,51 @@ OMG this sam local start-api command was very hard to figure out and I had to re
 From your windows Administrator shell, cd to your project folder(cd C:\work\java\eclipse-workspace2\AWS-lambda-assessment)<br/>
 The build is done from project file template.yaml, and it must contain the full path to your project folder.<br/>
 Your JAVA_HOME and path(windows Environment variables) must be set to JAVA 21<br/>
-To Begin, type: sam build --docker-network VA-assessment --use-container --profile my-local-dev<br/>
+To Begin, type:<br/>
+sam build --docker-network VA-assessment --use-container --profile my-local-dev<br/>
+
 To validate you should see new files in your project folder called .aws-sam<br/>
 If you make project changes remove the project folder .aws-sam Then delete the DockerDesktop Images and/or any Containers.<br/>
-Again run sam build --no-cached  --docker-network VA-assessment --use-container --profile my-local-dev .<br/>
+Again run<br/>
+sam build --no-cached  --docker-network VA-assessment --use-container --profile my-local-dev .<br/>
+
 To start the local Http Server to handle curl requests, and a container for your build image, the command is: <br/>
+
 sam local start-api --docker-network VA-assessment --warm-containers EAGER -p 9000 -d 8080 --profile my-local-dev --add-host host.docker.internal:host-gateway --host localhost --debug<br/> 
 
-In the above command, 0.0.0.0 means bind to any interface. The command above will start a container for the image in Docker Desktop<br/>
-In the new container after a request is made, you will see a port mapping of 8080:8080. This map is for connecting an exteral debugger.<br/>
+In the new Docker Desktop container after a request is made, you will see a port mapping of 8080:8080. This map is for connecting an external debugger.<br/>
 This container will be used over and over again on each request. This is needed because a connection pool runs in the container.</br>
 Before any Ctrl-C to exit the listener, a person should run a shutdown. "curl localhost:9000/v1/shutdown"<br/>
 The idea of running a shutdown, is to clean up the Hikari connection pool. The Handler Function creates a connection pool. <br/>
-If you forget you could stop and start postgres in DockerDesktop.<br/>
+If you forget you could stop and start postgres in DockerDesktop. You can explore many things when you click on a container<br/>
+I found Inspect and Files to be very helpful<br/>
 
 #Start Testing
+
+The very first step to successful testing is the sam cli fix I created. Everyone tells you to set<br/>
+DOCKER_HOST to tcp://127.0.0.1:2375. Guess what? the container processing file container.py in sam cli<br/>
+does not even read it. UGH!!! So you have to copy container.py from the project into the sam cli folder<br/>
+~/AWSSAMCLI/runtime/Lib/site-packages/samcli/local/docker, The tilde stands for you install folder.<br/>
+I am confident it will work, but back it up first anyway<br/>
+ 
+
+The way to test involves setting the windows environment variable DOCKER_HOST<br/>
+the value should be tcp://127.0.0.1:2375. Then go into docker Desktop and change a setting<br/>
+Click the Settings button->General and check Expose daemon on tcp://localhost:2375 without TLS<br/>
+Followed by a restart, this will set a port listeners on 2375, the process is com.docker.backend.exe<br/>
+When you set DOCKER_HOST and run a test you will get another listener on 2375, it is python.exe<br/>
 
 The testing is done locally and uses the aws-lambda-runtime-interface-emulator<br/>
 It's default port is 8080, yes it is a Tomcat conflict, The windows command for<br/>
 who got it first or who did not release it is: netstat -ao |find /i "listening"<br/>
 Also try netstat -ano | findstr :8080 if that comes back empty the port is free<br/>
 
+The test has to use invoke, because it does not go thru the gateway. Invoke was meant to be direct. Docker is
+forcing it too, because when you check the Expose daemon on ..., it is creating a listener on 2375 which is direct. <br/>
 Open a new windows Administrator Shell and run the command<br/>
-curl localhost:9000/v1/all/notifications<br/>
+
+sam local invoke NotificationAndTemplate --docker-network VA-assessment -d 8080 --container-host localhost:2375 --profile my-local-dev --add-host host.docker.internal:host-gateway --debug --event src/test/resources/AllNotificationsEvent.json<br/>
+
 You should see the following result After a wait:<br/>
 {<br/>
 &nbsp; \"status\" : \"NO\_CONTENT\",<br/>
@@ -94,13 +116,7 @@ You should see the following result After a wait:<br/>
 &nbsp; \"message\" : \"Notification Table is empty.\"S<br/>
 }<br/>
 
-curl localhost:9000/v1/all/templates<br/>
-result is the same<br/>
-
-All possible curl tests are in file template.yaml<br/>
-
-Second way for local testing, remove the DOCKER_HOST windows environment variable(set DOCKER_HOST=) and then run the commands below<br/>
-sam local invoke NotificationAndTemplate --docker-network VA-assessment -d 8080 --container-host localhost:2375 --profile my-local-dev --add-host host.docker.internal:host-gateway --debug --event src/test/resources/AllNotificationsEvent.json<br/>
+As of this writing I do have to make for events<br/>
 
 
 

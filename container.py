@@ -81,6 +81,7 @@ class Container:
     _STDERR_FRAME_TYPE = 2
     RAPID_PORT_CONTAINER = "8080"
     URL = "http://{host}:{port}/2015-03-31/functions/{function_name}/invocations"
+    DOCKER_HOST_URL = "{url}/2015-03-31/functions/{function_name}/invocations"
     # Set connection timeout to 1 sec to support the large input.
     RAPID_CONNECTION_TIMEOUT = 1
 
@@ -106,7 +107,7 @@ class Container:
     ):
         """
         Initializes the class with given configuration. This does not automatically create or run the container.
-
+    
         :param str image: Name of the Docker image to create container with
         :param str cmd: Command to pass to container
         :param str working_dir: Working directory for the container
@@ -127,7 +128,7 @@ class Container:
         :param dict extra_hosts: Optional. Dict of hostname to IP resolutions
         :param bool mount_symlinks: Optional. True if symlinks should be mounted in the container
         """
-
+    
         self._image = image
         self._cmd = cmd
         self._working_dir = working_dir
@@ -142,19 +143,19 @@ class Container:
         self._logs_thread = None
         self._extra_hosts = extra_hosts
         self._logs_thread_event = None
-
+    
         # Use the given Docker client or create new one
         self.docker_client = docker_client or docker.from_env(version=DOCKER_MIN_API_VERSION)
         self.lambda_client = boto3.client('lambda')
-
+    
         # Runtime properties of the container. They won't have value until container is created or started
         self.id: Optional[str] = None
-
+    
         # aws-lambda-rie defaults to 8080 as the port, however that's a common port. A port is chosen by
         # selecting the first free port in a range that's not ephemeral.
         self._start_port_range = 5000
         self._end_port_range = 9000
-
+    
         self._container_host = container_host
         self._container_host_interface = container_host_interface
         self._mount_with_write = mount_with_write
@@ -162,24 +163,27 @@ class Container:
         self._mount_symlinks = mount_symlinks
         
         self.use_npipe = False
-        self.use_socket = False
+        self.use_tcp_socket = False
+        self.docker_host = None
         self.use_socat = False
         self.rapid_port_host = 0
         
         docker_host = os.environ.get('DOCKER_HOST')
         if docker_host is not None and docker_host :
-            if docker_host.endswith(":2375"):
+            if docker_host.startswith("npipe:") :
+                self.docker_host = docker_host
+                self.use_npipe = True
+                LOG.debug("NPIPE is being used: %s", docker_host)
+            elif docker_host.startswith("tcp:") :
                 protocol_delimiter = "//"
                 protocal, host_and_port = docker_host.split(protocol_delimiter, 2)
                 delimiter = ":"
                 host_name, host_port = host_and_port.split(delimiter, 2)
                 self._container_host = host_name
-                self.rapid_port_host = 2375
-                self.use_socket = True
-                LOG.debug("TCP is being used: %s", docker_host)
-            elif docker_host.startswith("npipe:") :
-                self.use_npipe = True
-                LOG.debug("Npipe is being used: %s", docker_host)
+                self.rapid_port_host = int(host_port) 
+                self.docker_host = docker_host
+                self.use_tcp_socket = True
+                LOG.debug("TCP SOCKET is being used: %s host is: %s port is: %d", docker_host, self._container_host, self.rapid_port_host)
         elif self._container_host is not None and self._container_host and self._container_host.endswith(":2375") :
             elif_delimiter = ":"
             elif_host_name, elif_host_port = self._container_host.split(elif_delimiter, 2)
@@ -188,7 +192,7 @@ class Container:
             self.use_socat = True
             LOG.debug("Socat is being used: %s:%d", self._container_host, self.rapid_port_host)
             
-        if not self.use_socket and not self.use_npipe and not self.use_socat :
+        if not self.use_npipe and not self.use_socat and not self.use_tcp_socket :
             try:
                 self.rapid_port_host = find_free_port(
                     network_interface=self._container_host_interface, start=self._start_port_range, end=self._end_port_range
@@ -200,19 +204,19 @@ class Container:
         """
         Calls Docker API to creates the Docker container instance. Creating the container does *not* run the container.
         Use ``start`` method to run the container
-
+    
         context: samcli.local.docker.container.ContainerContext
             Context for the container management to run (build, invoke)
-
+    
         :return string: ID of the created container
         :raise RuntimeError: If this method is called after a container already has been created
         """
-
+    
         if self.is_created():
             raise RuntimeError("This container already exists. Cannot create again.")
-
+    
         _volumes = {}
-
+    
         if self._host_dir:
             mount_mode = "rw,delegated" if self._mount_with_write else "ro,delegated"
             LOG.info("Mounting %s as %s:%s, inside runtime container", self._host_dir, self._working_dir, mount_mode)
@@ -220,7 +224,7 @@ class Container:
                 mapped_symlinks = self._create_mapped_symlink_files()
             else:
                 mapped_symlinks = {}
-
+    
             _volumes = {
                 self._host_dir: {
                     # Mount the host directory inside container at working_dir
@@ -230,7 +234,7 @@ class Container:
                 },
                 **mapped_symlinks,
             }
-
+    
         kwargs = {
             "command": self._cmd,
             "working_dir": self._working_dir,
@@ -240,7 +244,7 @@ class Container:
             # Set proxy configuration from global Docker config file
             "use_config_proxy": True,
         }
-
+    
         # Get effective user when building lambda and mounting with write permissions
         # Pass effective user to docker run CLI as "--user" option in the format of uid[:gid]
         # to run docker as current user instead of root
@@ -249,21 +253,21 @@ class Container:
         if self._mount_with_write and effective_user and effective_user != ROOT_USER_ID:
             LOG.debug("Detect non-root user, will pass argument '--user %s' to container", effective_user)
             kwargs["user"] = effective_user
-
+    
         if self._container_opts:
             kwargs.update(self._container_opts)
-
+    
         if self._additional_volumes:
             kwargs["volumes"].update(self._additional_volumes)
-
+    
         # Make sure all mounts are of posix path style.
         kwargs["volumes"] = {to_posix_path(host_dir): mount for host_dir, mount in kwargs["volumes"].items()}
-
+    
         if self._env_vars:
             kwargs["environment"] = self._env_vars
-
+    
         kwargs["ports"] = {self.RAPID_PORT_CONTAINER: (self._container_host_interface, self.rapid_port_host)}
-
+    
         if self._exposed_ports:
             kwargs["ports"].update(
                 {
@@ -271,17 +275,17 @@ class Container:
                     for container_port, host_port in self._exposed_ports.items()
                 }
             )
-
+    
         if self._entrypoint:
             kwargs["entrypoint"] = self._entrypoint
-
+    
         if self._memory_limit_mb:
             # Ex: 128m => 128MB
             kwargs["mem_limit"] = "{}m".format(self._memory_limit_mb)
-
+    
         if self._extra_hosts:
             kwargs["extra_hosts"] = self._extra_hosts
-
+    
         try:
             real_container = self.docker_client.containers.create(self._image, **kwargs)
         except DockerAPIError as ex:
@@ -289,10 +293,10 @@ class Container:
                 f"Container creation failed: {ex.explanation}, check template for potential issue"
             )
         self.id = real_container.id
-
+    
         self._logs_thread = None
         self._logs_thread_event = None
-
+    
         if self.network_id and self.network_id != "host":
             try:
                 network = self.docker_client.networks.get(self.network_id)
@@ -301,7 +305,7 @@ class Container:
                 # stop and delete the created container before raising the exception
                 real_container.remove(force=True)
                 raise
-
+    
         return self.id
 
     def _create_mapped_symlink_files(self) -> Dict[str, Dict[str, str]]:
@@ -310,21 +314,21 @@ class Container:
         host directory and creates additional bind mounts to correctly map them
         inside of the container.
         By default only `node_modules` are mounted unless self.mount_symlinks is True
-
+    
         Returns
         -------
         Dict[str, Dict[str, str]]
             A dictonary representing the resolved file or directory and the bound path
             on the container
         """
-
+    
         mount_mode = "ro,delegated"
         additional_volumes: Dict[str, Dict[str, str]] = {}
-
+    
         if not pathlib.Path(self._host_dir).exists():
             LOG.debug("Host directory not found, skip resolving symlinks")
             return additional_volumes
-
+    
         with os.scandir(self._host_dir) as directory_iterator:
             for file in directory_iterator:
                 if not file.is_symlink():
@@ -342,18 +346,18 @@ class Container:
                     "bind": container_full_path,
                     "mode": mount_mode,
                 }
-
+        
                 LOG.info(
                     "Mounting resolved symlink (%s -> %s) as %s:%s, inside runtime container"
                     % (file.path, host_resolved_path, container_full_path, mount_mode)
                 )
-
+        
         return additional_volumes
 
     def stop(self, timeout=3):
         """
         Stop a container, with a given number of seconds between sending SIGTERM and SIGKILL.
-
+        
         Parameters
         ----------
         timeout
@@ -363,7 +367,7 @@ class Container:
         if not self.is_created():
             LOG.debug("Container was not created, cannot run stop.")
             return
-
+        
         try:
             self.docker_client.containers.get(self.id).stop(timeout=timeout)
         except docker.errors.NotFound:
@@ -372,7 +376,7 @@ class Container:
         except docker.errors.APIError as ex:
             msg = str(ex)
             removal_in_progress = ("removal of container" in msg) and ("is already in progress" in msg)
-
+        
             # When removal is already started, Docker API will throw an exception
             # Skip such exceptions and log
             if not removal_in_progress:
@@ -386,7 +390,7 @@ class Container:
         if not self.is_created():
             LOG.debug("Container was not created. Skipping deletion")
             return
-
+        
         try:
             self.docker_client.containers.get(self.id).remove(force=True)  # Remove a container, even if it is running
         except docker.errors.NotFound:
@@ -395,7 +399,7 @@ class Container:
         except docker.errors.APIError as ex:
             msg = str(ex)
             removal_in_progress = ("removal of container" in msg) and ("is already in progress" in msg)
-
+        
             # When removal is already started, Docker API will throw an exception
             # Skip such exceptions and log
             if not removal_in_progress:
@@ -408,7 +412,7 @@ class Container:
                 if host_tmp_dir_path.exists():
                     shutil.rmtree(self._host_tmp_dir)
                     LOG.debug("Successfully removed temporary directory %s on the host.", self._host_tmp_dir)
-
+        
         self.id = None
 
     def start(self, input_data=None):
@@ -416,27 +420,27 @@ class Container:
         Calls Docker API to start the container. The container must be created at the first place to run.
         It waits for the container to complete, fetches both stdout and stderr logs and returns through the
         given streams.
-
+        
         Parameters
         ----------
         input_data
             Optional. Input data sent to the container through container's stdin.
         """
-
+        
         if input_data:
             raise ValueError("Passing input through container's stdin is not supported")
-
+        
         if not self.is_created():
             raise RuntimeError("Container does not exist. Cannot start this container")
-
+        
         # Make tmp dir on the host
         if self._mount_with_write and self._host_tmp_dir and not os.path.exists(self._host_tmp_dir):
             os.makedirs(self._host_tmp_dir)
             LOG.debug("Successfully created temporary directory %s on the host.", self._host_tmp_dir)
-
+        
         # Get the underlying container instance from Docker API
         real_container = self.docker_client.containers.get(self.id)
-
+        
         try:
             # Start the container
             real_container.start()
@@ -450,10 +454,11 @@ class Container:
         # TODO(sriram-mv): `aws-lambda-rie` is in a mode where the function_name is always "function"
         # NOTE(sriram-mv): There is a connection timeout set on the http call to `aws-lambda-rie`, however there is not
         # a read time out for the response received from the server.
-
+        # the name param is the AWS::Serverless::Function name from template.yaml
+        
         data = event.encode("utf-8")
-        if not self.use_socat :
-        # generate a lock key with host-port combination which is unique per function
+        if not self.use_npipe :
+        # generate a lock key with host-port combination which is unique per function for a http request
             lock_key = f"{self._container_host}-{self.rapid_port_host}"
             LOG.debug("Getting lock for the key %s", lock_key)
             with CONCURRENT_CALL_MANAGER_LOCK:
@@ -468,22 +473,15 @@ class Container:
                     data,
                     timeout=(self.RAPID_CONNECTION_TIMEOUT, None),
                 )
-        else :
-            resp = requests.post(
-                self.URL.format(host=self._container_host, port=self.rapid_port_host, function_name="function"),
-                data,
-                timeout=(self.RAPID_CONNECTION_TIMEOUT, None),
-            )
             
-
-        try:
-            # if response is an image then json.loads/dumps will throw a UnicodeDecodeError so return raw content
-            if resp.headers.get("Content-Type") and "image" in resp.headers["Content-Type"]:
-                return resp.content, True
-            return json.dumps(json.loads(resp.content), ensure_ascii=False), False
-        except json.JSONDecodeError:
-            LOG.debug("Failed to deserialize response from RIE, returning the raw response as is")
-            return resp.content, False
+            try:
+                # if response is an image then json.loads/dumps will throw a UnicodeDecodeError so return raw content
+                if resp.headers.get("Content-Type") and "image" in resp.headers["Content-Type"]:
+                    return resp.content, True
+                return json.dumps(json.loads(resp.content), ensure_ascii=False), False
+            except json.JSONDecodeError:
+                LOG.debug("Failed to deserialize response from RIE, returning the raw response as is")
+                return resp.content, False
 
     @retry(exc=requests.exceptions.RequestException, exc_raise=ContainerResponseException)
     def wait_for_npipe_response(self, name, event, stdout) -> Tuple[Union[str, bytes], bool]: 
@@ -512,7 +510,7 @@ class Container:
         # NOTE(sriram-mv): Let logging happen in its own thread, so that a http request can be sent.
         # NOTE(sriram-mv): All logging is re-directed to stderr, so that only the lambda function return
         # will be written to stdout.
-
+        
         # the log thread will not be closed until the container itself got deleted,
         # so as long as the container is still there, no need to start a new log thread
         if not self._logs_thread or not self._logs_thread.is_alive():
@@ -521,11 +519,11 @@ class Container:
                 target = self.wait_for_logs, args=(stderr, stderr, self._logs_thread_event), daemon=True
             )
             self._logs_thread.start()
-
+        
         # wait_for_http_response will attempt to establish a connection to the socket
         # but it'll fail if the socket is not listening yet, so we wait for the socket
         self._wait_for_socket_connection()
-
+        
         # start the timer for function timeout right before executing the function, as waiting for the socket
         # can take some time
         timer = start_timer() if start_timer else None
@@ -535,7 +533,7 @@ class Container:
             response, is_image = self.wait_for_http_response(full_path, event, stdout)
         if timer:
             timer.cancel()
-
+        
         self._logs_thread_event.wait(timeout=1)
         if isinstance(response, str):
             stdout.write_str(response)
@@ -572,7 +570,7 @@ class Container:
         Waits for a successful connection to the socket used to communicate with Docker.
         """
         
-        if self.use_npipe or self.use_socat :
+        if self.use_npipe :
             return
         else :
             LOG.debug("About to try connecting to container-host and port: %s:%d", self._container_host, self.rapid_port_host)
@@ -591,7 +589,7 @@ class Container:
         """
         Checks if able to connect successully to the socket used to communicate with Docker.
         """
-
+    
         a_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         location = (self._container_host, self.rapid_port_host)
         # connect_ex returns 0 if connection succeeded
@@ -601,21 +599,21 @@ class Container:
 
     def copy(self, from_container_path, to_host_path) -> None:
         """Copies a path from container into host path"""
-
+    
         if not self.is_created():
             raise RuntimeError("Container does not exist. Cannot get logs for this container")
-
+    
         real_container = self.docker_client.containers.get(self.id)
-
+    
         LOG.debug("Copying from container: %s -> %s", from_container_path, to_host_path)
         with tempfile.NamedTemporaryFile() as fp:
             tar_stream, _ = real_container.get_archive(from_container_path)
             for data in tar_stream:
                 fp.write(data)
-
+    
             # Seek the handle back to start of file for tarfile to use
             fp.seek(0)
-
+    
             extract_tarfile(file_obj=fp, unpack_dir=to_host_path)
 
     @staticmethod
@@ -627,7 +625,7 @@ class Container:
     ):
         """
         Based on the data returned from the Container output, via the iterator, write it to the appropriate streams
-
+    
         Parameters
         ----------
         output_itr: Iterator
@@ -637,14 +635,14 @@ class Container:
         stderr: samcli.lib.utils.stream_writer.StreamWriter, optional
             Stream writer to write stderr data from the Container into
         """
-
+    
         # following iterator might throw an exception (see: https://github.com/aws/aws-sam-cli/issues/4222)
         try:
             # Iterator returns a tuple of (stdout, stderr)
             for stdout_data, stderr_data in output_itr:
                 if stdout_data and stdout:
                     Container._handle_data_writing(stdout, stdout_data, event)
-
+    
                 if stderr_data and stderr:
                     Container._handle_data_writing(stderr, stderr_data, event)
         except Exception as ex:
@@ -665,10 +663,10 @@ class Container:
         if isinstance(output_stream, StreamWriter):
             output_stream.write_str(output_str)
             output_stream.flush()
-
+    
         if isinstance(output_stream, io.BytesIO):
             output_stream.write(output_str.encode("utf-8"))
-
+    
         if isinstance(output_stream, io.TextIOWrapper):
             output_stream.buffer.write(output_str.encode("utf-8"))
         if re.match(pattern, output_str) is not None and event:
@@ -695,7 +693,7 @@ class Container:
     def network_id(self, value):
         """
         Set the ID of network that this container should connect to
-
+    
         :param string value: Value of the network ID
         """
         self._network_id = value
@@ -704,7 +702,7 @@ class Container:
     def image(self):
         """
         Returns the image used by this container
-
+    
         :return string: Name of the container image
         """
         return self._image
@@ -712,7 +710,7 @@ class Container:
     def is_created(self):
         """
         Checks if the real container exists?
-
+    
         Returns
         -------
         bool
@@ -729,7 +727,7 @@ class Container:
     def is_running(self):
         """
         Checks if the real container status is running
-
+    
         Returns
         -------
         bool
@@ -743,12 +741,12 @@ class Container:
 
     def _resolve_symlinks_in_context(self, context) -> bool:
         """
-
+    
         Parameters
         ----------
         context : samcli.local.docker.container.ContainerContext
             Context for the container management to run. (build, invoke)
-
+    
         Returns
         -------
         bool
@@ -758,12 +756,12 @@ class Container:
 
     def _resolve_symlinks_for_file(self, file: os.DirEntry) -> bool:
         """
-
+    
         Parameters
         ----------
         file : os.DirEntry
            File to check if it should be resolved
-
+    
         Returns
         -------
         bool
