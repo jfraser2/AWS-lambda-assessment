@@ -74,7 +74,7 @@ sam build --no-cached  --docker-network VA-assessment --use-container --profile 
 
 To start the local Http Server to handle curl requests, and a container for your build image, the command is: <br/>
 
-sam local start-api --docker-network VA-assessment --warm-containers EAGER -p 9000 -d 8080 --profile my-local-dev --add-host host.docker.internal:host-gateway --host localhost --debug<br/> 
+sam local start-api --docker-network VA-assessment --warm-containers LAZY -p 9000 -d 8080 --profile my-local-dev --add-host host.docker.internal:host-gateway --host localhost --debug<br/> 
 
 In the new Docker Desktop container after a request is made, you will see a port mapping of 8080:8080. This map is for connecting an external debugger.<br/>
 This container will be used over and over again on each request. This is needed because a connection pool runs in the container.</br>
@@ -123,13 +123,13 @@ the sam local start-api as described above. Some examples are below<br/>
 You do not need to build events this way, but you do have to<br/>
 add parameters on methods that need them<br/>
 
-curl  localhost:9000/v1/all/notifications
-curl  localhost:9000/v1/findByNotificationId/0
+curl  localhost:9000/v1/all/notifications<br/>
+curl  localhost:9000/v1/findByNotificationId/0<br/>
 
-curl localhost:9000/v1/all/templates
-curl localhost:9000/v1/findByTemplateId/0
+curl localhost:9000/v1/all/templates<br/>
+curl localhost:9000/v1/findByTemplateId/0<br/>
 
-curl localhost:9000/v1/shutdown
+curl localhost:9000/v1/shutdown<br/>
 
 
 

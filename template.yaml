@@ -1,12 +1,12 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Transform: AWS::Serverless-2016-10-31
-Description: Assessment Serverless Function
+Transform:
+  - AWS::LanguageExtensions
+  - AWS::Serverless-2016-10-316-10-31
 
 Resources:
   RequestLambdaFunctionAuthorizer:
-    Type: AWS::Serverless::HttpApi
+    Type: AWS::Serverless::HttpApiFunction
     Properties:
-      StageName: Prod
       Auth:
         DefaultAuthorizer: LambdaRequestAuthorizer
         Authorizers:
@@ -21,24 +21,24 @@ Resources:
   AuthFunction:
     Type: AWS::Serverless::Function
     Properties:
+      PackageType: Image
+      ImageUri: lambdaimage:rapid-x86_64
       CodeUri: C:\work\java\eclipse-workspace2\AWS-lambda-assessment
-      Handler: request.handlers.AuthorizationHandler::handleRequest
+      Architectures:
+        - x86_64
       Timeout: 120
       MemorySize: 4096
       Events:
         CheckAuthorization:
           Type: HttpApi
           Properties:
-            ApiId: !Ref RequestLambdaFunctionAuthorizer
-            Auth:
-              Authorizer: NONE # This overrides the default authorizer, making it public          
             Path: /v1/test/authorization
             Method: get
   NotificationAndTemplate:
     Type: AWS::Serverless::Function
     Properties:
       PackageType: Image
-      ImageUri: lambdaImage:rapid-x86_64
+      ImageUri: lambdaimage:rapid-x86_64
       CodeUri: C:\work\java\eclipse-workspace2\AWS-lambda-assessment
       Architectures:
         - x86_64
