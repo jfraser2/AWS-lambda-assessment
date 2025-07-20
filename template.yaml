@@ -32,6 +32,8 @@ Resources:
         CheckAuthorization:
           Type: HttpApi
           Properties:
+            Auth:
+              Authorizer: NONE  # <<-- This line makes the endpoint publicAuth
             Path: /v1/test/authorization
             Method: get
   NotificationAndTemplate:

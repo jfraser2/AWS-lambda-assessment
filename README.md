@@ -88,7 +88,7 @@ I found Inspect and Files to be very helpful<br/>
 The very first step to successful testing is the sam cli fix I created. Everyone tells you to set<br/>
 DOCKER_HOST to tcp://127.0.0.1:2375. Guess what? the container processing file container.py in sam cli<br/>
 does not even read it. UGH!!! So you have to copy container.py from the project into the sam cli folder<br/>
-~/AWSSAMCLI/runtime/Lib/site-packages/samcli/local/docker, The tilde stands for you install folder.<br/>
+~/AWSSAMCLI/runtime/Lib/site-packages/samcli/local/docker, The tilde stands for your install folder.<br/>
 I am confident it will work, but back it up first anyway<br/>
  
 
@@ -103,12 +103,20 @@ It's default port is 8080, yes it is a Tomcat conflict, The windows command for<
 who got it first or who did not release it is: netstat -ao |find /i "listening"<br/>
 Also try netstat -ano | findstr :8080 if that comes back empty the port is free<br/>
 
-The test has to use invoke, because it does not go thru the gateway. Invoke was meant to be direct. Docker is
-forcing it too, because when you check the Expose daemon on ..., it is creating a listener on 2375 which is direct. <br/>
-Open a new windows Administrator Shell and run the command<br/>
+The way to test is to use curl. The curl commands can be run after,<br/>
+the sam local start-api as described above is run. Some examples are below<br/>
+You do not need to build events this way, but you do have to<br/>
+add parameters on methods that need them. sam local invoke will not work, why you ask?<br/>
+It's because it will not run the Auth Function automatically like sam local start-api does<br/>
 
-sam local invoke NotificationAndTemplate --docker-network VA-assessment -d 8080 --profile my-local-dev --add-host host.docker.internal:host-gateway --debug --event src/test/resources/AllNotificationsEvent.json<br/>
+curl localhost:9000/v1/findByNotificationId/0<br/>
 
+curl localhost:9000/v1/all/templates<br/>
+curl localhost:9000/v1/findByTemplateId/0<br/>
+
+curl localhost:9000/v1/shutdown<br/>
+
+curl localhost:9000/v1/all/notifications<br/>
 You should see the following result After a wait:<br/>
 {<br/>
 &nbsp; \"status\" : \"NO\_CONTENT\",<br/>
@@ -116,20 +124,7 @@ You should see the following result After a wait:<br/>
 &nbsp; \"message\" : \"Notification Table is empty.\"S<br/>
 }<br/>
 
-As of this writing I do have to make for events<br/>
 
-Another way to test is to use curl. The curl commands can be run after<br/>
-the sam local start-api as described above. Some examples are below<br/>
-You do not need to build events this way, but you do have to<br/>
-add parameters on methods that need them<br/>
-
-curl  localhost:9000/v1/all/notifications<br/>
-curl  localhost:9000/v1/findByNotificationId/0<br/>
-
-curl localhost:9000/v1/all/templates<br/>
-curl localhost:9000/v1/findByTemplateId/0<br/>
-
-curl localhost:9000/v1/shutdown<br/>
 
 
 
