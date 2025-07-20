@@ -54,10 +54,7 @@ You may delete the dangling Images in DockerDesktop, created by the build.<br/>
 A single dangling image is created after every run. A dangling Image, always says none, none.<br/>
 You may also delete the notificationandtemplate image and/or container if you change the code<br/>
 
-The first is to figure out is the container-host, this is the first of two settings that change in the sam local start-api<br/>
-wsl -d docker-desktop hostname -i<br/>
-In a windows shell type"docker context ls" look for keywords like docker or npipe, in the response listing for<br/>
-Current DOCKER_HOST based configuration, those are the values for container-host. The second one that changes is --profile<br/>
+The only thing that each user has to change the  --profile<br/>
 --profile is discussed in the Testing Installs section. If you do change other values you will get wired errors.<br/>
 OMG this sam local start-api command was very hard to figure out and I had to read lots of articles
 
@@ -74,7 +71,7 @@ sam build --no-cached  --docker-network VA-assessment --use-container --profile 
 
 To start the local Http Server to handle curl requests, and a container for your build image, the command is: <br/>
 
-sam local start-api --docker-network VA-assessment --warm-containers LAZY -p 9000 -d 8080 --profile my-local-dev --add-host host.docker.internal:host-gateway --host localhost --debug<br/> 
+sam local start-api --docker-network VA-assessment --warm-containers LAZY -p 9000 --profile my-local-dev --host localhost --debug<br/> 
 
 In the new Docker Desktop container after a request is made, you will see a port mapping of 8080:8080. This map is for connecting an external debugger.<br/>
 This container will be used over and over again on each request. This is needed because a connection pool runs in the container.</br>
@@ -85,28 +82,15 @@ I found Inspect and Files to be very helpful<br/>
 
 #Start Testing
 
-The very first step to successful testing is the sam cli fix I created. Everyone tells you to set<br/>
-DOCKER_HOST to tcp://127.0.0.1:2375. Guess what? the container processing file container.py in sam cli<br/>
-does not even read it. UGH!!! So you have to copy container.py from the project into the sam cli folder<br/>
-~/AWSSAMCLI/runtime/Lib/site-packages/samcli/local/docker, The tilde stands for your install folder.<br/>
-I am confident it will work, but back it up first anyway<br/>
- 
-
-The way to test involves setting the windows environment variable DOCKER_HOST<br/>
-the value should be tcp://127.0.0.1:2375. Then go into docker Desktop and change a setting<br/>
-Click the Settings button->General and check Expose daemon on tcp://localhost:2375 without TLS<br/>
-Followed by a restart, this will set a port listeners on 2375, the process is com.docker.backend.exe<br/>
-When you set DOCKER_HOST and run a test you will get another listener on 2375, it is python.exe<br/>
-
 The testing is done locally and uses the aws-lambda-runtime-interface-emulator<br/>
-It's default port is 8080, yes it is a Tomcat conflict, The windows command for<br/>
-who got it first or who did not release it is: netstat -ao |find /i "listening"<br/>
-Also try netstat -ano | findstr :8080 if that comes back empty the port is free<br/>
+You cannot use the -d on the sam local start-api it is trouble<br/>
+If you are having port issues you can check in windows for who got it first or who did not release it:<br/>
+Try netstat -ano | findstr :8080 or whatever port is in question if that comes back empty the port is free<br/>
+To find the process the last column of the netstat is the PID. So tasklist | findstr PID will tell you<br/> 
 
 The way to test is to use curl. The curl commands can be run after,<br/>
 the sam local start-api as described above is run. Some examples are below<br/>
-You do not need to build events this way, but you do have to<br/>
-add parameters on methods that need them. sam local invoke will not work, why you ask?<br/>
+You have to add parameters on requests that need them. sam local invoke will not work, why you ask?<br/>
 It's because it will not run the Auth Function automatically like sam local start-api does<br/>
 
 curl localhost:9000/v1/findByNotificationId/0<br/>
