@@ -1,0 +1,56 @@
+package request.handlers;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import software.amazon.awssdk.http.HttpStatusCode;
+
+public class AuthorizationHandler
+	extends RequestHandlerBase
+	implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> 
+{
+	protected static ObjectMapper mapper;
+	protected static Gson gsonWithSerializeNullsAndPrettyPrint;
+	protected static Gson gsonWithSerializeNulls;
+
+	protected static Logger logger;	
+
+	static {
+		
+//		default is V7 can be changed
+//		ValidationConfig.get().setSchemaVersion(SpecVersion.VersionFlag.V4);
+		
+	    // update (de)serializationConfig or other properties
+	    mapper = new ObjectMapper();
+	    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL); // exclude null values
+	    
+	    gsonWithSerializeNullsAndPrettyPrint = new GsonBuilder().setPrettyPrinting().create();
+	    gsonWithSerializeNulls = new GsonBuilder().create();
+	    
+	    logger = LoggerFactory.getLogger(AuthorizationHandler.class);
+	}
+
+	@Override
+	public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent input, Context context) {
+		
+		logger.debug("Entered the Authorization Handler");
+		
+		APIGatewayV2HTTPResponse retVar = new APIGatewayV2HTTPResponse();
+		retVar.setIsBase64Encoded(false);
+		retVar.setHeaders(createResponseHeader(input));
+		retVar.setStatusCode(HttpStatusCode.OK);
+		
+		return retVar;
+	}
+
+	
+}

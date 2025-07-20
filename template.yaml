@@ -23,9 +23,6 @@ Resources:
     Properties:
       CodeUri: C:\work\java\eclipse-workspace2\AWS-lambda-assessment
       Handler: request.handlers.AuthorizationHandler::handleRequest
-      Architectures:
-        - x86_64
-      Runtime: java21
       Timeout: 120
       MemorySize: 4096
       Events:
