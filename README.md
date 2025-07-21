@@ -16,9 +16,8 @@ Maybe you can fiqure it out. lol <br/>
 Had to use Eclipse IDE 2025-06 for java 21<br/>
 The Project is loaded in Eclipse using (File Import from Git)<br/>
 Url is https://github.com/jfraser2/AWS-lambda-assessment.git<br/>
-The Maven build Run Configuration you create needs to have the goals set to: clean package<br/>
-right click on Project AWS-lambda-assessment<br>
-Hover on Run As, and choose your run configuration<br/>
+The Maven build Run Configuration you create in eclipse needs to have the goals set to: clean package<br/>
+right click on Project AWS-lambda-assessment then Hover on Run As, and choose your run configuration<br/>
 
 #Testing Installs (Do this third)
 You have to Install maven, you cannot only use the one in eclipse, because<br/>
@@ -28,48 +27,90 @@ AWS Lambda runtime locally, you do not have to spend money.<br/>
 After download(https://maven.apache.org/download.cgi) you have to set<br/>
 the windows MAVEN\_HOME, and add it the windows path.<br/>
 
-Now the local AWS Lambda runtime. It is AWS\_SAM\_CLI<br/>
-Download AWS\_SAM\_CLI\_64\_PY3.msi(I chose version 1.142.1) url is:<br/>
+Now the local AWS Lambda runtime. It is AWS_SAM_CLI<br/>
+Download AWS_SAM_CLI_64_PY3.msi(I chose version 1.142.1) url is:<br/>
 https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html<br/>
 This is much nicer, path is set during install<br/>
 now you can open your windows Administrator shell, and cd to the project install folder<br/>
 
+an AWS CLI install is also required to create a profile, that you need for AWS_SAM_CLI<br/>
+Of course you will need an AWS account to do that,I am using a free one, sign up url is:<br/>
+https://signin.aws.amazon.com/signup?request_type=register<br/>
+You will have to create an access key in that account, under IAM security credentials, but remember<br/>
+the secret key only appears during access key creation, so copy it to your local machine, you will need it<br/>
+If you forget to copy the secret key you have deactivate the old access key and create another one<br/>
+
+the url to download AWS_CLI is: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html<br/>
+Then go down and click on your desired OS and you will see the real download link, click it<br/>
+mine is a windows .msi file which is easy to install.<br/>
+Instructions to create the profile are at url:https://www.google.com/search?q=how+to+create+a+profile+with+aws++cli&sca_esv=cc1c4a1f7d117633&rlz=1C1JSBI_enUS1092US1092&sxsrf=AE3TifO3fXRtpzERjYfAKZyM7Kf_6DIEpA%3A1752241710828&ei=LhZxaJymMoigqtsPttWIkAM&ved=0ahUKEwic9e-F-bSOAxUIkGoFHbYqAjIQ4dUDCBA&uact=5&oq=how+to+create+a+profile+with+aws++cli&gs_lp=Egxnd3Mtd2l6LXNlcnAiJWhvdyB0byBjcmVhdGUgYSBwcm9maWxlIHdpdGggYXdzICBjbGkyCBAhGKABGMMEMgUQIRirAkibOlCrDljeLnABeACQAQCYAW6gAdoFqgEDNi4yuAEDyAEA-AEBmAIIoAK2BcICChAAGLADGNYEGEfCAggQABiiBBiJBcICBRAAGO8FwgIIEAAYgAQYogTCAgoQIRigARjDBBgKmAMAiAYBkAYIkgcDNS4zoAfRI7IHAzQuM7gHsAXCBwUxLjMuNMgHGQ&sclient=gws-wiz-serp<br/>
+
 #Building the Lambda Functions(do this fourth)
 
-You do have to have a DockerHub Account. The good news is the free one is fine. The signup url is: https://app.docker.com/<br/>
-The reason for this is, to create a Docker Image the Dockerfile uses maven:3.9.10-eclipse-temurin-21. This lives in DockerHub<br/>
-Again, it is in the free space(Yea!!). The two Dockerfiles in the project are: notificationDockerfile and templateDockerfile.<br/>
-The images they create in DockerDestop are: notificationfunction and templatefunction<br/>
+You do not need a DockerHub Account. I would not discourage it. The good news is they have lots of free docker images.<br/>
+The signup url is: https://app.docker.com/ After you sign up, two helpful commands are docker login and docker logout<br/>
+The Dockerfile in the project is: Dockerfile and the Image it creates in DockerDesktop is notificationandtemplate<br/>
+You may delete the dangling Images in DockerDesktop, created by the build.<br/>
+A single dangling image is created after every run. A dangling Image, always says none, none.<br/>
+You may also delete the notificationandtemplate image and/or container if you change the code<br/>
+
+The only thing that each user has to change the  --profile<br/>
+--profile is discussed in the Testing Installs section. If you do change other values you will get wired errors.<br/>
+OMG this sam local start-api command was very hard to figure out and I had to read lots of articles
 
 From your windows Administrator shell, cd to your project folder(cd C:\work\java\eclipse-workspace2\AWS-lambda-assessment)<br/>
 The build is done from project file template.yaml, and it must contain the full path to your project folder.<br/>
 Your JAVA_HOME and path(windows Environment variables) must be set to JAVA 21<br/>
-To Begin, type: sam build <br/>
-To validate you should see new files in your build folder of directory .aws-sam<br/>
-If you make project changes remove the build folder and again run sam build<br/>
-To start the app, the command is: sam local start-api --docker-network VA-assessment<br/>
-Before any Ctrl-C to exit the App, a person should run two shutdowns.<br/>
- "curl localhost:3000/v1/notification/shutdown" and "curl localhost:3000/v1/template/shutdown"<br/>
-this will clean up the Hikari connection pool. Each Function has its own connection pool. <br/>
-If you forget you could stop and start postgres in DockerDesktop.<br/>
+To Begin, type:<br/>
+sam build --docker-network VA-assessment --use-container --profile my-local-dev<br/>
+
+To validate you should see new files in your project folder called .aws-sam<br/>
+If you make project changes remove the project folder .aws-sam Then delete the DockerDesktop Images and/or any Containers.<br/>
+Again run<br/>
+sam build --no-cached  --docker-network VA-assessment --use-container --profile my-local-dev .<br/>
+
+To start the local Http Server to handle curl requests, and a container for your build image, the command is: <br/>
+
+sam local start-api --docker-network VA-assessment --warm-containers LAZY -p 9000 --profile my-local-dev --host localhost --debug<br/> 
+
+In the new Docker Desktop container after a request is made, you will see a port mapping of 8080:8080. This map is for connecting an external debugger.<br/>
+This container will be used over and over again on each request. This is needed because a connection pool runs in the container.</br>
+Before any Ctrl-C to exit the listener, a person should run a shutdown. "curl localhost:9000/v1/shutdown"<br/>
+The idea of running a shutdown, is to clean up the Hikari connection pool. The Handler Function creates a connection pool. <br/>
+If you forget you could stop and start postgres in DockerDesktop. You can explore many things when you click on a container<br/>
+I found Inspect and Files to be very helpful<br/>
 
 #Start Testing
 
-Open a new windows Administrator Shell<br/>
-curl localhost:3000/v1/all/notifications<br/>
-result After long wait:<br/>
+The testing is done locally and uses the aws-lambda-runtime-interface-emulator<br/>
+You cannot use the -d on the sam local start-api it is trouble<br/>
+If you are having port issues you can check in windows for who got it first or who did not release it:<br/>
+Try netstat -ano | findstr :8080 or whatever port is in question if that comes back empty the port is free<br/>
+To find the process the last column of the netstat is the PID. So tasklist | findstr PID will tell you<br/> 
+The request path is Http Server->Gateway->Container. Sam cli created the Http server and the Gateway<br/>
+It is trying to emulate(fake) the AWS site.<br/>
+
+The way to test is to use curl. The curl commands can be run after,<br/>
+the sam local start-api as described above is run. Some examples are below<br/>
+You have to add parameters on requests that need them. sam local invoke will not work, why you ask?<br/>
+It's because it will not run the Auth Function automatically like sam local start-api does<br/>
+
+curl localhost:9000/v1/findByNotificationId/0<br/>
+
+curl localhost:9000/v1/all/templates<br/>
+curl localhost:9000/v1/findByTemplateId/0<br/>
+
+curl localhost:9000/v1/shutdown<br/>
+
+curl localhost:9000/v1/all/notifications<br/>
+You should see the following result After a wait:<br/>
 {<br/>
-&nbsp; "status" : "NO\_CONTENT",<br/>
-&nbsp; "timestamp" : "07-02-2025 00:00:32",<br/>
-&nbsp; "message" : "Notification Table is empty.",<br/>
-&nbsp; "debugMessage" : null,<br/>
-&nbsp; "subErrors" : null<br/>
+&nbsp; \"status\" : \"NO\_CONTENT\",<br/>
+&nbsp; \"timestamp\" : \"07-02-2025 00:00:32\",<br/>
+&nbsp; \"message\" : \"Notification Table is empty.\"S<br/>
 }<br/>
 
-curl localhost:3000/v1/all/templates<br/>
-result is the same<br/>
 
-All possible curl tests are in file template.yaml<br/>
 
 
 

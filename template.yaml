@@ -1,91 +1,101 @@
-Globals:
-    Function:
-        Timeout: 120
-        MemorySize: 4096
-        Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
-          Variables:
-            DB_URL: jdbc:postgresql://postgres/postgres
-            DB_USER: postgres
-            DB_PASSWORD: sa
-
-Parameters:
-  DockerTag:
-    Type: String
-    Default: rapid-x86_64
-  NotificationInvokeParam:
-    Type: String
-    Default: request.handlers.CreateNotificationHandler::handleRequest
-  TemplateInvokeParam:
-    Type: String
-    Default: request.handlers.CreateTemplateHandler::handleRequest
+AWSTemplateFormatVersion: '2010-09-09'
+Transform:
+  - AWS::LanguageExtensions
+  - AWS::Serverless-2016-10-316-10-31
 
 Resources:
-  NotificationFunction:
+  RequestLambdaFunctionAuthorizer:
+    Type: AWS::Serverless::HttpApiFunction
+    Properties:
+      Auth:
+        DefaultAuthorizer: LambdaRequestAuthorizer
+        Authorizers:
+          LambdaRequestAuthorizer:
+            FunctionArn: !GetAtt AuthFunction.Arn
+            FunctionInvokeRole: arn:aws:iam::153822065620:role/AllowLambdaFunctionRole
+            Identity:
+              Headers:
+                - Authorization
+            AuthorizerPayloadFormatVersion: 2.0
+            EnableSimpleResponses: true
+  AuthFunction:
     Type: AWS::Serverless::Function
     Properties:
+      PackageType: Image
+      ImageUri: lambdaimage:rapid-x86_64
       CodeUri: C:\work\java\eclipse-workspace2\AWS-lambda-assessment
-      Handler: request.handlers.CreateNotificationHandler::handleRequest
       Architectures:
         - x86_64
-      ReservedConcurrentExecutions: 1
-      Runtime: java21
+      Timeout: 120
+      MemorySize: 4096
+      Events:
+        CheckAuthorization:
+          Type: HttpApi
+          Properties:
+            Auth:
+              Authorizer: NONE  # <<-- This line makes the endpoint publicAuth
+            Path: /v1/test/authorization
+            Method: get
+  NotificationAndTemplate:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      ImageUri: lambdaimage:rapid-x86_64
+      CodeUri: C:\work\java\eclipse-workspace2\AWS-lambda-assessment
+      Architectures:
+        - x86_64
       Timeout: 120
       MemorySize: 4096
       Events:
         CreateNotification:
-          Type: Api 
+          Type: HttpApi 
           Properties:
+            ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/createNotification
             Method: post
         FindAllNotifications:
-          Type: Api
+          Type: HttpApi
           Properties:
+            ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/all/notifications
             Method: get
         FindNotificationById:
-          Type: Api
+          Type: HttpApi
           Properties:
+            ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/findByNotificationId/{id}
             Method: get
-        NotificationShutdownHook:
-          Type: Api
-          Properties:
-            Path: /v1/notification/shutdown
-            Method: get
-  TemplateFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: C:\work\java\eclipse-workspace2\AWS-lambda-assessment
-      Handler: request.handlers.CreateTemplateHandler::handleRequest
-      Architectures:
-        - x86_64
-      ReservedConcurrentExecutions: 1
-      Runtime: java21
-      Timeout: 120
-      MemorySize: 4096
-      Events:
         CreateTemplate:
-          Type: Api 
+          Type: HttpApi 
           Properties:
+            ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/createTemplate
             Method: post
         FindAllTemplates:
-          Type: Api
+          Type: HttpApi
           Properties:
+            ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/all/templates
             Method: get
         FindTemplateById:
-          Type: Api
+          Type: HttpApi
           Properties:
+            ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/findByTemplateId/{id}
             Method: get
         UpdateTemplate:
-          Type: Api
+          Type: HttpApi
           Properties:
+            ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/updateTemplate
             Method: patch
-        TemplateShutdownHook:
-          Type: Api
+        ShutdownHook:
+          Type: HttpApi
           Properties:
-            Path: /v1/template/shutdown
+            ApiId: !Ref RequestLambdaFunctionAuthorizer
+            Path: /v1/shutdown
             Method: get
+    Metadata:  # <--- Metadata section to help SAM manage container images
+      DockerTag: rapid-x86_64
+      DockerContext: .  # <--- Points to the directory with your Dockerfile
+      Dockerfile: Dockerfile  # <--- Name of the Docker			

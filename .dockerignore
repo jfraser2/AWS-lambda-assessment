@@ -7,4 +7,5 @@ createPostgresInDocker
 dockerPsqlCreateTables
 README.md
 Requirements.md
-target
+container.py
+src/test/resources

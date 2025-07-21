@@ -4,7 +4,9 @@ import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import org.apache.commons.text.StringEscapeUtils;
+
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -31,10 +33,11 @@ import software.amazon.awssdk.http.HttpStatusCode;
 //@Order(Ordered.HIGHEST_PRECEDENCE)
 public abstract class RequestValidationAdvice
 {
-
+	protected static final String UNEXPECTED_PROCESSING_ERROR = "{\"message\": \"Object could not convert to json\"}";
+	
 	//other exception handlers or handler overrides below
 	
-    public APIGatewayProxyResponseEvent handleAccessDeniedException(
+    public APIGatewayV2HTTPResponse handleAccessDeniedException(
     		AccessDeniedException ex, String requestOrigin, ObjectMapper mapper)
     {
 		ApiError apiError = new ApiError();
@@ -49,7 +52,7 @@ public abstract class RequestValidationAdvice
         return buildResponseEntity(json, HttpStatusCode.OK, requestOrigin);
     }
 	
-    public APIGatewayProxyResponseEvent handleIllegalArgumentException(
+    public APIGatewayV2HTTPResponse handleIllegalArgumentException(
     		IllegalArgumentException ex, String requestOrigin, ObjectMapper mapper)
     {
 		ApiError apiError = new ApiError();
@@ -63,7 +66,7 @@ public abstract class RequestValidationAdvice
         return buildResponseEntity(json, HttpStatusCode.OK, requestOrigin);
     }
     
-    public APIGatewayProxyResponseEvent handleDatabaseRowNotFoundException(DatabaseRowNotFoundException ex, ObjectMapper mapper)
+    public APIGatewayV2HTTPResponse handleDatabaseRowNotFoundException(DatabaseRowNotFoundException ex, ObjectMapper mapper)
     {
 		ApiError apiError = new ApiError();
 		apiError.setStatus("NO_CONTENT");
@@ -76,7 +79,7 @@ public abstract class RequestValidationAdvice
         return buildResponseEntity(json, HttpStatusCode.OK, ex.getRequestOrigin());
     }
     
-    public APIGatewayProxyResponseEvent handleRequestValidationException(
+    public APIGatewayV2HTTPResponse handleRequestValidationException(
     	RequestValidationException ex, ObjectMapper mapper)
     {
 		ApiError apiError = new ApiError();
@@ -92,7 +95,7 @@ public abstract class RequestValidationAdvice
         return buildResponseEntity(json, HttpStatusCode.OK, ex.getRequestOrigin());
     }
 	 
-    public APIGatewayProxyResponseEvent handleShutdownException(
+    public APIGatewayV2HTTPResponse handleShutdownException(
         ShutdownException ex, ObjectMapper mapper)
     {
 		ApiError apiError = new ApiError();
@@ -107,12 +110,13 @@ public abstract class RequestValidationAdvice
         return buildResponseEntity(json, HttpStatusCode.OK, ex.getRequestOrigin());
     }
     
-	public APIGatewayProxyResponseEvent buildResponseEntity(String json, int aStatus, String requestOrigin)
+	public APIGatewayV2HTTPResponse buildResponseEntity(String json, int aStatus, String requestOrigin)
 	{
-		APIGatewayProxyResponseEvent retVar = new APIGatewayProxyResponseEvent();
+		APIGatewayV2HTTPResponse retVar = new APIGatewayV2HTTPResponse();
 		// support CORS
 		Map<String, String> aResponseHeader = createResponseHeader(requestOrigin);
 		
+		retVar.setIsBase64Encoded(false);
 		retVar.setHeaders(aResponseHeader);
 		retVar.setStatusCode(aStatus);
 		retVar.setBody(json);
@@ -125,11 +129,12 @@ public abstract class RequestValidationAdvice
 		String json = null;
 		try {
 			ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-			json = ow.writeValueAsString(apiError);
+			String tempString = ow.writeValueAsString(apiError);
+			json = StringEscapeUtils.escapeJson(tempString);
 		}
 		catch(JsonProcessingException jpe)
 		{
-			json = null;
+			json = StringEscapeUtils.escapeJson(UNEXPECTED_PROCESSING_ERROR);
 		}
 		
 		return json;
@@ -138,7 +143,7 @@ public abstract class RequestValidationAdvice
 	public Map<String, String> createResponseHeader(String requestOrigin)
 	{
 		// support CORS
-//		System.out.println("Access-Control-Allow-Origin is: " + requestOrigin);
+//		System.err.println("Access-Control-Allow-Origin is: " + requestOrigin);
 		Map<String, String> aResponseHeader = new HashMap<String, String>();
 		if (null != requestOrigin) {
 			aResponseHeader.put("Access-Control-Allow-Origin", requestOrigin);

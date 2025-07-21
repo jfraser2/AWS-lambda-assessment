@@ -32,13 +32,10 @@ public class HibernateUtil {
 	    	    properties.setProperty("hibernate.connection.release_mode", "after_transaction");
 	    	    
 	    	    properties.setProperty("hibernate.connection.provider_class", "com.zaxxer.hikari.hibernate.HikariConnectionProvider");
-	    	    properties.setProperty("hibernate.connection.driver_class", "org.hibernate.dialect.PostgreSQLDialect");
+	    	    properties.setProperty("hibernate.connection.driver_class", "org.postgresql.Driver");
 	    	    
-	    	    
-	    	    String url = System.getenv("DB_URL"); // Environment Variable defined in template.yaml
-	    	    String userName = System.getenv("DB_USER"); // Environment Variable defined in template.yaml
-	    	    String password = System.getenv("DB_PASSWORD"); // Environment Variable defined in template.yaml
-	    	    
+	    	    //jdbc:postgresql://my-postgres-container:5432/mydatabase
+	    	    String url = "jdbc:postgresql://postgres:5432/postgres";
 	    	    properties.setProperty("hibernate.connection.url", url);
 	    	    properties.setProperty("hibernate.hikari.dataSource.user", "postgres");
 	    	    properties.setProperty("hibernate.hikari.dataSource.password", "sa");
@@ -50,8 +47,9 @@ public class HibernateUtil {
 	    	    properties.setProperty("hibernate.hikari.connectionTimeout", "20000");
 	    	    properties.setProperty("hibernate.hikari.minimumIdle", "1");
 	    	    properties.setProperty("hibernate.hikari.maximumPoolSize", "5");
-	    	    properties.setProperty("hibernate.hikari.idleTimeout", "30000");	    	    
-
+	    	    properties.setProperty("hibernate.hikari.idleTimeout", "30000");
+	    	    
+	    	    properties.setProperty("oracle.jdbc.javaNetNio", "false");
 /*	    	    
 	            // Create a Map to hold Hibernate properties
 	            Map<String, String> hibernateProperties = new HashMap<>();
