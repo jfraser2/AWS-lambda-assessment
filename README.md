@@ -111,7 +111,11 @@ You should see the following result After a wait:<br/>
 }<br/>
 
 
+curl -i --header "Accept: application/json"  --header "Origin: http://localhost:9000" --request POST --data "{\"phoneNumber\":\"913-333-1460\",\"personalization\":\"Joe\",\"templateId\":null,\"templateText\":\"Hello, (personal). How are you today, (personal)?\"}" localhost:9000/v1/createNotification
 
+curl -i --header "Accept: application/json"  --header "Origin: http://localhost:9000" --request POST --data "{\"templateText\":\"Hello, (personal). How are you today, (personal)?\"}" localhost:9000/v1/createTemplate
+
+curl -i --header "Accept: application/json"  --header "Origin: http://localhost:9000" --request PATCH --data "{\"templateId\":\"33\",\"newTemplateText\":\"Hello, (personal). How are you today, (personal)?\"}" localhost:9000/v1/updateTemplate
 
 
 

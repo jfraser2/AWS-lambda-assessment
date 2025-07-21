@@ -115,9 +115,9 @@ public class NotificationImpl
 			String tempVar = createNotificationRequest.getTemplateText();
 			if (null != tempVar && tempVar.length() > 0)
 			{	
-				TemplateEntity tempEntity = new TemplateEntity();
-				tempEntity.setBody(createNotificationRequest.getTemplateText());
-				templateDao.save(this.session, tempEntity);
+				templateEntity = new TemplateEntity();
+				templateEntity.setBody(createNotificationRequest.getTemplateText());
+				templateDao.save(this.session, templateEntity);
 			}	
 		}
 		
