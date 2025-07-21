@@ -78,14 +78,12 @@ public class NotificationAndTemplateHandler
 		
 		APIGatewayV2HTTPResponse retVar = null;
 		
+		System.out.println("raw path is: " + input.getRawPath());
+		
 		switch (input.getRawPath()) {
 		    case "/v1/createNotification":
 				retVar = creation(input, notificationService, requestValidationErrorsContainer,
 					stringBuilderContainer, requestOrigin);
-		        break;
-		    case "/v1/all/notifications":
-				retVar = findAll(input, notificationService, requestValidationErrorsContainer,
-						stringBuilderContainer, requestOrigin);
 		        break;
 		    case "/v1/findByNotificationId/{id}":
 				retVar = findById(input, notificationService, requestValidationErrorsContainer,
@@ -99,10 +97,6 @@ public class NotificationAndTemplateHandler
 				retVar = findAll(input, templateService, requestValidationErrorsContainer,
 						stringBuilderContainer, requestOrigin);
 		        break;
-		    case "/v1/findByTemplateId/{id}":
-				retVar = findById(input, templateService, requestValidationErrorsContainer,
-						stringBuilderContainer, requestOrigin);
-		        break;
 		    case "/v1/updateTemplate":
 				retVar = update(input, templateService, requestValidationErrorsContainer,
 						stringBuilderContainer, requestOrigin);
@@ -110,6 +104,15 @@ public class NotificationAndTemplateHandler
 		    case "/v1/shutdown":
 				retVar = shutdownHook(requestOrigin);
 		        break;
+		    default:
+		    	if (input.getRawPath().contains("/v1/findByNotificationId")) {
+					retVar = findById(input, notificationService, requestValidationErrorsContainer,
+							stringBuilderContainer, requestOrigin);
+		    	} else if (input.getRawPath().contains("/v1/findByTemplateId")) {
+					retVar = findById(input, templateService, requestValidationErrorsContainer,
+							stringBuilderContainer, requestOrigin);
+		    	}
+		    	break;
 		}		
 		
 		stringBuilderContainer.onDestroy();

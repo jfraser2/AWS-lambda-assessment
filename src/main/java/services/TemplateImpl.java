@@ -27,7 +27,7 @@ public class TemplateImpl
 		TemplateEntity retVar = null;
 		
 		Optional<TemplateEntity> usne = templateDao.findById(this.session, templateId);
-		if (usne.isPresent())
+		if (usne.isPresent() && !usne.isEmpty())
 			retVar = usne.get();
 		
 		return retVar;
