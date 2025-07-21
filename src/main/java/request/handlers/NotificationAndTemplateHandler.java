@@ -44,8 +44,8 @@ public class NotificationAndTemplateHandler
 	implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> 
 {
 	protected static ObjectMapper mapper;
-	protected static Gson gsonWithSerializeNullsAndPrettyPrint;
-	protected static Gson gsonWithSerializeNulls;
+	protected static Gson gsonWithNoNullsAndPrettyPrint;
+	protected static Gson gsonWithNoNulls;
 	protected static Notification notificationService;
 	protected static Template templateService;
 	protected static SessionFactory sessionFactory;
@@ -60,8 +60,8 @@ public class NotificationAndTemplateHandler
 	    mapper = new ObjectMapper();
 	    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL); // exclude null values
 	    
-	    gsonWithSerializeNullsAndPrettyPrint = new GsonBuilder().setPrettyPrinting().create();
-	    gsonWithSerializeNulls = new GsonBuilder().create();
+	    gsonWithNoNullsAndPrettyPrint = new GsonBuilder().setPrettyPrinting().create();
+	    gsonWithNoNulls = new GsonBuilder().create();
 	    sessionFactory = HibernateUtil.getSessionFactory();
 	    
 	    templateService = new TemplateImpl(sessionFactory);	    //one per Class
@@ -167,7 +167,10 @@ public class NotificationAndTemplateHandler
 				retVar = handleDatabaseRowNotFoundException(new DatabaseRowNotFoundException(failureMessage, requestOrigin), mapper);
 //				System.err.println("!!!! returning Json is: " + retVar.getBody() + " !!!!");
 			} else {
-				String jsonString = goodResponse(ne, stringBuilderContainer, null, mapper);
+				
+				NotificationEntity savedEntity = notificationService.persistData(ne);
+				
+				String jsonString = goodResponse(savedEntity, stringBuilderContainer, null, mapper);
 				// support CORS
 				retVar = new APIGatewayV2HTTPResponse ();
 				retVar.setIsBase64Encoded(false);
@@ -196,7 +199,7 @@ public class NotificationAndTemplateHandler
 			retVar = handleDatabaseRowNotFoundException(new DatabaseRowNotFoundException("Notification Table is empty.", requestOrigin), mapper);
 		} else {
 			List<Object> objectList = new ArrayList<Object>(aList);
-			String jsonString = goodResponseList(objectList, stringBuilderContainer, gsonWithSerializeNullsAndPrettyPrint, mapper);
+			String jsonString = goodResponseList(objectList, stringBuilderContainer, gsonWithNoNulls, gsonWithNoNullsAndPrettyPrint, mapper);
 			
 			// support CORS
 			retVar = new APIGatewayV2HTTPResponse ();
@@ -315,7 +318,7 @@ public class NotificationAndTemplateHandler
 			retVar = handleDatabaseRowNotFoundException(new DatabaseRowNotFoundException("Template Table is empty.", requestOrigin), mapper);
 		} else {
 			List<Object> objectList = new ArrayList<Object>(aList);
-			String jsonString = goodResponseList(objectList, stringBuilderContainer, gsonWithSerializeNullsAndPrettyPrint, mapper);
+			String jsonString = goodResponseList(objectList, stringBuilderContainer, gsonWithNoNulls, gsonWithNoNullsAndPrettyPrint, mapper);
 			
 			// support CORS
 			retVar = new APIGatewayV2HTTPResponse ();

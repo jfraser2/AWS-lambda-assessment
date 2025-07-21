@@ -198,7 +198,7 @@ public abstract class RequestHandlerBase
 		return convertToPrettyPrintJson(tempString, mapper);
 	}
 	
-	protected String goodResponseList(List<Object> anObject, StringBuilderContainer aContainer, Gson gson, ObjectMapper mapper)
+	protected String goodResponseList(List<Object> anObject, StringBuilderContainer aContainer, Gson gson, Gson gsonPretty, ObjectMapper mapper)
 	{
 		String jsonString = convertListToJsonNoPrettyPrint(anObject, gson);
 		
@@ -216,7 +216,7 @@ public abstract class RequestHandlerBase
 //		System.err.println("raw json is: " + rawJson);
 		
 		String tempString = StringEscapeUtils.escapeJson(rawJson);
-		return gsonConvertRawJsonToPrettyPrint(tempString, gson);
+		return gsonConvertRawJsonToPrettyPrint(tempString, gsonPretty);
 	}
 
 	protected String getRequestOrigin(APIGatewayV2HTTPEvent  request)
@@ -253,6 +253,7 @@ public abstract class RequestHandlerBase
 			try {
 				retVar = mapper.readValue(jsonString, clazz);
 			} catch (JsonProcessingException e) {
+				System.out.println("could not convert string " + jsonString +  " into Java Class");
 				retVar = null;
 			}
 		}
