@@ -49,23 +49,14 @@ COPY --from=build /app/target/AWS-lambda-assessment-0.0.1-SNAPSHOT.jar ./app.jar
 
 #RUN file3="$(ls -1a " && echo $file3
 
+RUN echo "runtime JAVA_HOME is set to: ${JAVA_HOME}"
 
-RUN echo "JAVA_HOME is set to: ${JAVA_HOME}"
-#ENV PATH=${PATH}:/deployment/classes/dao:/deployment/classes/dto/request:/deployment/classes/dto/response:/deployment/classes/entities:\
-#/deployment/classes/errorHandling/helpers:/deployment/classes/errorHandling/processing:/deployment/classes/helpers:\
-#/deployment/classes/hibernate/utils:/deployment/classes/request/handlers:/deployment/classes/servies:/deployment/classes/services/interfaces:\
-#/deployment/classes/services/validation/request:/deployment/classes/services/validation/request/interfaces/functional:\
-#/deployment/classes/validation/exceptions
-
-RUN export PATH
 RUN echo "runtime PATH is set to: ${PATH}"
 
-ENV CLASSPATH=/deployment/resources/log4j2.xml:/deployment/app.jar
-RUN export CLASSPATH
-RUN echo "CLASSPATH is set to: ${CLASSPATH}"
+RUN echo "runtime CLASSPATH is set to: ${CLASSPATH}"
 
 
-RUN echo "LD_LIBRARY_PATH is set to: ${LD_LIBRARY_PATH}"
+RUN echo "runtime LD_LIBRARY_PATH is set to: ${LD_LIBRARY_PATH}"
 
 # entry point of the container
 #ENTRYPOINT ["./entrypoint.sh"]

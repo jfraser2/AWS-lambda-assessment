@@ -1,25 +1,13 @@
 <Configuration>
   <Appenders>
-<!--   
-    <Lambda name="Lambda" format="${env:AWS_LAMBDA_LOG_FORMAT:-TEXT}">
-       <LambdaTextFormat>
-         <PatternLayout>
-             <pattern>%d{yyyy-MM-dd HH:mm:ss} %X{AWSRequestId} %-5p %c{1} - %m%n </pattern>
-         </PatternLayout>
-       </LambdaTextFormat>
-       <LambdaJSONFormat>
-         <JsonTemplateLayout eventTemplateUri="classpath:LambdaLayout.json" />
-       </LambdaJSONFormat>
-     </Lambda>
--->     
      <Console name="ConsoleAppender" target="System.out">
 	    <PatternLayout>
 	        <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %m%n</Pattern>
 	    </PatternLayout>
      </Console>
-     <RollingFile name           ="LambdaFunctionAppender"
+     <RollingFile name ="LambdaFunctionAppender"
            fileName       ="/tmp/lambdaFunction.log"
-      	   filePattern="${LOG_DIR}/application.%i.log.gz"
+      	   filePattern="/tmp/LambdaFunction-%d{MM-dd-yyyy}-%i.log.gz"
       	   ignoreExceptions="false"
       	   immediateFlush ="true"
            append         ="true">
@@ -29,44 +17,25 @@
 	    <Policies>
 	        <SizeBasedTriggeringPolicy size="10MB" />
 	    </Policies>
-	    <DefaultRolloverStrategy max="5">
-	        <Delete basePath="${LOG_DIR}" maxDepth="2">
-	          <IfFileName glob="*/app-*.log.gz" />
-	          <IfLastModified age="P30D" />
-	        </Delete>
-	    </DefaultRolloverStrategy>
      </RollingFile>
   </Appenders>
   <Loggers>
+<!-- Root logger: logs everything not handled by specific loggers -->
      <Root>
  <!-- The level set on a Appender is a filter, if omitted it means no filter or all -->   
        <AppenderRef ref="ConsoleAppender"/>
        <AppenderRef ref="LambdaFunctionAppender"/>
-<!--       
-       <AppenderRef ref="Lambda" level="${env:AWS_LAMBDA_LOG_LEVEL:-INFO}"/>
--->       
      </Root>
  <!-- The level set on a Logger the minimum threshold filter, for the given package name -->   
-	 <logger name="request.handlers" additivity="false">
+	 <logger name="request.handlers">
      	<level value="ERROR"/>
     	<appender-ref ref="ConsoleAppender" />
     	<appender-ref ref="LambdaFunctionAppender" />
-<!--     	
-    	<appender-ref ref="Lambda" />
--->    	
 	 </logger>
-	 <logger name="software.amazon.awssdk.request" additivity="false">
-     	<level value="DEBUG"/>
-<!--      	
-    	<appender-ref ref="Lambda" />
--->    	
-	 </logger>
-	 <logger name="software.amazon.awssdk" additivity="false">
-     	<level value="WARN"/>
-<!--      	
-    	<appender-ref ref="Lambda" />
--->    	
+	 <logger name="com.zaxxer.hikari.hibernate.HikariConnectionProvider">
+     	<level value="ERROR"/>
+    	<appender-ref ref="ConsoleAppender" />
+    	<appender-ref ref="LambdaFunctionAppender" />
 	 </logger>
   </Loggers>
-   
- </Configuration>
+</Configuration>  
