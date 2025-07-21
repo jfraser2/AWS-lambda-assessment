@@ -85,8 +85,8 @@ public class NotificationAndTemplateHandler
 				retVar = creation(input, notificationService, requestValidationErrorsContainer,
 					stringBuilderContainer, requestOrigin);
 		        break;
-		    case "/v1/findByNotificationId/{id}":
-				retVar = findById(input, notificationService, requestValidationErrorsContainer,
+		    case "/v1/all/notifications":
+				retVar = findAll(input, notificationService, requestValidationErrorsContainer,
 						stringBuilderContainer, requestOrigin);
 		        break;
 		    case "/v1/createTemplate":
