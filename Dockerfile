@@ -60,19 +60,17 @@ RUN echo "JAVA_HOME is set to: ${JAVA_HOME}"
 RUN export PATH
 RUN echo "runtime PATH is set to: ${PATH}"
 
-ENV CLASSPATH=/development/resources/log4j2.xml:app.jar
+ENV CLASSPATH=/deployment/resources/log4j2.xml:/deployment/app.jar
 RUN export CLASSPATH
 RUN echo "CLASSPATH is set to: ${CLASSPATH}"
 
 
-ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/deployment/lib
-RUN export LD_LIBRARY_PATH
 RUN echo "LD_LIBRARY_PATH is set to: ${LD_LIBRARY_PATH}"
 
 # entry point of the container
 #ENTRYPOINT ["./entrypoint.sh"]
 #ENTRYPOINT ["/var/rapid/aws-lambda-rie"]
-ENTRYPOINT ["/var/lang/bin/java", "-cp", "${CLASSPATH}", "com.amazonaws.services.lambda.runtime.api.client.AWSLambda" ]
+ENTRYPOINT ["/var/lang/bin/java", "-cp", "/deployment/resources/log4j2.xml:/deployment/app.jar:/deployment/lib/*", "com.amazonaws.services.lambda.runtime.api.client.AWSLambda" ]
 
 # Pass the name of the function handler as an argument to the runtime com.amazonaws.services.lambda.runtime.api.client.AWSLambda
 CMD ["request.handlers.NotificationAndTemplateHandler::handleRequest" ]

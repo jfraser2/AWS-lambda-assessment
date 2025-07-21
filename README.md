@@ -87,6 +87,8 @@ You cannot use the -d on the sam local start-api it is trouble<br/>
 If you are having port issues you can check in windows for who got it first or who did not release it:<br/>
 Try netstat -ano | findstr :8080 or whatever port is in question if that comes back empty the port is free<br/>
 To find the process the last column of the netstat is the PID. So tasklist | findstr PID will tell you<br/> 
+The request path is Http Server->Gateway->Container. Sam cli created the Http server and the Gateway<br/>
+It is trying to emulate(fake) the AWS site.<br/>
 
 The way to test is to use curl. The curl commands can be run after,<br/>
 the sam local start-api as described above is run. Some examples are below<br/>
