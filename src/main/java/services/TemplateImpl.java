@@ -38,7 +38,7 @@ public class TemplateImpl
 		List<TemplateEntity> retVar = null;
 		
 		List<TemplateEntity> usne = templateDao.findAll(this.session);
-		if (null != usne)
+		if (null != usne && !usne.isEmpty())
 			retVar = usne;
 		
 		return retVar;
