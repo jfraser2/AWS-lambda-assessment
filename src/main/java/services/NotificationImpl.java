@@ -37,7 +37,7 @@ public class NotificationImpl
 		NotificationEntity retVar = null;
 		
 		Optional<NotificationEntity> usne = notificationDao.findById(this.session, notificationId);
-		if (usne.isPresent())
+		if (usne.isPresent() && !usne.isEmpty())
 			retVar = usne.get();
 		
 		return retVar;
@@ -48,7 +48,7 @@ public class NotificationImpl
 		List<NotificationEntity> retVar = null;
 		
 		List<NotificationEntity> usne = notificationDao.findAll(this.session);
-		if (null != usne)
+		if (null != usne && !usne.isEmpty())
 			retVar = usne;
 		
 		return retVar;
@@ -106,7 +106,7 @@ public class NotificationImpl
 		{
 			Long tempId = Long.valueOf(templateId);
 			Optional<TemplateEntity> te = templateDao.findById(this.session, tempId);
-			if (te.isPresent()) {
+			if (te.isPresent() && !te.isEmpty()) {
 				templateEntity = te.get();
 			} else {
 				throw new BuildNotificationException("The Template for Id: " + templateId + " does not exist.");
