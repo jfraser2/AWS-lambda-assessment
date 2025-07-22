@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -49,7 +47,6 @@ public class NotificationAndTemplateHandler
 	protected static Notification notificationService;
 	protected static Template templateService;
 	protected static SessionFactory sessionFactory;
-	protected static Logger logger;	
 	
 	static {
 		
@@ -67,7 +64,6 @@ public class NotificationAndTemplateHandler
 	    templateService = new TemplateImpl(sessionFactory);	    //one per Class
 	    notificationService = new NotificationImpl(sessionFactory);  //one per Class
 	    
-	    logger = LoggerFactory.getLogger(NotificationAndTemplateHandler.class);
 	}
 	
 	@Override
@@ -118,7 +114,6 @@ public class NotificationAndTemplateHandler
 		stringBuilderContainer.onDestroy();
 		requestValidationErrorsContainer.onDestroy();
 		
-        logger.debug("This is the json Being returned from NotificationAndTemplate: " + retVar.getBody());
         System.out.println("This is the json Being returned from NotificationAndTemplate: " + retVar.getBody());
 		
 		return retVar;
