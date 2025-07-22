@@ -48,6 +48,7 @@ public class AuthorizationHandler
 		retVar.setIsBase64Encoded(false);
 		retVar.setHeaders(createResponseHeader(input));
 		retVar.setStatusCode(HttpStatusCode.OK);
+		retVar.setBody("");
 		
 		return retVar;
 	}

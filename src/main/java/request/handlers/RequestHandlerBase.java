@@ -194,8 +194,8 @@ public abstract class RequestHandlerBase
 		
 //		System.err.println("raw json is: " + rawJson);
 		
-		String tempString = StringEscapeUtils.escapeJson(rawJson);
-		return convertToPrettyPrintJson(tempString, mapper);
+		String tempString = convertToPrettyPrintJson(rawJson, mapper);
+		return  StringEscapeUtils.escapeJson(tempString);
 	}
 	
 	protected String goodResponseList(List<Object> anObject, StringBuilderContainer aContainer, Gson gson, Gson gsonPretty, ObjectMapper mapper)
@@ -213,10 +213,10 @@ public abstract class RequestHandlerBase
 		aBuilder.append(GODD_RESPONSE_SUFFIX);
 		String rawJson = aBuilder.toString();
 
-//		System.err.println("raw json is: " + rawJson);
+//		System.out.println("raw json is: " + rawJson);
 		
-		String tempString = StringEscapeUtils.escapeJson(rawJson);
-		return gsonConvertRawJsonToPrettyPrint(tempString, gsonPretty);
+		String tempString = gsonConvertRawJsonToPrettyPrint(rawJson, gsonPretty);
+		return  StringEscapeUtils.escapeJson(tempString);
 	}
 
 	protected String getRequestOrigin(APIGatewayV2HTTPEvent  request)

@@ -119,7 +119,7 @@ public class NotificationAndTemplateHandler
 		requestValidationErrorsContainer.onDestroy();
 		
         logger.debug("This is the json Being returned from NotificationAndTemplate: " + retVar.getBody());
-//        System.err.println("This is the json Being returned from NotificationAndTemplate: " + retVar.getBody());
+        System.out.println("This is the json Being returned from NotificationAndTemplate: " + retVar.getBody());
 		
 		return retVar;
 	}	
@@ -172,7 +172,7 @@ public class NotificationAndTemplateHandler
 				
 				String jsonString = goodResponse(savedEntity, stringBuilderContainer, null, mapper);
 				// support CORS
-				retVar = new APIGatewayV2HTTPResponse ();
+				retVar = new APIGatewayV2HTTPResponse();
 				retVar.setIsBase64Encoded(false);
 				retVar.setHeaders(createResponseHeader(input));
 				retVar.setStatusCode(HttpStatusCode.CREATED);
@@ -202,7 +202,7 @@ public class NotificationAndTemplateHandler
 			String jsonString = goodResponseList(objectList, stringBuilderContainer, gsonWithNoNulls, gsonWithNoNullsAndPrettyPrint, mapper);
 			
 			// support CORS
-			retVar = new APIGatewayV2HTTPResponse ();
+			retVar = new APIGatewayV2HTTPResponse();
 			retVar.setIsBase64Encoded(false);
 			retVar.setHeaders(createResponseHeader(input));
 			retVar.setStatusCode(HttpStatusCode.OK);
@@ -252,7 +252,7 @@ public class NotificationAndTemplateHandler
 					jsonString = goodResponse(record, stringBuilderContainer, null, mapper);			
 				}
 				// support CORS
-				retVar = new APIGatewayV2HTTPResponse ();
+				retVar = new APIGatewayV2HTTPResponse();
 				retVar.setIsBase64Encoded(false);
 				retVar.setHeaders(createResponseHeader(input));
 				retVar.setStatusCode(HttpStatusCode.OK);
@@ -292,7 +292,7 @@ public class NotificationAndTemplateHandler
 			
 			String jsonString = goodResponse(savedEntity, stringBuilderContainer, null, mapper);
 			// support CORS
-			retVar = new APIGatewayV2HTTPResponse ();
+			retVar = new APIGatewayV2HTTPResponse();
 			retVar.setIsBase64Encoded(false);
 			retVar.setHeaders(createResponseHeader(input));
 			retVar.setStatusCode(HttpStatusCode.CREATED);
@@ -320,8 +320,10 @@ public class NotificationAndTemplateHandler
 			List<Object> objectList = new ArrayList<Object>(aList);
 			String jsonString = goodResponseList(objectList, stringBuilderContainer, gsonWithNoNulls, gsonWithNoNullsAndPrettyPrint, mapper);
 			
+//			System.out.println("pretty print json is: " + jsonString);
+			
 			// support CORS
-			retVar = new APIGatewayV2HTTPResponse ();
+			retVar = new APIGatewayV2HTTPResponse();
 			retVar.setIsBase64Encoded(false);
 			retVar.setHeaders(createResponseHeader(input));
 			retVar.setStatusCode(HttpStatusCode.OK);
@@ -363,7 +365,7 @@ public class NotificationAndTemplateHandler
 			} else {
 				String jsonString = goodResponse(record, stringBuilderContainer, null, mapper);
 				// support CORS
-				retVar = new APIGatewayV2HTTPResponse ();
+				retVar = new APIGatewayV2HTTPResponse();
 				retVar.setIsBase64Encoded(false);
 				retVar.setHeaders(createResponseHeader(input));
 				retVar.setStatusCode(HttpStatusCode.OK);
@@ -409,7 +411,7 @@ public class NotificationAndTemplateHandler
 				
 				String jsonString = goodResponse(updatedEntity, stringBuilderContainer, null, mapper);
 				// support CORS
-				retVar = new APIGatewayV2HTTPResponse ();
+				retVar = new APIGatewayV2HTTPResponse();
 				retVar.setIsBase64Encoded(false);
 				retVar.setHeaders(createResponseHeader(input));
 				retVar.setStatusCode(HttpStatusCode.OK);
@@ -452,5 +454,4 @@ public class NotificationAndTemplateHandler
 		return retVar;
 	}
 	
-
 }
