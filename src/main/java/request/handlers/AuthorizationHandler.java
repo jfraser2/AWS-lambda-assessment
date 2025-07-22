@@ -1,8 +1,5 @@
 package request.handlers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
@@ -22,8 +19,6 @@ public class AuthorizationHandler
 	protected static Gson gsonWithSerializeNullsAndPrettyPrint;
 	protected static Gson gsonWithSerializeNulls;
 
-	protected static Logger logger;	
-
 	static {
 		
 //		default is V7 can be changed
@@ -36,13 +31,12 @@ public class AuthorizationHandler
 	    gsonWithSerializeNullsAndPrettyPrint = new GsonBuilder().setPrettyPrinting().create();
 	    gsonWithSerializeNulls = new GsonBuilder().create();
 	    
-	    logger = LoggerFactory.getLogger(AuthorizationHandler.class);
 	}
 
 	@Override
 	public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent input, Context context) {
 		
-		logger.debug("Entered the Authorization Handler");
+		System.out.println("Entered the Authorization Handler");
 		
 		APIGatewayV2HTTPResponse retVar = new APIGatewayV2HTTPResponse();
 		retVar.setIsBase64Encoded(false);

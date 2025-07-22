@@ -38,7 +38,6 @@ WORKDIR /deployment
 
 RUN chmod -R 0777 .
 
-COPY --from=build /app/src/main/resources/log4j2.xml ./resources/log4j2.xml
 COPY --from=build /app/template.yaml .
 #COPY --from=build /app/target/classes ${LAMBDA_TASK_ROOT}
 #COPY --from=build /app/target/dependency/* ${LAMBDA_TASK_ROOT}/lib/
@@ -61,7 +60,7 @@ RUN echo "runtime LD_LIBRARY_PATH is set to: ${LD_LIBRARY_PATH}"
 # entry point of the container
 #ENTRYPOINT ["./entrypoint.sh"]
 #ENTRYPOINT ["/var/rapid/aws-lambda-rie"]
-ENTRYPOINT ["/var/lang/bin/java", "-cp", "/deployment/resources/log4j2.xml:/deployment/app.jar:/deployment/lib/*", "com.amazonaws.services.lambda.runtime.api.client.AWSLambda" ]
+ENTRYPOINT ["/var/lang/bin/java", "-cp", "/deployment/app.jar:/deployment/lib/*", "com.amazonaws.services.lambda.runtime.api.client.AWSLambda" ]
 
 # Pass the name of the function handler as an argument to the runtime com.amazonaws.services.lambda.runtime.api.client.AWSLambda
 CMD ["request.handlers.NotificationAndTemplateHandler::handleRequest" ]
