@@ -3,6 +3,10 @@ package validation.exceptions;
 public class ShutdownException
 	extends Exception
 {
+	/**
+	 * 
+	 */
+	protected static final long serialVersionUID = 2305399875677747137L;
 	protected String status;
 	protected String requestOrigin; //support CORS
 	

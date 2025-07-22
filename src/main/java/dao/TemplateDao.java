@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import entities.NotificationEntity;
 import entities.TemplateEntity;
 
 public class TemplateDao {
