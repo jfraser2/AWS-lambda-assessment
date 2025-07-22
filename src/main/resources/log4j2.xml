@@ -23,19 +23,19 @@
 <!-- Root logger: logs everything not handled by specific loggers -->
      <Root>
  <!-- The level set on a Appender is a filter, if omitted it means no filter or all -->   
-       <AppenderRef ref="ConsoleAppender"/>
        <AppenderRef ref="LambdaFunctionAppender"/>
+       <AppenderRef ref="ConsoleAppender"/>
      </Root>
  <!-- The level set on a Logger the is a threshold filter, The level given or below for the given package name -->   
 	 <logger name="request.handlers">
      	<level value="DEBUG"/>
-    	<appender-ref ref="ConsoleAppender" />
-    	<appender-ref ref="LambdaFunctionAppender" />
+    	<AppenderRef ref="LambdaFunctionAppender" />
+        <AppenderRef ref="ConsoleAppender"/>
 	 </logger>
 	 <logger name="com.zaxxer.hikari.hibernate.HikariConnectionProvider">
      	<level value="DEBUG"/>
-    	<appender-ref ref="ConsoleAppender" />
-    	<appender-ref ref="LambdaFunctionAppender" />
+    	<AppenderRef ref="LambdaFunctionAppender" />
+        <AppenderRef ref="ConsoleAppender"/>
 	 </logger>
   </Loggers>
 </Configuration>  
