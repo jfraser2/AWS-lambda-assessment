@@ -26,14 +26,14 @@
        <AppenderRef ref="ConsoleAppender"/>
        <AppenderRef ref="LambdaFunctionAppender"/>
      </Root>
- <!-- The level set on a Logger the minimum threshold filter, for the given package name -->   
+ <!-- The level set on a Logger the is a threshold filter, The level given or below for the given package name -->   
 	 <logger name="request.handlers">
-     	<level value="ERROR"/>
+     	<level value="DEBUG"/>
     	<appender-ref ref="ConsoleAppender" />
     	<appender-ref ref="LambdaFunctionAppender" />
 	 </logger>
 	 <logger name="com.zaxxer.hikari.hibernate.HikariConnectionProvider">
-     	<level value="ERROR"/>
+     	<level value="DEBUG"/>
     	<appender-ref ref="ConsoleAppender" />
     	<appender-ref ref="LambdaFunctionAppender" />
 	 </logger>
