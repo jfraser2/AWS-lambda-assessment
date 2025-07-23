@@ -1,0 +1,21 @@
+<Configuration>
+  <Appenders>
+    <Console name="ConsoleAppender" target="SYSTEM_OUT">
+      <PatternLayout>
+        <Pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n</Pattern>
+      </PatternLayout>
+      <!-- log4j2 severity order from least to most ALL < TRACE < DEBUG < INFO < WARN < ERROR < FATAL < OFF -->
+      <!-- it will also capture messages at all levels that are considered more severe than that configured level -->
+      <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>      
+    </Console>
+  </Appenders>
+  <Loggers>
+  <!--  the Root logger is intended to catch any log the does not match a specific logger -->
+  <!-- So it should always be listed last. anything above root should have additivity="false" -->
+  <!-- Or you will get double logs. Do not put Logger.<anything> in your code it is not considered  -->
+  <!-- a best practice in Lambda. Use System.out.println, of course you cannot control other peoples code --> 
+    <Root>
+      <AppenderRef ref="ConsoleAppender"/>
+    </Root>
+  </Loggers>
+</Configuration>	
