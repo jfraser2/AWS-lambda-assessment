@@ -46,7 +46,24 @@
         	<artifactId>s3</artifactId>
         	<version>2.28.29</version>
     	</dependency>
-		  	
+<!-- For Request Logging -->		
+		<dependency>
+    		<groupId>org.apache.logging.log4j</groupId>
+    		<artifactId>log4j-slf4j2-impl</artifactId>
+    		<version>2.24.2</version>
+		</dependency>
+				
+		<dependency>
+    		<groupId>org.apache.logging.log4j</groupId>
+    		<artifactId>log4j-api</artifactId>
+    		<version>2.24.2</version>
+		</dependency>
+
+		<dependency>
+		    <groupId>org.apache.logging.log4j</groupId>
+		    <artifactId>log4j-core</artifactId>
+		    <version>2.24.2</version>
+		</dependency>
 		  	    	
  <!--   	
     	<dependency>
