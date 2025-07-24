@@ -1,0 +1,279 @@
+{
+	"openapi": "3.1.0",
+	"info": {
+		"title": "Available AWS Lambda Functions",
+		"description": "Request and Response format is JSON, Request validation is: jakarta validation enhanced with a Framework.\nSince there are so many ways to do Security. I choose a simple one for this project.\nThe user must put a JWT Token in the request header or in a request cookie (will make the AngularJS folks happy).\nJWT Tokens copied directly from the site http://jwt.io may not work. Why you ask?\nOn the Windows Platform the Character set gets changed, it is not longer UTF-8, it becomes Cp1252 (Eclipse Project Default).\nNo worries, a Junit Test was made to build Tokens. It is called BuildJwtToken. For Swagger usage, copy the token from the Eclipse project Console instead.\nThe Secret to making the JUnit produce a UTF-8 token is to set the Windows Environment Variable JAVA_TOOL_OPTIONS to value -Dfile.encoding=UTF-8",
+		"contact": {
+			"name": "Joe Fraser",
+			"url": "https://www.linkedin.com/in/joe-fraser-333127b/",
+			"email": "jfraser2@yahoo.com"
+		},
+		"license": {
+			"name": "MIT License",
+			"url": "https://choosealicense.com/licenses/mit/"
+		},
+		"version": "1.0.0"
+	},
+	"servers": [
+		{
+			"url": "http://localhost:9000",
+			"description": "Http Server URL in Development environment, Using SAM CLI"
+		}
+	],
+	"paths": {
+		"/v1/createTemplate": {
+			"post": {
+				"tags": [
+					"NotificationAndTemplateHandler"
+				],
+				"operationId": "createTemplate",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateTemplate"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/v1/createNotification": {
+			"post": {
+				"tags": [
+					"NotificationAndTemplateHandler"
+				],
+				"operationId": "createNotification",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateNotification"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/v1/updateTemplate": {
+			"patch": {
+				"tags": [
+					"NotificationAndTemplateHandler"
+				],
+				"operationId": "updateTemplate",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateTemplate"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/v1/findByTemplateId": {
+			"get": {
+				"tags": [
+					"NotificationAndTemplateHandler"
+				],
+				"operationId": "findByTemplateId",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "query",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/v1/findByNotificationId": {
+			"get": {
+				"tags": [
+					"NotificationAndTemplateHandler"
+				],
+				"operationId": "findByNotificationId",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "query",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/v1/all/templates": {
+			"get": {
+				"tags": [
+					"NotificationAndTemplateHandler"
+				],
+				"operationId": "allTemplates",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/v1/all/notifications": {
+			"get": {
+				"tags": [
+					"NotificationAndTemplateHandler"
+				],
+				"operationId": "allNotifications",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"CreateTemplate": {
+				"type": "object",
+				"properties": {
+					"templateText": {
+						"type": "string",
+						"maxLength": 200,
+						"minLength": 0
+					}
+				},
+				"required": [
+					"templateText"
+				]
+			},
+			"CreateNotification": {
+				"type": "object",
+				"properties": {
+					"phoneNumber": {
+						"type": "string",
+						"maxLength": 20,
+						"minLength": 0,
+						"pattern": "^\\d{3}[- .]?\\d{3}[- .]?\\d{4}$"
+					},
+					"personalization": {
+						"type": "string",
+						"maxLength": 25,
+						"minLength": 0
+					},
+					"templateId": {
+						"type": "string",
+						"pattern": "[0-9]*"
+					},
+					"templateText": {
+						"type": "string",
+						"maxLength": 200,
+						"minLength": 0
+					}
+				},
+				"required": [
+					"phoneNumber"
+				]
+			},
+			"UpdateTemplate": {
+				"type": "object",
+				"properties": {
+					"templateId": {
+						"type": "string",
+						"minLength": 1,
+						"pattern": "[0-9]+"
+					},
+					"newTemplateText": {
+						"type": "string",
+						"maxLength": 200,
+						"minLength": 0
+					}
+				},
+				"required": [
+					"newTemplateText",
+					"templateId"
+				]
+			}
+		}
+	}
+}
