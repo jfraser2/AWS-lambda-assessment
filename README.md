@@ -82,6 +82,9 @@ I found Inspect and Files to be very helpful<br/>
 
 #Start Testing
 
+The Api for the Lambda Functions is documented in file. OpenApiConfig.json, in project folder<br/>
+src/test/resources.<br/> 
+
 The testing is done locally and uses the aws-lambda-runtime-interface-emulator<br/>
 You cannot use the -d on the sam local start-api it is trouble<br/>
 If you are having port issues you can check in windows for who got it first or who did not release it:<br/>
