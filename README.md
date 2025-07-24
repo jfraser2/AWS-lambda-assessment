@@ -82,21 +82,22 @@ I found Inspect and Files to be very helpful<br/>
 
 #Start Testing
 
-The Api for the Lambda Functions is documented in file. OpenApiConfig.json, in project folder<br/>
+The Api's for the Lambda Functions are documented in file OpenApiConfig.json, in project folder<br/>
 src/test/resources.<br/> 
 
 The testing is done locally and uses the aws-lambda-runtime-interface-emulator<br/>
 You cannot use the -d on the sam local start-api it is trouble<br/>
 If you are having port issues you can check in windows for who got it first or who did not release it:<br/>
-Try netstat -ano | findstr :8080 or whatever port is in question if that comes back empty the port is free<br/>
-To find the process the last column of the netstat is the PID. So tasklist | findstr PID will tell you<br/> 
-The request path is Http Server->Gateway->Container. Sam cli created the Http server and the Gateway<br/>
+Try netstat -ano | findstr :8080 or whatever port is in question, if that comes back empty the port is free.<br/>
+To find the process the last column of the netstat is the PID. So tasklist | findstr PID will tell you.<br/> 
+The request execution path is Http Server->Gateway->Container. SAM CLI created the Http Server and the Gateway.<br/>
 It is trying to emulate(fake) the AWS site.<br/>
 
-The way to test is to use curl. The curl commands can be run after,<br/>
+The free way to test is to use curl. The curl commands can be run after,<br/>
 the sam local start-api as described above is run. Some examples are below<br/>
 You have to add parameters on requests that need them. sam local invoke will not work, why you ask?<br/>
-It's because it will not run the Auth Function automatically like sam local start-api does<br/>
+It's because it will not run the Auth Function automatically like sam local start-api does.<br/>
+Without a successful Auth Function, AWS says: no soup for you. lol <br/>
 
 curl localhost:9000/v1/findByNotificationId/0<br/>
 
@@ -108,7 +109,7 @@ curl localhost:9000/v1/shutdown<br/>
 curl localhost:9000/v1/all/notifications<br/>
 You should see the following result After a wait:<br/>
 {<br/>
-&nbsp; \"status\" : \"NO\_CONTENT\",<br/>
+&nbsp; \"status\" : \"NO_CONTENT\",<br/>
 &nbsp; \"timestamp\" : \"07-02-2025 00:00:32\",<br/>
 &nbsp; \"message\" : \"Notification Table is empty.\"S<br/>
 }<br/>
