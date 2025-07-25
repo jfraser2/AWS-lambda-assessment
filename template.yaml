@@ -1,12 +1,11 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform:
   - AWS::LanguageExtensions
-  - AWS::Serverless-2016-10-316-10-31
+  - AWS::Serverless-2016-10-31
 Resources:
   RequestLambdaFunctionAuthorizer:
     Type: AWS::Serverless::HttpApi
     Properties:
-      DefinitionUri: ./src/test/resources/OpenApiConfig.json # Local file path
       Auth:
         DefaultAuthorizer: LambdaAuthorizer
         Authorizers: 
