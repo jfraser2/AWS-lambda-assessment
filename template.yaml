@@ -5,7 +5,7 @@ Transform:
 
 Resources:
   CorsConfig:
-    Type: AWS::erverless::HttpApi
+    Type: AWS::Serverless::HttpApi
     Properties:
       CorsConfiguration:
         AllowOrigins:
