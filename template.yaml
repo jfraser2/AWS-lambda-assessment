@@ -7,7 +7,6 @@ Resources:
     Type: AWS::Serverless::HttpApi
     Properties:
       Auth:
-        DefaultAuthorizer: LambdaAuthorizer
         Authorizers: 
           LambdaAuthorizer:
             FunctionArn: !GetAtt AuthFunction.Arn
