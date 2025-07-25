@@ -20,7 +20,7 @@ import errorHandling.processing.RequestValidationAdvice;
 public abstract class RequestHandlerBase
 	extends RequestValidationAdvice
 {
-	protected static final String DEFAULT_REQUEST_ORIGIN = "http://localhost:8080";
+	protected static final String DEFAULT_REQUEST_ORIGIN = "http://localhost:9000";
 	protected static final String EOL = System.getProperty("line.separator");
 	protected static final String INDENT = "  ";
 

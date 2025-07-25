@@ -9,8 +9,7 @@ Resources:
     Properties:
       CorsConfiguration:
         AllowOrigins:
-          - 'http://localhost:9000' # Or '*' for all origins
-          - 'http://localhost:8080'          
+          - '*' # Or '*' for all origins
         AllowHeaders:
           - 'Content-Type'
           - 'Origin'
@@ -20,7 +19,7 @@ Resources:
           - 'X-Api-Key'
           - 'X-Amz-Security-Token'
           - 'Access-Control-Request-Headers'
-          - 'Access-Control-Request-Methods'
+          - 'Access-Control-Request-Method'
         AllowMethods:
           - 'GET'
           - 'POST'
@@ -32,6 +31,8 @@ Resources:
           - 'Content-Type'
           - 'Content-Range'
           - 'Access-Control-Allow-Origin'
+          - 'Access-Control-Allow-Methods'
+          - 'Access-Control-Allow-Headers'
   RequestLambdaFunctionAuthorizer:
     Type: AWS::Serverless::HttpApiFunction
     Properties:

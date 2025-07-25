@@ -32,7 +32,7 @@ import software.amazon.awssdk.http.HttpStatusCode;
 public abstract class RequestValidationAdvice
 {
 	protected static final String UNEXPECTED_PROCESSING_ERROR = "{\"message\": \"Object could not convert to json\"}";
-	protected static final String DEFAULT_REQUEST_ORIGIN = "http://localhost:8080";
+	protected static final String DEFAULT_REQUEST_ORIGIN = "http://localhost:9000";
 	
 	//other exception handlers or handler overrides below
 	
