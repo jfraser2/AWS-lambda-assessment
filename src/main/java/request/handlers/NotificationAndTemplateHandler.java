@@ -69,6 +69,8 @@ public class NotificationAndTemplateHandler
 	@Override
 	public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent input, Context context) {
 		String requestOrigin = getRequestOrigin(input);
+		System.out.println("The request Origin is: " + requestOrigin);
+		
 		StringBuilderContainer stringBuilderContainer = new StringBuilderContainer(); // request Scope
 		ValidationErrorContainer requestValidationErrorsContainer = new ValidationErrorContainer(); //request Scope
 		

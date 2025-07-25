@@ -8,4 +8,3 @@ dockerPsqlCreateTables
 README.md
 Requirements.md
 container.py
-src/test/resources

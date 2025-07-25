@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.text.StringEscapeUtils;
-
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,7 +20,7 @@ import errorHandling.processing.RequestValidationAdvice;
 public abstract class RequestHandlerBase
 	extends RequestValidationAdvice
 {
-	
+	protected static final String DEFAULT_REQUEST_ORIGIN = "http://localhost:9000";
 	protected static final String EOL = System.getProperty("line.separator");
 	protected static final String INDENT = "  ";
 
@@ -195,7 +193,8 @@ public abstract class RequestHandlerBase
 //		System.err.println("raw json is: " + rawJson);
 		
 		String tempString = convertToPrettyPrintJson(rawJson, mapper);
-		return  StringEscapeUtils.escapeJson(tempString);
+//		return  StringEscapeUtils.escapeJson(tempString);
+		return  tempString;
 	}
 	
 	protected String goodResponseList(List<Object> anObject, StringBuilderContainer aContainer, Gson gson, Gson gsonPretty, ObjectMapper mapper)
@@ -216,7 +215,8 @@ public abstract class RequestHandlerBase
 //		System.out.println("raw json is: " + rawJson);
 		
 		String tempString = gsonConvertRawJsonToPrettyPrint(rawJson, gsonPretty);
-		return  StringEscapeUtils.escapeJson(tempString);
+//		return  StringEscapeUtils.escapeJson(tempString);
+		return  tempString;
 	}
 
 	protected String getRequestOrigin(APIGatewayV2HTTPEvent  request)
@@ -237,9 +237,7 @@ public abstract class RequestHandlerBase
 		Map<String, String> aResponseHeader = new HashMap<String, String>();
 		
 		String requestOrigin = getRequestOrigin(request);
-		if (null != requestOrigin) {
-			aResponseHeader.put("Access-Control-Allow-Origin", getRequestOrigin(request));
-		}	
+		aResponseHeader.put("Access-Control-Allow-Origin", requestOrigin);
 //		aResponseHeader.put("Access-Control-Allow-Origin", "*");
 		aResponseHeader.put("Content-Type", "application/json");
 		

@@ -1,28 +1,50 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform:
   - AWS::LanguageExtensions
-  - AWS::Serverless-2016-10-316-10-31
-
+  - AWS::Serverless-2016-10-31
 Resources:
   RequestLambdaFunctionAuthorizer:
-    Type: AWS::Serverless::HttpApiFunction
+    Type: AWS::Serverless::HttpApi
     Properties:
       Auth:
-        DefaultAuthorizer: LambdaRequestAuthorizer
-        Authorizers:
-          LambdaRequestAuthorizer:
+        Authorizers: 
+          LambdaAuthorizer:
             FunctionArn: !GetAtt AuthFunction.Arn
             FunctionInvokeRole: arn:aws:iam::153822065620:role/AllowLambdaFunctionRole
-            Identity:
-              Headers:
-                - Authorization
-            AuthorizerPayloadFormatVersion: 2.0
+            AuthorizerPayloadFormatVersion: "2.0"
+            EnableFunctionDefaultPermissions: true
             EnableSimpleResponses: true
+      CorsConfiguration:
+        AllowOrigins:
+          - '*' # Or '*' for all origins
+        AllowHeaders:
+          - 'Content-Type'
+          - 'Origin'
+          - 'Accept'
+          - 'X-Amz-Date'
+          - 'Authorization'
+          - 'X-Api-Key'
+          - 'X-Amz-Security-Token'
+          - 'Access-Control-Request-Headers'
+          - 'Access-Control-Request-Method'
+        AllowMethods:
+          - 'GET'
+          - 'POST'
+          - 'OPTIONS'
+          - 'PUT'
+          - 'DELETE'
+          - 'PATCH'
+        ExposeHeaders:
+          - 'Content-Type'
+          - 'Content-Range'
+          - 'Access-Control-Allow-Origin'
+          - 'Access-Control-Allow-Methods'
+          - 'Access-Control-Allow-Headers'
   AuthFunction:
     Type: AWS::Serverless::Function
     Properties:
       PackageType: Image
-      ImageUri: lambdaimage:rapid-x86_64
+      ImageUri: notificationandtemplate:rapid-x86_64
       CodeUri: C:\work\java\eclipse-workspace2\AWS-lambda-assessment
       Architectures:
         - x86_64
@@ -30,17 +52,15 @@ Resources:
       MemorySize: 4096
       Events:
         CheckAuthorization:
-          Type: HttpApi
+          Type: Api
           Properties:
-            Auth:
-              Authorizer: NONE  # <<-- This line makes the endpoint publicAuth
             Path: /v1/test/authorization
-            Method: get
+            Method: post
   NotificationAndTemplate:
     Type: AWS::Serverless::Function
     Properties:
       PackageType: Image
-      ImageUri: lambdaimage:rapid-x86_64
+      ImageUri: notificationandtemplate:rapid-x86_64
       CodeUri: C:\work\java\eclipse-workspace2\AWS-lambda-assessment
       Architectures:
         - x86_64

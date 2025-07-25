@@ -38,6 +38,7 @@ WORKDIR /deployment
 
 RUN chmod -R 0777 .
 
+COPY --from=build /app/src/test/resources/OpenApiConfig.json ./test/OpenApiConfig.json 
 COPY --from=build /app/src/main/resources/log4j2.xml ./resources/log4j2.xml
 COPY --from=build /app/template.yaml .
 #COPY --from=build /app/target/classes ${LAMBDA_TASK_ROOT}
