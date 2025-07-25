@@ -120,7 +120,7 @@
 				"parameters": [
 					{
 						"name": "id",
-						"in": "query",
+						"in": "path",
 						"required": true,
 						"schema": {
 							"type": "string"
@@ -150,7 +150,7 @@
 				"parameters": [
 					{
 						"name": "id",
-						"in": "query",
+						"in": "path",
 						"required": true,
 						"schema": {
 							"type": "string"

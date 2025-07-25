@@ -4,8 +4,6 @@ import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.text.StringEscapeUtils;
-
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,6 +32,7 @@ import software.amazon.awssdk.http.HttpStatusCode;
 public abstract class RequestValidationAdvice
 {
 	protected static final String UNEXPECTED_PROCESSING_ERROR = "{\"message\": \"Object could not convert to json\"}";
+	protected static final String DEFAULT_REQUEST_ORIGIN = "http://localhost:8080";
 	
 	//other exception handlers or handler overrides below
 	
@@ -130,11 +129,13 @@ public abstract class RequestValidationAdvice
 		try {
 			ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
 			String tempString = ow.writeValueAsString(apiError);
-			json = StringEscapeUtils.escapeJson(tempString);
+//			json = StringEscapeUtils.escapeJson(tempString);
+			json = tempString;
 		}
 		catch(JsonProcessingException jpe)
 		{
-			json = StringEscapeUtils.escapeJson(UNEXPECTED_PROCESSING_ERROR);
+//			json = StringEscapeUtils.escapeJson(UNEXPECTED_PROCESSING_ERROR);
+			json = UNEXPECTED_PROCESSING_ERROR;
 		}
 		
 		return json;
@@ -145,9 +146,11 @@ public abstract class RequestValidationAdvice
 		// support CORS
 //		System.err.println("Access-Control-Allow-Origin is: " + requestOrigin);
 		Map<String, String> aResponseHeader = new HashMap<String, String>();
-		if (null != requestOrigin) {
+		if (null != requestOrigin && requestOrigin.length() > 0) {
 			aResponseHeader.put("Access-Control-Allow-Origin", requestOrigin);
-		}	
+		} else {
+			aResponseHeader.put("Access-Control-Allow-Origin", DEFAULT_REQUEST_ORIGIN);
+		}
 //		aResponseHeader.put("Access-Control-Allow-Origin", "*");
 		aResponseHeader.put("Content-Type", "application/json");
 		

@@ -4,6 +4,34 @@ Transform:
   - AWS::Serverless-2016-10-316-10-31
 
 Resources:
+  CorsConfig:
+    Type: AWS::erverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins:
+          - 'http://localhost:9000' # Or '*' for all origins
+          - 'http://localhost:8080'          
+        AllowHeaders:
+          - 'Content-Type'
+          - 'Origin'
+          - 'Accept'
+          - 'X-Amz-Date'
+          - 'Authorization'
+          - 'X-Api-Key'
+          - 'X-Amz-Security-Token'
+          - 'Access-Control-Request-Headers'
+          - 'Access-Control-Request-Methods'
+        AllowMethods:
+          - 'GET'
+          - 'POST'
+          - 'OPTIONS'
+          - 'PUT'
+          - 'DELETE'
+          - 'PATCH'
+        ExposedHeaders:
+          - 'Content-Type'
+          - 'Content-Range'
+          - 'Access-Control-Allow-Origin'
   RequestLambdaFunctionAuthorizer:
     Type: AWS::Serverless::HttpApiFunction
     Properties:

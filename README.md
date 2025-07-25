@@ -73,8 +73,8 @@ To start the local Http Server to handle curl requests, and a container for your
 
 sam local start-api --docker-network VA-assessment --warm-containers LAZY -p 9000 --profile my-local-dev --host localhost --debug<br/> 
 
-In the new Docker Desktop container after a request is made, you will see a port mapping of 8080:8080. This map is for connecting an external debugger.<br/>
 This container will be used over and over again on each request. This is needed because a connection pool runs in the container.</br>
+The first curl command will be like 2.5 seconds no worries, the second is like 10 milliseconds.<br/>
 Before any Ctrl-C to exit the listener, a person should run a shutdown. "curl localhost:9000/v1/shutdown"<br/>
 The idea of running a shutdown, is to clean up the Hikari connection pool. The Handler Function creates a connection pool. <br/>
 If you forget you could stop and start postgres in DockerDesktop. You can explore many things when you click on a container<br/>
@@ -82,8 +82,16 @@ I found Inspect and Files to be very helpful<br/>
 
 #Start Testing
 
-The Api's for the Lambda Functions are documented in file OpenApiConfig.json, in project folder<br/>
-src/test/resources.<br/> 
+The Api's for the Lambda Functions are  documented in file OpenApiConfig.json, in project folder<br/>
+src/test/resources. Now testing with OpenApi is possible, after you run sam local start-api<br/>
+First download the OpenApi docker image in a windows shell with command:<br/>
+docker pull swaggerapi/swagger-ui<br/> 
+Then run the command:<br/>
+docker run --network VA-assessment -p 8080:8080 -e SWAGGER_JSON=/deployment/test/OpenApiConfig.json --volume ./src/test/resources/OpenApiConfig.json:/deployment/test/OpenApiConfig.json swaggerapi/swagger-ui<br/>
+
+The dot is a relative path from the project install folder, and general description of the command is:<br/>
+docker run -p 8080:8080 -e SWAGGER_JSON=/app/swagger.json --volume /path/to/your/local/swagger.json:/app/swagger.json swaggerapi/swagger-ui<br/>
+After running this command, you can open your web browser and navigate to http://localhost:8080 (or the port you chose) to run the tests.<br/>
 
 The testing is done locally and uses the aws-lambda-runtime-interface-emulator<br/>
 You cannot use the -d on the sam local start-api it is trouble<br/>
@@ -93,7 +101,7 @@ To find the process the last column of the netstat is the PID. So tasklist | fin
 The request execution path is Http Server->Gateway->Container. SAM CLI created the Http Server and the Gateway.<br/>
 It is trying to emulate(fake) the AWS site.<br/>
 
-The free way to test is to use curl. The curl commands can be run after,<br/>
+The old school way to test(new school is easier) is to use curl. The curl commands can be run after,<br/>
 the sam local start-api as described above is run. Some examples are below<br/>
 You have to add parameters on requests that need them. sam local invoke will not work, why you ask?<br/>
 It's because it will not run the Auth Function automatically like sam local start-api does.<br/>
@@ -109,9 +117,9 @@ curl localhost:9000/v1/shutdown<br/>
 curl localhost:9000/v1/all/notifications<br/>
 You should see the following result After a wait:<br/>
 {<br/>
-&nbsp; \"status\" : \"NO_CONTENT\",<br/>
-&nbsp; \"timestamp\" : \"07-02-2025 00:00:32\",<br/>
-&nbsp; \"message\" : \"Notification Table is empty.\"S<br/>
+&nbsp; "status" : "NO_CONTENT",<br/>
+&nbsp; "timestamp" : "07-02-2025 00:00:32",<br/>
+&nbsp; "message" : "Notification Table is empty."<br/>
 }<br/>
 
 
