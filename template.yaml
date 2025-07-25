@@ -53,7 +53,7 @@ Resources:
       MemorySize: 4096
       Events:
         CheckAuthorization:
-          Type: HttpApi
+          Type: Api
           Properties:
             Path: /v1/test/authorization
             Method: post
