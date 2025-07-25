@@ -15,6 +15,8 @@ public class AuthorizationHandler
 	extends RequestHandlerBase
 	implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> 
 {
+	protected static final String AUTHORIZED_RESPONSE = "{\"isAuthorized\": true}";
+	protected static final String UNAUTHORIZED_RESPONSE = "{\"isAuthorized\": false}";
 	protected static ObjectMapper mapper;
 	protected static Gson gsonWithSerializeNullsAndPrettyPrint;
 	protected static Gson gsonWithSerializeNulls;
@@ -42,7 +44,9 @@ public class AuthorizationHandler
 		retVar.setIsBase64Encoded(false);
 		retVar.setHeaders(createResponseHeader(input));
 		retVar.setStatusCode(HttpStatusCode.OK);
-		retVar.setBody("{}");
+		retVar.setBody(AUTHORIZED_RESPONSE);
+		
+        System.out.println("In AuthorizationHandler, json Being returned: " + retVar.getBody());
 		
 		return retVar;
 	}
