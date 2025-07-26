@@ -1,12 +1,9 @@
 package request.handlers;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -16,7 +13,7 @@ import software.amazon.awssdk.http.HttpStatusCode;
 
 public class AuthorizationHandler
 	extends RequestHandlerBase
-	implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent>
+	implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse>
 {
 	protected static final String AUTHORIZED_RESPONSE = "{\"isAuthorized\": \"true\"}";
 	protected static final String UNAUTHORIZED_RESPONSE = "{\"isAuthorized\": \"false\"}";
@@ -39,44 +36,24 @@ public class AuthorizationHandler
 	}
 
 	@Override
-	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
+	public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent input, Context context) {
 		System.out.println("Entered the Authorization Handler");
 		
-		APIGatewayProxyResponseEvent retVar = new APIGatewayProxyResponseEvent();
+		String requestOrigin = getRequestOrigin(input);
+		String requestMethod = input.getRequestContext().getHttp().getMethod();
+		System.out.println("The request Origin is: " + requestOrigin);
+		System.out.println("The request Method is: " + requestMethod);
+		System.out.println("raw path is: " + input.getRawPath());
+
+		APIGatewayV2HTTPResponse retVar = new APIGatewayV2HTTPResponse();
 		retVar.setIsBase64Encoded(false);
-		retVar.setHeaders(createResponseHeader(input));
+		retVar.setHeaders(createResponseHeader(requestOrigin));
 		retVar.setStatusCode(HttpStatusCode.OK);
 		retVar.setBody(AUTHORIZED_RESPONSE);
 		
         System.out.println("In AuthorizationHandler, json Being returned: " + retVar.getBody());
 		
 		return retVar;
-	}
-	
-	protected String getRequestOrigin(APIGatewayProxyRequestEvent request)
-	{
-		String retVar = null;
-		
-		if (null != request && null != request.getHeaders()) {
-			retVar = request.getHeaders().get("Origin");
-		}
-		
-		return retVar;
-	}
-	
-	protected Map<String, String> createResponseHeader(APIGatewayProxyRequestEvent request)
-	{
-		// support CORS
-//		System.err.println("Access-Control-Allow-Origin is: " + request.getHeader("Origin"));
-		Map<String, String> aResponseHeader = new HashMap<String, String>();
-		
-		String requestOrigin = getRequestOrigin(request);
-		aResponseHeader.put("Access-Control-Allow-Origin", requestOrigin);
-//		aResponseHeader.put("Access-Control-Allow-Origin", "*");
-		aResponseHeader.put("Content-Type", "application/json");
-		
-		return aResponseHeader;
-		
 	}
 	
 }

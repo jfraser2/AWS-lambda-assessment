@@ -90,7 +90,7 @@ Then run the command:<br/>
 docker run --network VA-assessment -p 8080:8080 -e SWAGGER_JSON=/deployment/test/OpenApiConfig.json --volume ./src/test/resources/OpenApiConfig.json:/deployment/test/OpenApiConfig.json swaggerapi/swagger-ui<br/>
 
 The dot is a relative path from the project install folder, and general description of the command is:<br/>
-docker run -p 8080:8080 -e SWAGGER_JSON=/app/swagger.json --volume /path/to/your/local/swagger.json:/app/swagger.json swaggerapi/swagger-ui<br/>
+docker run --network VA-assessment -p 8080:8080 -e SWAGGER_JSON=/app/swagger.json --volume /path/to/your/local/swagger.json:/app/swagger.json swaggerapi/swagger-ui<br/>
 After running this command, you can open your web browser and navigate to http://localhost:8080 (or the port you chose) to run the tests.<br/>
 
 The testing is done locally and uses the aws-lambda-runtime-interface-emulator<br/>

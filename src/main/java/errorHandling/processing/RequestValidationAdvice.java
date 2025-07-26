@@ -113,7 +113,7 @@ public abstract class RequestValidationAdvice
 	{
 		APIGatewayV2HTTPResponse retVar = new APIGatewayV2HTTPResponse();
 		// support CORS
-		Map<String, String> aResponseHeader = createResponseHeader(requestOrigin);
+		Map<String, String> aResponseHeader = createErrorResponseHeader(requestOrigin);
 		
 		retVar.setIsBase64Encoded(false);
 		retVar.setHeaders(aResponseHeader);
@@ -141,7 +141,7 @@ public abstract class RequestValidationAdvice
 		return json;
 	}
 	
-	public Map<String, String> createResponseHeader(String requestOrigin)
+	public Map<String, String> createErrorResponseHeader(String requestOrigin)
 	{
 		// support CORS
 //		System.err.println("Access-Control-Allow-Origin is: " + requestOrigin);

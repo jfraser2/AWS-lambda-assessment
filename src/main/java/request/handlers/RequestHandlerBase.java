@@ -230,13 +230,12 @@ public abstract class RequestHandlerBase
 		return retVar;
 	}
 	
-	protected Map<String, String> createResponseHeader(APIGatewayV2HTTPEvent request)
+	protected Map<String, String> createResponseHeader(String requestOrigin)
 	{
 		// support CORS
 //		System.err.println("Access-Control-Allow-Origin is: " + request.getHeader("Origin"));
 		Map<String, String> aResponseHeader = new HashMap<String, String>();
 		
-		String requestOrigin = getRequestOrigin(request);
 		aResponseHeader.put("Access-Control-Allow-Origin", requestOrigin);
 //		aResponseHeader.put("Access-Control-Allow-Origin", "*");
 		aResponseHeader.put("Content-Type", "application/json");
@@ -257,6 +256,22 @@ public abstract class RequestHandlerBase
 		}
 		
 		return retVar;
+	}
+
+	protected Map<String, String> createOptionsResponseHeader(String requestOrigin)
+	{
+		// support CORS
+//		System.err.println("Access-Control-Allow-Origin is: " + request.getHeader("Origin"));
+		Map<String, String> aResponseHeader = new HashMap<String, String>();
+		
+		aResponseHeader.put("Access-Control-Allow-Origin", requestOrigin);
+		aResponseHeader.put("Access-Control-Allow-Methods", "OPTIONS,GET,POST,PUT,DELETE,PATCH"); // Allowed HTTP methods
+		aResponseHeader.put("Access-Control-Allow-Headers", "Content-Type,Origin,Accept,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Access-Control-Request-Headers,Access-Control-Request-Method"); // Allowed headers		
+		
+//		aResponseHeader.put("Access-Control-Allow-Origin", "*");
+		aResponseHeader.put("Content-Type", "application/json");
+		
+		return aResponseHeader;
 	}
 	
 

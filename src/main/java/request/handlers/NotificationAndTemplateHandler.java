@@ -69,35 +69,50 @@ public class NotificationAndTemplateHandler
 	@Override
 	public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent input, Context context) {
 		String requestOrigin = getRequestOrigin(input);
+		String requestMethod = input.getRequestContext().getHttp().getMethod();
 		System.out.println("The request Origin is: " + requestOrigin);
+		System.out.println("The request Method is: " + requestMethod);
+		System.out.println("raw path is: " + input.getRawPath());
+		
+		boolean isOptionsRequest = "OPTIONS".equalsIgnoreCase(requestMethod);
 		
 		StringBuilderContainer stringBuilderContainer = new StringBuilderContainer(); // request Scope
 		ValidationErrorContainer requestValidationErrorsContainer = new ValidationErrorContainer(); //request Scope
 		
 		APIGatewayV2HTTPResponse retVar = null;
 		
-		System.out.println("raw path is: " + input.getRawPath());
-		
 		switch (input.getRawPath()) {
 		    case "/v1/createNotification":
-				retVar = creation(input, notificationService, requestValidationErrorsContainer,
-					stringBuilderContainer, requestOrigin);
+		    	if (isOptionsRequest) {
+		    		retVar = optionsMethod(input, requestOrigin);
+		    	} else {
+		    		retVar = creation(input, notificationService, requestValidationErrorsContainer,
+		    			stringBuilderContainer, requestOrigin);
+		    	}	
 		        break;
 		    case "/v1/all/notifications":
 				retVar = findAll(input, notificationService, requestValidationErrorsContainer,
 						stringBuilderContainer, requestOrigin);
 		        break;
 		    case "/v1/createTemplate":
-				retVar = creation(input, templateService, requestValidationErrorsContainer,
-					stringBuilderContainer, requestOrigin);
+		    	if (isOptionsRequest) {
+		    		retVar = optionsMethod(input, requestOrigin);
+		    	} else {
+		    		retVar = creation(input, templateService, requestValidationErrorsContainer,
+		    			stringBuilderContainer, requestOrigin);
+		    	}	
 		        break;
 		    case "/v1/all/templates":
 				retVar = findAll(input, templateService, requestValidationErrorsContainer,
 						stringBuilderContainer, requestOrigin);
 		        break;
 		    case "/v1/updateTemplate":
-				retVar = update(input, templateService, requestValidationErrorsContainer,
+		    	if (isOptionsRequest) {
+		    		retVar = optionsMethod(input, requestOrigin);
+		    	} else {
+		    		retVar = update(input, templateService, requestValidationErrorsContainer,
 						stringBuilderContainer, requestOrigin);
+		    	}	
 		        break;
 		    case "/v1/shutdown":
 				retVar = shutdownHook(requestOrigin);
@@ -171,7 +186,7 @@ public class NotificationAndTemplateHandler
 				// support CORS
 				retVar = new APIGatewayV2HTTPResponse();
 				retVar.setIsBase64Encoded(false);
-				retVar.setHeaders(createResponseHeader(input));
+				retVar.setHeaders(createOptionsResponseHeader(requestOrigin));
 				retVar.setStatusCode(HttpStatusCode.CREATED);
 				retVar.setBody(jsonString);
 			}
@@ -201,7 +216,7 @@ public class NotificationAndTemplateHandler
 			// support CORS
 			retVar = new APIGatewayV2HTTPResponse();
 			retVar.setIsBase64Encoded(false);
-			retVar.setHeaders(createResponseHeader(input));
+			retVar.setHeaders(createResponseHeader(requestOrigin));
 			retVar.setStatusCode(HttpStatusCode.OK);
 			retVar.setBody(jsonString);
 		}
@@ -251,7 +266,7 @@ public class NotificationAndTemplateHandler
 				// support CORS
 				retVar = new APIGatewayV2HTTPResponse();
 				retVar.setIsBase64Encoded(false);
-				retVar.setHeaders(createResponseHeader(input));
+				retVar.setHeaders(createResponseHeader(requestOrigin));
 				retVar.setStatusCode(HttpStatusCode.OK);
 				retVar.setBody(jsonString);
 			}
@@ -291,7 +306,7 @@ public class NotificationAndTemplateHandler
 			// support CORS
 			retVar = new APIGatewayV2HTTPResponse();
 			retVar.setIsBase64Encoded(false);
-			retVar.setHeaders(createResponseHeader(input));
+			retVar.setHeaders(createOptionsResponseHeader(requestOrigin));
 			retVar.setStatusCode(HttpStatusCode.CREATED);
 			retVar.setBody(jsonString);
 		}
@@ -322,7 +337,7 @@ public class NotificationAndTemplateHandler
 			// support CORS
 			retVar = new APIGatewayV2HTTPResponse();
 			retVar.setIsBase64Encoded(false);
-			retVar.setHeaders(createResponseHeader(input));
+			retVar.setHeaders(createResponseHeader(requestOrigin));
 			retVar.setStatusCode(HttpStatusCode.OK);
 			retVar.setBody(jsonString);
 		}
@@ -364,7 +379,7 @@ public class NotificationAndTemplateHandler
 				// support CORS
 				retVar = new APIGatewayV2HTTPResponse();
 				retVar.setIsBase64Encoded(false);
-				retVar.setHeaders(createResponseHeader(input));
+				retVar.setHeaders(createResponseHeader(requestOrigin));
 				retVar.setStatusCode(HttpStatusCode.OK);
 				retVar.setBody(jsonString);
 			}
@@ -410,7 +425,7 @@ public class NotificationAndTemplateHandler
 				// support CORS
 				retVar = new APIGatewayV2HTTPResponse();
 				retVar.setIsBase64Encoded(false);
-				retVar.setHeaders(createResponseHeader(input));
+				retVar.setHeaders(createOptionsResponseHeader(requestOrigin));
 				retVar.setStatusCode(HttpStatusCode.OK);
 				retVar.setBody(jsonString);
 			}
@@ -450,5 +465,17 @@ public class NotificationAndTemplateHandler
 		retVar = handleShutdownException(new ShutdownException(outputMessage, outputStatus, requestOrigin), mapper);
 		return retVar;
 	}
+	
+	protected APIGatewayV2HTTPResponse optionsMethod(APIGatewayV2HTTPEvent input, String requestOrigin)
+	{
+		// support CORS
+		APIGatewayV2HTTPResponse retVar = new APIGatewayV2HTTPResponse();
+		retVar.setIsBase64Encoded(false);
+		retVar.setHeaders(createOptionsResponseHeader(requestOrigin));
+		retVar.setStatusCode(HttpStatusCode.OK);
+		retVar.setBody("{}"); // empty Json Object
+		
+		return retVar;
+	}	
 	
 }

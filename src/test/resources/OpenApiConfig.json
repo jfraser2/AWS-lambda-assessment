@@ -111,7 +111,7 @@
 				}
 			}
 		},
-		"/v1/findByTemplateId": {
+		"/v1/findByTemplateId/{id}": {
 			"get": {
 				"tags": [
 					"NotificationAndTemplateHandler"
@@ -141,7 +141,7 @@
 				}
 			}
 		},
-		"/v1/findByNotificationId": {
+		"/v1/findByNotificationId/{id}": {
 			"get": {
 				"tags": [
 					"NotificationAndTemplateHandler"
