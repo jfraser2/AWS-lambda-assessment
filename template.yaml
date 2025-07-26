@@ -21,7 +21,7 @@ Resources:
         AllowHeaders:
           - 'Content-Type'
           - 'Origin'
-          - 'accept'
+          - 'Accept'
           - 'X-Amz-Date'
           - 'Authorization'
           - 'X-Api-Key'

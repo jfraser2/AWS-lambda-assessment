@@ -172,7 +172,7 @@ public class NotificationAndTemplateHandler
 				// support CORS
 				retVar = new APIGatewayV2HTTPResponse();
 				retVar.setIsBase64Encoded(false);
-				retVar.setHeaders(createResponseHeader(requestOrigin));
+				retVar.setHeaders(createOptionsResponseHeader(requestOrigin));
 				retVar.setStatusCode(HttpStatusCode.CREATED);
 				retVar.setBody(jsonString);
 			}
@@ -292,7 +292,7 @@ public class NotificationAndTemplateHandler
 			// support CORS
 			retVar = new APIGatewayV2HTTPResponse();
 			retVar.setIsBase64Encoded(false);
-			retVar.setHeaders(createResponseHeader(requestOrigin));
+			retVar.setHeaders(createOptionsResponseHeader(requestOrigin));
 			retVar.setStatusCode(HttpStatusCode.CREATED);
 			retVar.setBody(jsonString);
 		}
@@ -411,7 +411,7 @@ public class NotificationAndTemplateHandler
 				// support CORS
 				retVar = new APIGatewayV2HTTPResponse();
 				retVar.setIsBase64Encoded(false);
-				retVar.setHeaders(createResponseHeader(requestOrigin));
+				retVar.setHeaders(createOptionsResponseHeader(requestOrigin));
 				retVar.setStatusCode(HttpStatusCode.OK);
 				retVar.setBody(jsonString);
 			}
