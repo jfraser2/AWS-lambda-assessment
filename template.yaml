@@ -68,6 +68,11 @@ Resources:
       Timeout: 120
       MemorySize: 4096
       Events:
+        CreateNotificationOptionsEvent: # Explicitly define OPTIONS if needed for specific logic
+          Type: HttpApi
+          Properties:
+            Path: /v1/createNotification
+            Method: options
         CreateNotification:
           Type: HttpApi 
           Properties:
@@ -86,6 +91,11 @@ Resources:
             ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/findByNotificationId/{id}
             Method: get
+        CreateTemplateOptionsEvent: # Explicitly define OPTIONS if needed for specific logic
+          Type: HttpApi
+          Properties:
+            Path: /v1/createTemplate
+            Method: options
         CreateTemplate:
           Type: HttpApi 
           Properties:
@@ -104,6 +114,11 @@ Resources:
             ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/findByTemplateId/{id}
             Method: get
+        UpdateTemplateOptionsEvent: # Explicitly define OPTIONS if needed for specific logic
+          Type: HttpApi
+          Properties:
+            Path: /v1/updateTemplate
+            Method: options
         UpdateTemplate:
           Type: HttpApi
           Properties:
