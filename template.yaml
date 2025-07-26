@@ -9,6 +9,7 @@ Resources:
       Auth:
         Authorizers: 
           LambdaAuthorizer:
+            FunctionPayloadType: REQUEST
             FunctionArn: !GetAtt AuthFunction.Arn
             FunctionInvokeRole: arn:aws:iam::153822065620:role/AllowLambdaFunctionRole
             AuthorizerPayloadFormatVersion: "2.0"
@@ -20,7 +21,7 @@ Resources:
         AllowHeaders:
           - 'Content-Type'
           - 'Origin'
-          - 'Accept'
+          - 'accept'
           - 'X-Amz-Date'
           - 'Authorization'
           - 'X-Api-Key'
@@ -52,7 +53,7 @@ Resources:
       MemorySize: 4096
       Events:
         CheckAuthorization:
-          Type: Api
+          Type: HttpApi
           Properties:
             Path: /v1/test/authorization
             Method: post
