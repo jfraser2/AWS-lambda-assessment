@@ -1,8 +1,5 @@
 package request.handlers;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
@@ -42,9 +39,15 @@ public class AuthorizationHandler
 	public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
 		System.out.println("Entered the Authorization Handler");
 		
+		String requestOrigin = getRequestOrigin(input);
+		String requestMethod = input.getHttpMethod();
+		System.out.println("The request Origin is: " + requestOrigin);
+		System.out.println("The request Method is: " + requestMethod);
+		System.out.println("path is: " + input.getPath());
+
 		APIGatewayProxyResponseEvent retVar = new APIGatewayProxyResponseEvent();
 		retVar.setIsBase64Encoded(false);
-		retVar.setHeaders(createResponseHeader(input));
+		retVar.setHeaders(createResponseHeader(requestOrigin));
 		retVar.setStatusCode(HttpStatusCode.OK);
 		retVar.setBody(AUTHORIZED_RESPONSE);
 		
@@ -62,21 +65,6 @@ public class AuthorizationHandler
 		}
 		
 		return retVar;
-	}
-	
-	protected Map<String, String> createResponseHeader(APIGatewayProxyRequestEvent request)
-	{
-		// support CORS
-//		System.err.println("Access-Control-Allow-Origin is: " + request.getHeader("Origin"));
-		Map<String, String> aResponseHeader = new HashMap<String, String>();
-		
-		String requestOrigin = getRequestOrigin(request);
-		aResponseHeader.put("Access-Control-Allow-Origin", requestOrigin);
-//		aResponseHeader.put("Access-Control-Allow-Origin", "*");
-		aResponseHeader.put("Content-Type", "application/json");
-		
-		return aResponseHeader;
-		
 	}
 	
 }

@@ -69,14 +69,15 @@ public class NotificationAndTemplateHandler
 	@Override
 	public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent input, Context context) {
 		String requestOrigin = getRequestOrigin(input);
+		String requestMethod = input.getRequestContext().getHttp().getMethod();
 		System.out.println("The request Origin is: " + requestOrigin);
+		System.out.println("The request Method is: " + requestMethod);
+		System.out.println("raw path is: " + input.getRawPath());
 		
 		StringBuilderContainer stringBuilderContainer = new StringBuilderContainer(); // request Scope
 		ValidationErrorContainer requestValidationErrorsContainer = new ValidationErrorContainer(); //request Scope
 		
 		APIGatewayV2HTTPResponse retVar = null;
-		
-		System.out.println("raw path is: " + input.getRawPath());
 		
 		switch (input.getRawPath()) {
 		    case "/v1/createNotification":
@@ -171,7 +172,7 @@ public class NotificationAndTemplateHandler
 				// support CORS
 				retVar = new APIGatewayV2HTTPResponse();
 				retVar.setIsBase64Encoded(false);
-				retVar.setHeaders(createResponseHeader(input));
+				retVar.setHeaders(createResponseHeader(requestOrigin));
 				retVar.setStatusCode(HttpStatusCode.CREATED);
 				retVar.setBody(jsonString);
 			}
@@ -201,7 +202,7 @@ public class NotificationAndTemplateHandler
 			// support CORS
 			retVar = new APIGatewayV2HTTPResponse();
 			retVar.setIsBase64Encoded(false);
-			retVar.setHeaders(createResponseHeader(input));
+			retVar.setHeaders(createResponseHeader(requestOrigin));
 			retVar.setStatusCode(HttpStatusCode.OK);
 			retVar.setBody(jsonString);
 		}
@@ -251,7 +252,7 @@ public class NotificationAndTemplateHandler
 				// support CORS
 				retVar = new APIGatewayV2HTTPResponse();
 				retVar.setIsBase64Encoded(false);
-				retVar.setHeaders(createResponseHeader(input));
+				retVar.setHeaders(createResponseHeader(requestOrigin));
 				retVar.setStatusCode(HttpStatusCode.OK);
 				retVar.setBody(jsonString);
 			}
@@ -291,7 +292,7 @@ public class NotificationAndTemplateHandler
 			// support CORS
 			retVar = new APIGatewayV2HTTPResponse();
 			retVar.setIsBase64Encoded(false);
-			retVar.setHeaders(createResponseHeader(input));
+			retVar.setHeaders(createResponseHeader(requestOrigin));
 			retVar.setStatusCode(HttpStatusCode.CREATED);
 			retVar.setBody(jsonString);
 		}
@@ -322,7 +323,7 @@ public class NotificationAndTemplateHandler
 			// support CORS
 			retVar = new APIGatewayV2HTTPResponse();
 			retVar.setIsBase64Encoded(false);
-			retVar.setHeaders(createResponseHeader(input));
+			retVar.setHeaders(createResponseHeader(requestOrigin));
 			retVar.setStatusCode(HttpStatusCode.OK);
 			retVar.setBody(jsonString);
 		}
@@ -364,7 +365,7 @@ public class NotificationAndTemplateHandler
 				// support CORS
 				retVar = new APIGatewayV2HTTPResponse();
 				retVar.setIsBase64Encoded(false);
-				retVar.setHeaders(createResponseHeader(input));
+				retVar.setHeaders(createResponseHeader(requestOrigin));
 				retVar.setStatusCode(HttpStatusCode.OK);
 				retVar.setBody(jsonString);
 			}
@@ -410,7 +411,7 @@ public class NotificationAndTemplateHandler
 				// support CORS
 				retVar = new APIGatewayV2HTTPResponse();
 				retVar.setIsBase64Encoded(false);
-				retVar.setHeaders(createResponseHeader(input));
+				retVar.setHeaders(createResponseHeader(requestOrigin));
 				retVar.setStatusCode(HttpStatusCode.OK);
 				retVar.setBody(jsonString);
 			}
