@@ -148,15 +148,27 @@ public abstract class RequestValidationAdvice
 		Map<String, String> aResponseHeader = new HashMap<String, String>();
 		
 		if (null != requestOrigin && requestOrigin.length() > 0) {
-			aResponseHeader.put("Access-Control-Allow-Origin", requestOrigin);
+			aResponseHeader.put("Access-Control-Allow-Origin", requestOrigin); //who is allowed to access the resource
 		} else {
-			aResponseHeader.put("Access-Control-Allow-Origin", "*");
-		}	
-		aResponseHeader.put("Content-Type", "application/json");
+			aResponseHeader.put("Access-Control-Allow-Origin", "*"); //who is allowed to access the resource
+		}
 		
+		if (null != requestOrigin && requestOrigin.length() > 0)
+		{
+			if (requestOrigin.contains(":8080")) { 
+				aResponseHeader.put("Content-Type", "image/svg+xml;charset=utf-8"); // Swagger a.k.a OpenApi
+			} else {
+				aResponseHeader.put("Content-Type", "application/json"); // browser or curl
+			}
+		} else {
+			aResponseHeader.put("Content-Type", "application/json"); // default Content-Type
+		}
+		
+//		aResponseHeader.put("Access-Control-Allow-Origin", "*"); //who is allowed to access the resource
+		aResponseHeader.put("X-Requested-With", "*"); // enable CORS for AWS
 		
 		aResponseHeader.put("Access-Control-Allow-Methods", "OPTIONS,GET,POST,PUT,DELETE,PATCH"); // Allowed HTTP methods
-		aResponseHeader.put("Access-Control-Allow-Headers", "Content-Type,Origin,Accept,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Access-Control-Request-Headers,Access-Control-Request-Method,Referer,User-Agent"); // Allowed headers		
+		aResponseHeader.put("Access-Control-Allow-Headers", "Content-Type,Origin,Accept,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,x-requested-with,Referer,User-Agent,api_key"); // Allowed headers		
 		
 		return aResponseHeader;
 		

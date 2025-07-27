@@ -1,5 +1,8 @@
 package request.handlers;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
@@ -45,13 +48,22 @@ public class AuthorizationHandler
 		System.out.println("The request Origin is: " + requestOrigin);
 		System.out.println("The request Method is: " + requestMethod);
 		System.out.println("raw path is: " + input.getRawPath());
+		
+		Boolean isAuthorized = true;
+		
+	    // Construct the response Body Map
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("isAuthorized", isAuthorized);
+//        responseBody.put("context", authorizerContext);
+        
+        String jsonString = convertToJsonNoPrettyPrint(responseBody, mapper);
 
 		APIGatewayV2HTTPResponse retVar = new APIGatewayV2HTTPResponse();
 		retVar.setIsBase64Encoded(false);
 		retVar.setHeaders(createOptionsResponseHeader(requestOrigin));
 		retVar.setStatusCode(HttpStatusCode.OK);
 //		retVar.setBody(StringEscapeUtils.escapeJson(AUTHORIZED_RESPONSE));
-		retVar.setBody(AUTHORIZED_RESPONSE);
+		retVar.setBody(jsonString);
 		
         System.out.println("In AuthorizationHandler, json Being returned: " + retVar.getBody());
 		

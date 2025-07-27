@@ -224,11 +224,25 @@ public abstract class RequestHandlerBase
 		String retVar = null;
 		
 		if (null != request && null != request.getHeaders()) {
-			String tempRetVar = request.getHeaders().get("Origin");
+			String tempRetVar = request.getHeaders().get("Referer"); //Sent for Cross-Origin Requests
 			if (null != tempRetVar && tempRetVar.length() > 0) {
 				retVar = tempRetVar;
 			} else {
-				retVar = request.getHeaders().get("Referer");
+				retVar = request.getHeaders().get("Origin"); // look for the Origin
+			}
+		}
+		
+		return retVar;
+	}
+	
+	protected boolean isSwaggerRequest(String requestOrigin)
+	{
+		boolean retVar = false;
+		
+		if (null != requestOrigin && requestOrigin.length() > 0)
+		{
+			if (requestOrigin.contains(":8080")) { 
+				retVar = true;
 			}
 		}
 		
@@ -241,11 +255,20 @@ public abstract class RequestHandlerBase
 		Map<String, String> aResponseHeader = new HashMap<String, String>();
 		
 		if (null != requestOrigin && requestOrigin.length() > 0) {
-			aResponseHeader.put("Access-Control-Allow-Origin", requestOrigin);
+			aResponseHeader.put("Access-Control-Allow-Origin", requestOrigin); //who is allowed to access the resource
 		} else {
-			aResponseHeader.put("Access-Control-Allow-Origin", "*");
-		}	
-		aResponseHeader.put("Content-Type", "application/json");
+			aResponseHeader.put("Access-Control-Allow-Origin", "*"); //who is allowed to access the resource
+		}
+		
+		if (isSwaggerRequest(requestOrigin))
+		{
+			aResponseHeader.put("Content-Type", "image/svg+xml;charset=utf-8"); // Swagger a.k.a OpenApi
+		} else {
+			aResponseHeader.put("Content-Type", "application/json"); // default Content-Type, for broser, curl or no Origin
+		}
+		
+//		aResponseHeader.put("Access-Control-Allow-Origin", "*"); //who is allowed to access the resource
+		aResponseHeader.put("X-Requested-With", "*"); // enable CORS for AWS
 		
 		return aResponseHeader;
 		
@@ -272,7 +295,7 @@ public abstract class RequestHandlerBase
 		Map<String, String> aResponseHeader = createResponseHeader(requestOrigin);
 		
 		aResponseHeader.put("Access-Control-Allow-Methods", "OPTIONS,GET,POST,PUT,DELETE,PATCH"); // Allowed HTTP methods
-		aResponseHeader.put("Access-Control-Allow-Headers", "Content-Type,Origin,Accept,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Access-Control-Request-Headers,Access-Control-Request-Method,Referer,User-Agent"); // Allowed headers		
+		aResponseHeader.put("Access-Control-Allow-Headers", "Content-Type,Origin,Accept,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,x-requested-with,Referer,User-Agent,api_key"); // Allowed headers		
 		
 		return aResponseHeader;
 	}

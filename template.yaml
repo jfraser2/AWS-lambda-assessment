@@ -16,6 +16,7 @@ Resources:
             AuthorizerPayloadFormatVersion: "2.0"
             EnableFunctionDefaultPermissions: true
             EnableSimpleResponses: true
+            AuthorizerResultTtlInSeconds: 0 # Turns off Cache unit of measure is seconds 
       CorsConfiguration:
         AllowOrigins:
           - '*' # Or '*' for all origins
@@ -31,6 +32,7 @@ Resources:
           - 'Access-Control-Request-Method'
           - 'Referer'
           - 'User-Agent'
+          - 'api_key'
         AllowMethods:
           - 'GET'
           - 'POST'
@@ -44,12 +46,14 @@ Resources:
           - 'Access-Control-Allow-Origin'
           - 'Access-Control-Allow-Methods'
           - 'Access-Control-Allow-Headers'
+          - 'X-Requested-With'
   AuthFunction:
     Type: AWS::Serverless::Function
     Properties:
       PackageType: Image
       ImageUri: notificationandtemplate:rapid-x86_64
       CodeUri: C:\work\java\eclipse-workspace2\AWS-lambda-assessment
+      Role: arn:aws:iam::153822065620:role/AllowLambdaFunctionRole
       Architectures:
         - x86_64
       Timeout: 120
