@@ -147,9 +147,16 @@ public abstract class RequestValidationAdvice
 //		System.err.println("Access-Control-Allow-Origin is: " + requestOrigin);
 		Map<String, String> aResponseHeader = new HashMap<String, String>();
 		
-		aResponseHeader.put("Access-Control-Allow-Origin", requestOrigin);
-//		aResponseHeader.put("Access-Control-Allow-Origin", "*");
+		if (null != requestOrigin && requestOrigin.length() > 0) {
+			aResponseHeader.put("Access-Control-Allow-Origin", requestOrigin);
+		} else {
+			aResponseHeader.put("Access-Control-Allow-Origin", "*");
+		}	
 		aResponseHeader.put("Content-Type", "application/json");
+		
+		
+		aResponseHeader.put("Access-Control-Allow-Methods", "OPTIONS,GET,POST,PUT,DELETE,PATCH"); // Allowed HTTP methods
+		aResponseHeader.put("Access-Control-Allow-Headers", "Content-Type,Origin,Accept,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Access-Control-Request-Headers,Access-Control-Request-Method,Referer,User-Agent"); // Allowed headers		
 		
 		return aResponseHeader;
 		

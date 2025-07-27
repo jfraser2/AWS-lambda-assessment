@@ -224,7 +224,12 @@ public abstract class RequestHandlerBase
 		String retVar = null;
 		
 		if (null != request && null != request.getHeaders()) {
-			retVar = request.getHeaders().get("Origin");
+			String tempRetVar = request.getHeaders().get("Origin");
+			if (null != tempRetVar && tempRetVar.length() > 0) {
+				retVar = tempRetVar;
+			} else {
+				retVar = request.getHeaders().get("Referer");
+			}
 		}
 		
 		return retVar;
@@ -233,11 +238,13 @@ public abstract class RequestHandlerBase
 	protected Map<String, String> createResponseHeader(String requestOrigin)
 	{
 		// support CORS
-//		System.err.println("Access-Control-Allow-Origin is: " + request.getHeader("Origin"));
 		Map<String, String> aResponseHeader = new HashMap<String, String>();
 		
-		aResponseHeader.put("Access-Control-Allow-Origin", requestOrigin);
-//		aResponseHeader.put("Access-Control-Allow-Origin", "*");
+		if (null != requestOrigin && requestOrigin.length() > 0) {
+			aResponseHeader.put("Access-Control-Allow-Origin", requestOrigin);
+		} else {
+			aResponseHeader.put("Access-Control-Allow-Origin", "*");
+		}	
 		aResponseHeader.put("Content-Type", "application/json");
 		
 		return aResponseHeader;
@@ -262,14 +269,10 @@ public abstract class RequestHandlerBase
 	{
 		// support CORS
 //		System.err.println("Access-Control-Allow-Origin is: " + request.getHeader("Origin"));
-		Map<String, String> aResponseHeader = new HashMap<String, String>();
+		Map<String, String> aResponseHeader = createResponseHeader(requestOrigin);
 		
-		aResponseHeader.put("Access-Control-Allow-Origin", requestOrigin);
 		aResponseHeader.put("Access-Control-Allow-Methods", "OPTIONS,GET,POST,PUT,DELETE,PATCH"); // Allowed HTTP methods
-		aResponseHeader.put("Access-Control-Allow-Headers", "Content-Type,Origin,Accept,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Access-Control-Request-Headers,Access-Control-Request-Method"); // Allowed headers		
-		
-//		aResponseHeader.put("Access-Control-Allow-Origin", "*");
-		aResponseHeader.put("Content-Type", "application/json");
+		aResponseHeader.put("Access-Control-Allow-Headers", "Content-Type,Origin,Accept,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Access-Control-Request-Headers,Access-Control-Request-Method,Referer,User-Agent"); // Allowed headers		
 		
 		return aResponseHeader;
 	}

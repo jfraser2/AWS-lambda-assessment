@@ -7,8 +7,9 @@ Resources:
     Type: AWS::Serverless::HttpApi
     Properties:
       Auth:
-        Authorizers: 
-          LambdaAuthorizer:
+        DefaultAuthorizer: RequestLambdaAuthorizer
+        Authorizers:
+          RequestLambdaAuthorizer:
             FunctionPayloadType: REQUEST
             FunctionArn: !GetAtt AuthFunction.Arn
             FunctionInvokeRole: arn:aws:iam::153822065620:role/AllowLambdaFunctionRole
@@ -28,6 +29,8 @@ Resources:
           - 'X-Amz-Security-Token'
           - 'Access-Control-Request-Headers'
           - 'Access-Control-Request-Method'
+          - 'Referer'
+          - 'User-Agent'
         AllowMethods:
           - 'GET'
           - 'POST'
@@ -57,6 +60,9 @@ Resources:
           Properties:
             Path: /v1/test/authorization
             Method: post
+            ApiId: !Ref RequestLambdaFunctionAuthorizer
+            Auth:
+              Authorizer: NONE
   NotificationAndTemplate:
     Type: AWS::Serverless::Function
     Properties:
@@ -73,64 +79,73 @@ Resources:
           Properties:
             Path: /v1/createNotification
             Method: options
+            ApiId: !Ref RequestLambdaFunctionAuthorizer
+            Auth:
+              Authorizer: NONE
         CreateNotification:
           Type: HttpApi 
           Properties:
-            ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/createNotification
             Method: post
+            ApiId: !Ref RequestLambdaFunctionAuthorizer
         FindAllNotifications:
           Type: HttpApi
           Properties:
-            ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/all/notifications
             Method: get
+            ApiId: !Ref RequestLambdaFunctionAuthorizer
         FindNotificationById:
           Type: HttpApi
           Properties:
-            ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/findByNotificationId/{id}
             Method: get
+            ApiId: !Ref RequestLambdaFunctionAuthorizer
         CreateTemplateOptionsEvent: # Explicitly define OPTIONS if needed for specific logic
           Type: HttpApi
           Properties:
             Path: /v1/createTemplate
             Method: options
+            ApiId: !Ref RequestLambdaFunctionAuthorizer
+            Auth:
+              Authorizer: NONE
         CreateTemplate:
           Type: HttpApi 
           Properties:
-            ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/createTemplate
             Method: post
+            ApiId: !Ref RequestLambdaFunctionAuthorizer
         FindAllTemplates:
           Type: HttpApi
           Properties:
-            ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/all/templates
             Method: get
+            ApiId: !Ref RequestLambdaFunctionAuthorizer
         FindTemplateById:
           Type: HttpApi
           Properties:
-            ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/findByTemplateId/{id}
             Method: get
+            ApiId: !Ref RequestLambdaFunctionAuthorizer
         UpdateTemplateOptionsEvent: # Explicitly define OPTIONS if needed for specific logic
           Type: HttpApi
           Properties:
             Path: /v1/updateTemplate
             Method: options
+            ApiId: !Ref RequestLambdaFunctionAuthorizer
+            Auth:
+              Authorizer: NONE
         UpdateTemplate:
           Type: HttpApi
           Properties:
-            ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/updateTemplate
             Method: patch
+            ApiId: !Ref RequestLambdaFunctionAuthorizer
         ShutdownHook:
           Type: HttpApi
           Properties:
-            ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/shutdown
             Method: get
+            ApiId: !Ref RequestLambdaFunctionAuthorizer
     Metadata:  # <--- Metadata section to help SAM manage container images
       DockerTag: rapid-x86_64
       DockerContext: .  # <--- Points to the directory with your Dockerfile
