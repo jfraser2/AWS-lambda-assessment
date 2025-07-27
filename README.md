@@ -107,14 +107,14 @@ You have to add parameters on requests that need them. sam local invoke will not
 It's because it will not run the Auth Function automatically like sam local start-api does.<br/>
 Without a successful Auth Function, AWS says: no soup for you. lol <br/>
 
-curl -i localhost:9000/v1/findByNotificationId/0<br/>
+curl -i --header "Origin: http://localhost:9000" localhost:9000/v1/findByNotificationId/0<br/>
 
-curl -i localhost:9000/v1/all/templates<br/>
-curl -i localhost:9000/v1/findByTemplateId/0<br/>
+curl -i --header "Origin: http://localhost:9000" localhost:9000/v1/all/templates<br/>
+curl -i --header "Origin: http://localhost:9000" localhost:9000/v1/findByTemplateId/0<br/>
 
-curl -i localhost:9000/v1/shutdown<br/>
+curl -i --header "Origin: http://localhost:9000" localhost:9000/v1/shutdown<br/>
 
-curl -i localhost:9000/v1/all/notifications<br/>
+curl -i --header "Origin: http://localhost:9000" localhost:9000/v1/all/notifications<br/>
 You should see the following result After a wait:<br/>
 {<br/>
 &nbsp; "status" : "NO_CONTENT",<br/>

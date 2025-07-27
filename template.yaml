@@ -3,18 +3,9 @@ Transform:
   - AWS::LanguageExtensions
   - AWS::Serverless-2016-10-31
 Resources:
-  RequestLambdaFunctionAuthorizer:
+  RequestCorsConfiguration:
     Type: AWS::Serverless::HttpApi
     Properties:
-      Auth:
-        Authorizers: 
-          LambdaAuthorizer:
-            FunctionPayloadType: REQUEST
-            FunctionArn: !GetAtt AuthFunction.Arn
-            FunctionInvokeRole: arn:aws:iam::153822065620:role/AllowLambdaFunctionRole
-            AuthorizerPayloadFormatVersion: "2.0"
-            EnableFunctionDefaultPermissions: true
-            EnableSimpleResponses: true
       CorsConfiguration:
         AllowOrigins:
           - '*' # Or '*' for all origins
@@ -28,6 +19,9 @@ Resources:
           - 'X-Amz-Security-Token'
           - 'Access-Control-Request-Headers'
           - 'Access-Control-Request-Method'
+          - 'Referer'
+          - 'User-Agent'
+          - 'api_key'
         AllowMethods:
           - 'GET'
           - 'POST'
@@ -41,22 +35,7 @@ Resources:
           - 'Access-Control-Allow-Origin'
           - 'Access-Control-Allow-Methods'
           - 'Access-Control-Allow-Headers'
-  AuthFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      PackageType: Image
-      ImageUri: notificationandtemplate:rapid-x86_64
-      CodeUri: C:\work\java\eclipse-workspace2\AWS-lambda-assessment
-      Architectures:
-        - x86_64
-      Timeout: 120
-      MemorySize: 4096
-      Events:
-        CheckAuthorization:
-          Type: HttpApi
-          Properties:
-            Path: /v1/test/authorization
-            Method: post
+          - 'X-Requested-With'
   NotificationAndTemplate:
     Type: AWS::Serverless::Function
     Properties:
@@ -73,64 +52,67 @@ Resources:
           Properties:
             Path: /v1/createNotification
             Method: options
+            ApiId: !Ref RequestCorsConfiguration
         CreateNotification:
           Type: HttpApi 
           Properties:
-            ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/createNotification
             Method: post
+            ApiId: !Ref RequestCorsConfiguration
         FindAllNotifications:
           Type: HttpApi
           Properties:
-            ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/all/notifications
             Method: get
+            ApiId: !Ref RequestCorsConfiguration
         FindNotificationById:
           Type: HttpApi
           Properties:
-            ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/findByNotificationId/{id}
             Method: get
+            ApiId: !Ref RequestCorsConfiguration
         CreateTemplateOptionsEvent: # Explicitly define OPTIONS if needed for specific logic
           Type: HttpApi
           Properties:
             Path: /v1/createTemplate
             Method: options
+            ApiId: !Ref RequestCorsConfiguration
         CreateTemplate:
           Type: HttpApi 
           Properties:
-            ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/createTemplate
             Method: post
+            ApiId: !Ref RequestCorsConfiguration
         FindAllTemplates:
           Type: HttpApi
           Properties:
-            ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/all/templates
             Method: get
+            ApiId: !Ref RequestCorsConfiguration
         FindTemplateById:
           Type: HttpApi
           Properties:
-            ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/findByTemplateId/{id}
             Method: get
+            ApiId: !Ref RequestCorsConfiguration
         UpdateTemplateOptionsEvent: # Explicitly define OPTIONS if needed for specific logic
           Type: HttpApi
           Properties:
             Path: /v1/updateTemplate
             Method: options
+            ApiId: !Ref RequestCorsConfiguration
         UpdateTemplate:
           Type: HttpApi
           Properties:
-            ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/updateTemplate
             Method: patch
+            ApiId: !Ref RequestCorsConfiguration
         ShutdownHook:
           Type: HttpApi
           Properties:
-            ApiId: !Ref RequestLambdaFunctionAuthorizer
             Path: /v1/shutdown
             Method: get
+            ApiId: !Ref RequestCorsConfiguration
     Metadata:  # <--- Metadata section to help SAM manage container images
       DockerTag: rapid-x86_64
       DockerContext: .  # <--- Points to the directory with your Dockerfile

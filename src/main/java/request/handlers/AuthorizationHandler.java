@@ -1,5 +1,8 @@
 package request.handlers;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
@@ -15,8 +18,9 @@ public class AuthorizationHandler
 	extends RequestHandlerBase
 	implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse>
 {
-	protected static final String AUTHORIZED_RESPONSE = "{\"isAuthorized\": \"true\"}";
-	protected static final String UNAUTHORIZED_RESPONSE = "{\"isAuthorized\": \"false\"}";
+	// For AuthorizerPayloadFormatVersion: 2.0 and enableSimpleResponses: true
+	protected static final String AUTHORIZED_RESPONSE = "{\"isAuthorized\": true}";
+	protected static final String UNAUTHORIZED_RESPONSE = "{\"isAuthorized\": false}";
 	protected static ObjectMapper mapper;
 	protected static Gson gsonWithSerializeNullsAndPrettyPrint;
 	protected static Gson gsonWithSerializeNulls;
@@ -44,12 +48,22 @@ public class AuthorizationHandler
 		System.out.println("The request Origin is: " + requestOrigin);
 		System.out.println("The request Method is: " + requestMethod);
 		System.out.println("raw path is: " + input.getRawPath());
+		
+		Boolean isAuthorized = true;
+		
+	    // Construct the response Body Map
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("isAuthorized", isAuthorized);
+//        responseBody.put("context", authorizerContext);
+        
+        String jsonString = convertToJsonNoPrettyPrint(responseBody, mapper);
 
 		APIGatewayV2HTTPResponse retVar = new APIGatewayV2HTTPResponse();
 		retVar.setIsBase64Encoded(false);
-		retVar.setHeaders(createResponseHeader(requestOrigin));
+		retVar.setHeaders(createOptionsResponseHeader(requestOrigin));
 		retVar.setStatusCode(HttpStatusCode.OK);
-		retVar.setBody(AUTHORIZED_RESPONSE);
+//		retVar.setBody(StringEscapeUtils.escapeJson(AUTHORIZED_RESPONSE));
+		retVar.setBody(jsonString);
 		
         System.out.println("In AuthorizationHandler, json Being returned: " + retVar.getBody());
 		
