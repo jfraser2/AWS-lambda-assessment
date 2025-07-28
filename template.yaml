@@ -3,9 +3,10 @@ Transform:
   - AWS::LanguageExtensions
   - AWS::Serverless-2016-10-31
 Resources:
-  RequestCorsConfiguration:
+  RequestCorsConfigAndAuthorizer:
     Type: AWS::Serverless::HttpApi
     Properties:
+      StageName: Prod
       CorsConfiguration:
         AllowOrigins:
           - '*' # Or '*' for all origins
@@ -25,10 +26,10 @@ Resources:
         AllowMethods:
           - 'GET'
           - 'POST'
-          - 'OPTIONS'
           - 'PUT'
           - 'DELETE'
           - 'PATCH'
+          - 'OPTIONS'
         ExposeHeaders:
           - 'Content-Type'
           - 'Content-Range'
@@ -36,6 +37,7 @@ Resources:
           - 'Access-Control-Allow-Methods'
           - 'Access-Control-Allow-Headers'
           - 'X-Requested-With'
+      FailOnWarnings: true
   NotificationAndTemplate:
     Type: AWS::Serverless::Function
     Properties:
@@ -47,72 +49,54 @@ Resources:
       Timeout: 120
       MemorySize: 4096
       Events:
-        CreateNotificationOptionsEvent: # Explicitly define OPTIONS if needed for specific logic
-          Type: HttpApi
-          Properties:
-            Path: /v1/createNotification
-            Method: options
-            ApiId: !Ref RequestCorsConfiguration
         CreateNotification:
           Type: HttpApi 
           Properties:
             Path: /v1/createNotification
             Method: post
-            ApiId: !Ref RequestCorsConfiguration
+            ApiId: !Ref RequestCorsConfigAndAuthorizer
         FindAllNotifications:
           Type: HttpApi
           Properties:
             Path: /v1/all/notifications
             Method: get
-            ApiId: !Ref RequestCorsConfiguration
+            ApiId: !Ref RequestCorsConfigAndAuthorizer
         FindNotificationById:
           Type: HttpApi
           Properties:
             Path: /v1/findByNotificationId/{id}
             Method: get
-            ApiId: !Ref RequestCorsConfiguration
-        CreateTemplateOptionsEvent: # Explicitly define OPTIONS if needed for specific logic
-          Type: HttpApi
-          Properties:
-            Path: /v1/createTemplate
-            Method: options
-            ApiId: !Ref RequestCorsConfiguration
+            ApiId: !Ref RequestCorsConfigAndAuthorizer
         CreateTemplate:
           Type: HttpApi 
           Properties:
             Path: /v1/createTemplate
             Method: post
-            ApiId: !Ref RequestCorsConfiguration
+            ApiId: !Ref RequestCorsConfigAndAuthorizer
         FindAllTemplates:
           Type: HttpApi
           Properties:
             Path: /v1/all/templates
             Method: get
-            ApiId: !Ref RequestCorsConfiguration
+            ApiId: !Ref RequestCorsConfigAndAuthorizer
         FindTemplateById:
           Type: HttpApi
           Properties:
             Path: /v1/findByTemplateId/{id}
             Method: get
-            ApiId: !Ref RequestCorsConfiguration
-        UpdateTemplateOptionsEvent: # Explicitly define OPTIONS if needed for specific logic
-          Type: HttpApi
-          Properties:
-            Path: /v1/updateTemplate
-            Method: options
-            ApiId: !Ref RequestCorsConfiguration
+            ApiId: !Ref RequestCorsConfigAndAuthorizer
         UpdateTemplate:
           Type: HttpApi
           Properties:
             Path: /v1/updateTemplate
             Method: patch
-            ApiId: !Ref RequestCorsConfiguration
+            ApiId: !Ref RequestCorsConfigAndAuthorizer
         ShutdownHook:
           Type: HttpApi
           Properties:
             Path: /v1/shutdown
             Method: get
-            ApiId: !Ref RequestCorsConfiguration
+            ApiId: !Ref RequestCorsConfigAndAuthorizer
     Metadata:  # <--- Metadata section to help SAM manage container images
       DockerTag: rapid-x86_64
       DockerContext: .  # <--- Points to the directory with your Dockerfile
