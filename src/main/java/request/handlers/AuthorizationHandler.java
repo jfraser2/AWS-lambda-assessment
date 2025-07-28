@@ -49,25 +49,45 @@ public class AuthorizationHandler
 		System.out.println("The request Method is: " + requestMethod);
 		System.out.println("raw path is: " + input.getRawPath());
 		
+		boolean isOptionsRequest = "OPTIONS".equalsIgnoreCase(requestMethod);
 		Boolean isAuthorized = true;
+		APIGatewayV2HTTPResponse retVar = null;
 		
-	    // Construct the response Body Map
-        Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("isAuthorized", isAuthorized);
-//        responseBody.put("context", authorizerContext);
-        
-        String jsonString = convertToJsonNoPrettyPrint(responseBody, mapper);
-
-		APIGatewayV2HTTPResponse retVar = new APIGatewayV2HTTPResponse();
-		retVar.setIsBase64Encoded(false);
-		retVar.setHeaders(createOptionsResponseHeader(requestOrigin));
-		retVar.setStatusCode(HttpStatusCode.OK);
-//		retVar.setBody(StringEscapeUtils.escapeJson(AUTHORIZED_RESPONSE));
-		retVar.setBody(jsonString);
+		if (isOptionsRequest) {
+			retVar = optionsMethod(input, requestOrigin);
+		} else {
+			// For AuthorizerPayloadFormatVersion: 2.0 and enableSimpleResponses: true
+		    // Construct the response Body Map
+	        Map<String, Object> responseBody = new HashMap<>();
+	        responseBody.put("isAuthorized", isAuthorized);
+	        // This is Optional
+//          responseBody.put("context", authorizerContext);
+	        
+	        String jsonString = convertToJsonNoPrettyPrint(responseBody, mapper);
+	
+			retVar = new APIGatewayV2HTTPResponse();
+			retVar.setIsBase64Encoded(false);
+			retVar.setHeaders(createOptionsResponseHeader(requestOrigin));
+			retVar.setStatusCode(HttpStatusCode.OK);
+	//		retVar.setBody(StringEscapeUtils.escapeJson(AUTHORIZED_RESPONSE));
+			retVar.setBody(jsonString);
+		}	
 		
         System.out.println("In AuthorizationHandler, json Being returned: " + retVar.getBody());
 		
 		return retVar;
 	}
+	
+	protected APIGatewayV2HTTPResponse optionsMethod(APIGatewayV2HTTPEvent input, String requestOrigin)
+	{
+		// support CORS
+		APIGatewayV2HTTPResponse retVar = new APIGatewayV2HTTPResponse();
+		retVar.setIsBase64Encoded(false);
+		retVar.setHeaders(createOptionsResponseHeader(requestOrigin));
+		retVar.setStatusCode(HttpStatusCode.OK);
+		retVar.setBody("{}"); // empty Json Object
+		
+		return retVar;
+	}	
 	
 }
