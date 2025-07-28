@@ -74,7 +74,7 @@ public class NotificationAndTemplateHandler
 		System.out.println("The request Method is: " + requestMethod);
 		System.out.println("raw path is: " + input.getRawPath());
 		
-		boolean isOptionsRequest = "OPTIONS".equalsIgnoreCase(requestMethod);
+//		boolean isOptionsRequest = "OPTIONS".equalsIgnoreCase(requestMethod);
 		
 		StringBuilderContainer stringBuilderContainer = new StringBuilderContainer(); // request Scope
 		ValidationErrorContainer requestValidationErrorsContainer = new ValidationErrorContainer(); //request Scope
@@ -83,36 +83,24 @@ public class NotificationAndTemplateHandler
 		
 		switch (input.getRawPath()) {
 		    case "/v1/createNotification":
-		    	if (isOptionsRequest) {
-		    		retVar = optionsMethod(input, requestOrigin);
-		    	} else {
-		    		retVar = creation(input, notificationService, requestValidationErrorsContainer,
+		    	retVar = creation(input, notificationService, requestValidationErrorsContainer,
 		    			stringBuilderContainer, requestOrigin);
-		    	}	
 		        break;
 		    case "/v1/all/notifications":
 				retVar = findAll(input, notificationService, requestValidationErrorsContainer,
 						stringBuilderContainer, requestOrigin);
 		        break;
 		    case "/v1/createTemplate":
-		    	if (isOptionsRequest) {
-		    		retVar = optionsMethod(input, requestOrigin);
-		    	} else {
-		    		retVar = creation(input, templateService, requestValidationErrorsContainer,
+		    	retVar = creation(input, templateService, requestValidationErrorsContainer,
 		    			stringBuilderContainer, requestOrigin);
-		    	}	
 		        break;
 		    case "/v1/all/templates":
 				retVar = findAll(input, templateService, requestValidationErrorsContainer,
 						stringBuilderContainer, requestOrigin);
 		        break;
 		    case "/v1/updateTemplate":
-		    	if (isOptionsRequest) {
-		    		retVar = optionsMethod(input, requestOrigin);
-		    	} else {
-		    		retVar = update(input, templateService, requestValidationErrorsContainer,
+		    	retVar = update(input, templateService, requestValidationErrorsContainer,
 						stringBuilderContainer, requestOrigin);
-		    	}	
 		        break;
 		    case "/v1/shutdown":
 				retVar = shutdownHook(requestOrigin);
