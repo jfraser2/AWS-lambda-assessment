@@ -107,14 +107,14 @@ You have to add parameters on requests that need them. sam local invoke will not
 It's because it will not run the Auth Function automatically like sam local start-api does.<br/>
 Without a successful Auth Function, AWS says: no soup for you. lol <br/>
 
-curl -i --header "Origin: http://localhost:9000" localhost:9000/v1/findByNotificationId/0<br/>
+curl -i --header "X-Api-Key: abc" --header "Origin: http://localhost:9000" localhost:9000/v1/findByNotificationId/0<br/>
 
-curl -i --header "Origin: http://localhost:9000" localhost:9000/v1/all/templates<br/>
-curl -i --header "Origin: http://localhost:9000" localhost:9000/v1/findByTemplateId/0<br/>
+curl -i --header "X-Api-Key: abc" --header "Origin: http://localhost:9000" localhost:9000/v1/all/templates<br/>
+curl -i --header "X-Api-Key: abc" --header "Origin: http://localhost:9000" localhost:9000/v1/findByTemplateId/0<br/>
 
-curl -i --header "Origin: http://localhost:9000" localhost:9000/v1/shutdown<br/>
+curl -i --header "X-Api-Key: abc" --header "Origin: http://localhost:9000" localhost:9000/v1/shutdown<br/>
 
-curl -i --header "Origin: http://localhost:9000" localhost:9000/v1/all/notifications<br/>
+curl -i --header "X-Api-Key: abc" --header "Origin: http://localhost:9000" localhost:9000/v1/all/notifications<br/>
 You should see the following result After a wait:<br/>
 {<br/>
 &nbsp; "status" : "NO_CONTENT",<br/>
@@ -123,11 +123,11 @@ You should see the following result After a wait:<br/>
 }<br/>
 
 
-curl -i --header "Accept: application/json"  --header "Origin: http://localhost:9000" --request POST --data "{\"phoneNumber\":\"913-333-1460\",\"personalization\":\"Joe\",\"templateId\":null,\"templateText\":\"Hello, (personal). How are you today, (personal)?\"}" localhost:9000/v1/createNotification
+curl -i --header "Accept: application/json" --header "X-Api-Key: abc" --header "Origin: http://localhost:9000" --request POST --data "{\"phoneNumber\":\"913-333-1460\",\"personalization\":\"Joe\",\"templateId\":null,\"templateText\":\"Hello, (personal). How are you today, (personal)?\"}" localhost:9000/v1/createNotification
 
-curl -i --header "Accept: application/json"  --header "Origin: http://localhost:9000" --request POST --data "{\"templateText\":\"Hello, (personal). How are you today, (personal)?\"}" localhost:9000/v1/createTemplate
+curl -i --header "Accept: application/json" --header "X-Api-Key: abc" --header "Origin: http://localhost:9000" --request POST --data "{\"templateText\":\"Hello, (personal). How are you today, (personal)?\"}" localhost:9000/v1/createTemplate
 
-curl -i --header "Accept: application/json"  --header "Origin: http://localhost:9000" --request PATCH --data "{\"templateId\":\"33\",\"newTemplateText\":\"Hello, (personal). How are you today, (personal)?\"}" localhost:9000/v1/updateTemplate
+curl -i --header "Accept: application/json" --header "X-Api-Key: abc" --header "Origin: http://localhost:9000" --request PATCH --data "{\"templateId\":\"33\",\"newTemplateText\":\"Hello, (personal). How are you today, (personal)?\"}" localhost:9000/v1/updateTemplate
 
 
 

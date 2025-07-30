@@ -27,6 +27,17 @@
 					"NotificationAndTemplateHandler"
 				],
 				"operationId": "createTemplate",
+				"parameters": [
+				  {
+				    "name": "X-Api-Key",
+				    "in": "header",
+				    "description": "A custom header for authentication",
+				    "required": true,
+				    "schema": {
+				      "type": "string",
+                      "default": "abc" 			    }
+				  }
+				],				
 				"requestBody": {
 					"content": {
 						"application/json": {
@@ -57,6 +68,18 @@
 					"NotificationAndTemplateHandler"
 				],
 				"operationId": "createNotification",
+				"parameters": [
+				  {
+				    "name": "X-Api-Key",
+				    "in": "header",
+				    "description": "A custom header for authentication",
+				    "required": true,
+				    "schema": {
+				      "type": "string",
+                      "default": "abc"
+				    }
+				  }
+				],				
 				"requestBody": {
 					"content": {
 						"application/json": {
@@ -87,6 +110,18 @@
 					"NotificationAndTemplateHandler"
 				],
 				"operationId": "updateTemplate",
+				"parameters": [
+				  {
+				    "name": "X-Api-Key",
+				    "in": "header",
+				    "description": "A custom header for authentication",
+				    "required": true,
+				    "schema": {
+				      "type": "string",
+                      "default": "abc"
+				    }
+				  }
+				],				
 				"requestBody": {
 					"content": {
 						"application/json": {
@@ -119,6 +154,16 @@
 				"operationId": "findByTemplateId",
 				"parameters": [
 					{
+					  "name": "X-Api-Key",
+					  "in": "header",
+					  "description": "A custom header for authentication",
+					  "required": true,
+					  "schema": {
+					    "type": "string",
+                        "default": "abc"
+					  }
+					},
+					{
 						"name": "id",
 						"in": "path",
 						"required": true,
@@ -149,6 +194,16 @@
 				"operationId": "findByNotificationId",
 				"parameters": [
 					{
+					  "name": "X-Api-Key",
+					  "in": "header",
+					  "description": "A custom header for authentication",
+					  "required": true,
+					  "schema": {
+					    "type": "string",
+                        "default": "abc"
+					  }
+					},
+					{
 						"name": "id",
 						"in": "path",
 						"required": true,
@@ -177,6 +232,18 @@
 					"NotificationAndTemplateHandler"
 				],
 				"operationId": "allTemplates",
+				"parameters": [
+				  {
+				    "name": "X-Api-Key",
+				    "in": "header",
+				    "description": "A custom header for authentication",
+				    "required": true,
+				    "schema": {
+				      "type": "string",
+					  "default": "abc"
+				    }
+				  }
+				],				
 				"responses": {
 					"200": {
 						"description": "OK",
@@ -197,6 +264,18 @@
 					"NotificationAndTemplateHandler"
 				],
 				"operationId": "allNotifications",
+				"parameters": [
+				  {
+				    "name": "X-Api-Key",
+				    "in": "header",
+				    "description": "A custom header for authentication",
+				    "required": true,
+				    "schema": {
+				      "type": "string",
+					  "default": "abc"
+				    }
+				  }
+				],				
 				"responses": {
 					"200": {
 						"description": "OK",
