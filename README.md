@@ -71,10 +71,10 @@ sam build --no-cached  --docker-network VA-assessment --use-container --profile 
 
 To start the local Http Server to handle curl requests, and a container for your build image, the command is: <br/>
 
-sam local start-api --docker-network VA-assessment --warm-containers LAZY -p 9000 --profile my-local-dev --host localhost --debug<br/> 
+sam local start-api --docker-network VA-assessment --warm-containers EAGER -p 9000 --profile my-local-dev --host localhost --debug<br/> 
 
 This container will be used over and over again on each request. This is needed because a connection pool runs in the container.</br>
-The first curl command will be like 2.5 seconds no worries, the second is like 10 milliseconds.<br/>
+The first curl command will be like 2.5 seconds no worries, the second is like 12 milliseconds.<br/>
 Before any Ctrl-C to exit the listener, a person should run a shutdown. "curl localhost:9000/v1/shutdown"<br/>
 The idea of running a shutdown, is to clean up the Hikari connection pool. The Handler Function creates a connection pool. <br/>
 If you forget you could stop and start postgres in DockerDesktop. You can explore many things when you click on a container<br/>
@@ -82,7 +82,7 @@ I found Inspect and Files to be very helpful<br/>
 
 #Start Testing
 
-The Api's for the Lambda Functions are  documented in file OpenApiConfig.json, in project folder<br/>
+The Api's for the Lambda Functions are documented in file OpenApiConfig.json, in project folder<br/>
 src/test/resources. Now testing with OpenApi is possible, after you run sam local start-api<br/>
 First download the OpenApi docker image in a windows shell with command:<br/>
 docker pull swaggerapi/swagger-ui<br/> 
@@ -95,10 +95,10 @@ After running this command, you can open your web browser and navigate to http:/
 
 The testing is done locally and uses the aws-lambda-runtime-interface-emulator<br/>
 You cannot use the -d on the sam local start-api it is trouble<br/>
-If you are having port issues you can check in windows for who got it first or who did not release it:<br/>
+If you are having port issues you can check in windows, for who got it first or who did not release it:<br/>
 Try netstat -ano | findstr :8080 or whatever port is in question, if that comes back empty the port is free.<br/>
 To find the process the last column of the netstat is the PID. So tasklist | findstr PID will tell you.<br/> 
-The request execution path is Http Server->Gateway->Container. SAM CLI created the Http Server and the Gateway.<br/>
+The request execution path is Http Server->Api Gateway->Container. SAM CLI created the Http Server and the Api Gateway.<br/>
 It is trying to emulate(fake) the AWS site.<br/>
 
 The old school way to test(new school is easier) is to use curl. The curl commands can be run after,<br/>

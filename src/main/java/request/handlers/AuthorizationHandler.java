@@ -67,7 +67,7 @@ public class AuthorizationHandler
         responseBody.put("isAuthorized", isAuthorized);
 
 //        System.out.println("In AuthorizationHandler, response Headers are: " + retVar.getHeaders());
-        System.out.println("In AuthorizationHandler, json Being returned: " + responseBody);
+        System.out.println("In AuthorizationHandler, Map Being returned: " + responseBody);
 		
 		return responseBody;
 	}
