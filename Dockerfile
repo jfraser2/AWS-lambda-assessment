@@ -63,5 +63,6 @@ RUN echo "runtime LD_LIBRARY_PATH is set to: ${LD_LIBRARY_PATH}"
 ENTRYPOINT ["/var/lang/bin/java", "-cp", "/deployment/resources/log4j2.xml:/deployment/app.jar:/deployment/lib/*", "com.amazonaws.services.lambda.runtime.api.client.AWSLambda" ]
 
 
+#Moved to the ImageConfig of template.yaml
 # Pass the name of the function handler as an argument to the runtime com.amazonaws.services.lambda.runtime.api.client.AWSLambda
-CMD ["request.handlers.NotificationAndTemplateHandler::handleRequest" ]
+#CMD ["request.handlers.NotificationAndTemplateHandler::handleRequest" ]

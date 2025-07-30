@@ -168,7 +168,7 @@ public abstract class RequestValidationAdvice
 		aResponseHeader.put("X-Requested-With", "*"); // enable CORS for AWS
 		
 		aResponseHeader.put("Access-Control-Allow-Methods", "OPTIONS,GET,POST,PUT,DELETE,PATCH"); // Allowed HTTP methods
-		aResponseHeader.put("Access-Control-Allow-Headers", "Content-Type,Origin,Accept,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,x-requested-with,Referer,User-Agent,api_key"); // Allowed headers		
+		aResponseHeader.put("Access-Control-Allow-Headers", "Content-Type,Origin,Accept,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,x-requested-with,Referer,User-Agent,api_key,Host,X-Forwarded-Proto,X-Forwarded-Port"); // Allowed headers		
 		
 		return aResponseHeader;
 		

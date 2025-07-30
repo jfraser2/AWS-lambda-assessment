@@ -21,6 +21,8 @@ public class AuthorizationHandler
 	// For AuthorizerPayloadFormatVersion: 2.0 and enableSimpleResponses: true
 	protected static final String AUTHORIZED_RESPONSE = "{\"isAuthorized\": true}";
 	protected static final String UNAUTHORIZED_RESPONSE = "{\"isAuthorized\": false}";
+	protected static final String HEADER_KEY = "X-Api-Key";
+	protected static final String API_KEY_VALUE = "abc";
 	protected static ObjectMapper mapper;
 	protected static Gson gsonWithSerializeNullsAndPrettyPrint;
 	protected static Gson gsonWithSerializeNulls;
@@ -49,15 +51,30 @@ public class AuthorizationHandler
 		System.out.println("The request Method is: " + requestMethod);
 		System.out.println("raw path is: " + input.getRawPath());
 		
-		Boolean isAuthorized = true;
+		Boolean isAuthorized = false;
 		APIGatewayV2HTTPResponse retVar = null;
 		
+		String sentApiKey = null;
+		if (null != input && null != input.getHeaders()) {
+			String testString = input.getHeaders().get(HEADER_KEY);
+			if (null != testString && testString.length() > 0) {
+				sentApiKey = testString.trim();
+			}
+			if (null != sentApiKey && API_KEY_VALUE.equalsIgnoreCase(sentApiKey)) {
+				isAuthorized = true;
+			}
+		}
+			
 		// For AuthorizerPayloadFormatVersion: 2.0 and enableSimpleResponses: true
 	    // Construct the response Body Map
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("isAuthorized", isAuthorized);
-        // This is Optional
-//          responseBody.put("context", authorizerContext);
+
+    	Map<String, Object> contextMap = new HashMap<>();
+        if (null != sentApiKey && sentApiKey.length() > 0) {
+        	contextMap.put(HEADER_KEY, sentApiKey); // passed X-Api-Key value
+        	responseBody.put("context", contextMap);
+        }	
         
         String jsonString = convertToJsonNoPrettyPrint(responseBody, mapper);
 
@@ -67,22 +84,11 @@ public class AuthorizationHandler
 		retVar.setStatusCode(HttpStatusCode.OK);
 //		retVar.setBody(StringEscapeUtils.escapeJson(AUTHORIZED_RESPONSE));
 		retVar.setBody(jsonString);
-		
+
+        System.out.println("In AuthorizationHandler, response Headers are: " + retVar.getHeaders());
         System.out.println("In AuthorizationHandler, json Being returned: " + retVar.getBody());
 		
 		return retVar;
 	}
-	
-	protected APIGatewayV2HTTPResponse optionsMethod(APIGatewayV2HTTPEvent input, String requestOrigin)
-	{
-		// support CORS
-		APIGatewayV2HTTPResponse retVar = new APIGatewayV2HTTPResponse();
-		retVar.setIsBase64Encoded(false);
-		retVar.setHeaders(createOptionsResponseHeader(requestOrigin));
-		retVar.setStatusCode(HttpStatusCode.OK);
-		retVar.setBody("{}"); // empty Json Object
-		
-		return retVar;
-	}	
 	
 }

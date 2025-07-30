@@ -23,6 +23,9 @@ Resources:
           - 'Referer'
           - 'User-Agent'
           - 'api_key'
+          - 'Host'
+          - 'X-Forwarded-Proto'
+          - 'X-Forwarded-Port'
         AllowMethods:
           - 'GET'
           - 'POST'
@@ -37,12 +40,52 @@ Resources:
           - 'Access-Control-Allow-Methods'
           - 'Access-Control-Allow-Headers'
           - 'X-Requested-With'
+      Auth:
+        Authorizers:
+          LambdaAuthorizer:
+            AuthorizerType: REQUEST
+            FunctionArn: !GetAtt AuthFunction.Arn
+            FunctionInvokeRole: arn:aws:iam::153822065620:role/AllowLambdaFunctionGatewayRole #Permission for the Gateway to Invoke the Authorizer
+            AuthorizerPayloadFormatVersion: "2.0"
+            EnableSimpleResponses: true
+            AuthorizerResultTtlInSeconds: 0 # Turns off Cache unit of measure is seconds
+            Identity:
+              Headers:
+                - X-Api-Key
+        DefaultAuthorizer: LambdaAuthorizer
       FailOnWarnings: true
+  AuthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      ImageUri: notificationandtemplate:rapid-x86_64
+      ImageConfig:
+        Command:
+          - request.handlers.AuthorizationHandler::handleRequest
+      CodeUri: C:\work\java\eclipse-workspace2\AWS-lambda-assessment
+      Architectures:
+        - x86_64
+      Timeout: 120
+      MemorySize: 4096
+      Policies:
+        - arn:aws:iam::153822065620:policy/AllowLambdaFunctionWithGatewayApiActions
+      Events:
+        CheckAuthorization:
+          Type: HttpApi
+          Properties:
+            Path: /v1/test/authorization
+            Method: get
+            ApiId: !Ref RequestCorsConfigAndAuthorizer
+            Auth:
+              Authorizer: NONE
   NotificationAndTemplate:
     Type: AWS::Serverless::Function
     Properties:
       PackageType: Image
       ImageUri: notificationandtemplate:rapid-x86_64
+      ImageConfig:
+        Command:
+          - request.handlers.NotificationAndTemplateHandler::handleRequest
       CodeUri: C:\work\java\eclipse-workspace2\AWS-lambda-assessment
       Architectures:
         - x86_64
@@ -55,48 +98,64 @@ Resources:
             Path: /v1/createNotification
             Method: post
             ApiId: !Ref RequestCorsConfigAndAuthorizer
+            Auth:
+              ReauthorizeEvery: 0 # Disable caching
         FindAllNotifications:
           Type: HttpApi
           Properties:
             Path: /v1/all/notifications
             Method: get
             ApiId: !Ref RequestCorsConfigAndAuthorizer
+            Auth:
+              ReauthorizeEvery: 0 # Disable caching
         FindNotificationById:
           Type: HttpApi
           Properties:
             Path: /v1/findByNotificationId/{id}
             Method: get
             ApiId: !Ref RequestCorsConfigAndAuthorizer
+            Auth:
+              ReauthorizeEvery: 0 # Disable caching
         CreateTemplate:
           Type: HttpApi 
           Properties:
             Path: /v1/createTemplate
             Method: post
             ApiId: !Ref RequestCorsConfigAndAuthorizer
+            Auth:
+              ReauthorizeEvery: 0 # Disable caching
         FindAllTemplates:
           Type: HttpApi
           Properties:
             Path: /v1/all/templates
             Method: get
             ApiId: !Ref RequestCorsConfigAndAuthorizer
+            Auth:
+              ReauthorizeEvery: 0 # Disable caching
         FindTemplateById:
           Type: HttpApi
           Properties:
             Path: /v1/findByTemplateId/{id}
             Method: get
             ApiId: !Ref RequestCorsConfigAndAuthorizer
+            Auth:
+              ReauthorizeEvery: 0 # Disable caching
         UpdateTemplate:
           Type: HttpApi
           Properties:
             Path: /v1/updateTemplate
             Method: patch
             ApiId: !Ref RequestCorsConfigAndAuthorizer
+            Auth:
+              ReauthorizeEvery: 0 # Disable caching
         ShutdownHook:
           Type: HttpApi
           Properties:
             Path: /v1/shutdown
             Method: get
             ApiId: !Ref RequestCorsConfigAndAuthorizer
+            Auth:
+              ReauthorizeEvery: 0 # Disable caching
     Metadata:  # <--- Metadata section to help SAM manage container images
       DockerTag: rapid-x86_64
       DockerContext: .  # <--- Points to the directory with your Dockerfile
