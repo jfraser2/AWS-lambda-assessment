@@ -6,17 +6,14 @@ import java.util.Map;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import software.amazon.awssdk.http.HttpStatusCode;
-
 public class AuthorizationHandler
 	extends RequestHandlerBase
-	implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse>
+	implements RequestHandler<APIGatewayV2HTTPEvent, Map<String, Object>>
 {
 	// For AuthorizerPayloadFormatVersion: 2.0 and enableSimpleResponses: true
 	protected static final String AUTHORIZED_RESPONSE = "{\"isAuthorized\": true}";
@@ -42,7 +39,7 @@ public class AuthorizationHandler
 	}
 
 	@Override
-	public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent input, Context context) {
+	public Map<String, Object> handleRequest(APIGatewayV2HTTPEvent input, Context context) {
 		System.out.println("Entered the Authorization Handler");
 		
 		String requestOrigin = getRequestOrigin(input);
@@ -52,7 +49,6 @@ public class AuthorizationHandler
 		System.out.println("raw path is: " + input.getRawPath());
 		
 		Boolean isAuthorized = false;
-		APIGatewayV2HTTPResponse retVar = null;
 		
 		String sentApiKey = null;
 		if (null != input && null != input.getHeaders()) {
@@ -70,25 +66,10 @@ public class AuthorizationHandler
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("isAuthorized", isAuthorized);
 
-    	Map<String, Object> contextMap = new HashMap<>();
-        if (null != sentApiKey && sentApiKey.length() > 0) {
-        	contextMap.put(HEADER_KEY, sentApiKey); // passed X-Api-Key value
-        	responseBody.put("context", contextMap);
-        }	
-        
-        String jsonString = convertToJsonNoPrettyPrint(responseBody, mapper);
-
-		retVar = new APIGatewayV2HTTPResponse();
-		retVar.setIsBase64Encoded(false);
-		retVar.setHeaders(createOptionsResponseHeader(requestOrigin));
-		retVar.setStatusCode(HttpStatusCode.OK);
-//		retVar.setBody(StringEscapeUtils.escapeJson(AUTHORIZED_RESPONSE));
-		retVar.setBody(jsonString);
-
-        System.out.println("In AuthorizationHandler, response Headers are: " + retVar.getHeaders());
-        System.out.println("In AuthorizationHandler, json Being returned: " + retVar.getBody());
+//        System.out.println("In AuthorizationHandler, response Headers are: " + retVar.getHeaders());
+        System.out.println("In AuthorizationHandler, json Being returned: " + responseBody);
 		
-		return retVar;
+		return responseBody;
 	}
 	
 }
