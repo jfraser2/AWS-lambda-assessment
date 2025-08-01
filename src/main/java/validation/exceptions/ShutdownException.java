@@ -1,5 +1,7 @@
 package validation.exceptions;
 
+import helpers.RequestOrigin;
+
 public class ShutdownException
 	extends Exception
 {
@@ -8,9 +10,9 @@ public class ShutdownException
 	 */
 	protected static final long serialVersionUID = 2305399875677747137L;
 	protected String status;
-	protected String requestOrigin; //support CORS
+	protected RequestOrigin requestOrigin; //support CORS
 	
-	public ShutdownException(String exceptionText, String statusText, String requestOrigin) {
+	public ShutdownException(String exceptionText, String statusText, RequestOrigin requestOrigin) {
 		super(exceptionText);
 		this.status = statusText;
 		this.requestOrigin = requestOrigin;
@@ -24,11 +26,11 @@ public class ShutdownException
 		this.status = status;
 	}
 
-	public String getRequestOrigin() {
+	public RequestOrigin getRequestOrigin() {
 		return requestOrigin;
 	}
 
-	public void setRequestOrigin(String requestOrigin) {
+	public void setRequestOrigin(RequestOrigin requestOrigin) {
 		this.requestOrigin = requestOrigin;
 	}
 	

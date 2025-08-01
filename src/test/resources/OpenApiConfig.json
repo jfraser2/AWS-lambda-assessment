@@ -36,6 +36,16 @@
 				    "schema": {
 				      "type": "string",
                       "default": "abc" 			    }
+				  },
+				  {
+				    "name": "FromSwagger",
+				    "in": "header",
+				    "description": "A custom header to identity the source",
+				    "required": true,
+				    "schema": {
+				      "type": "string",
+				      "default": "true"
+					}
 				  }
 				],				
 				"requestBody": {
@@ -78,6 +88,16 @@
 				      "type": "string",
                       "default": "abc"
 				    }
+				  },
+				  {
+				    "name": "FromSwagger",
+				    "in": "header",
+				    "description": "A custom header to identity the source",
+				    "required": true,
+				    "schema": {
+				      "type": "string",
+				      "default": "true"
+				    }
 				  }
 				],				
 				"requestBody": {
@@ -119,6 +139,16 @@
 				    "schema": {
 				      "type": "string",
                       "default": "abc"
+				    }
+				  },
+				  {
+				    "name": "FromSwagger",
+				    "in": "header",
+				    "description": "A custom header to identity the source",
+				    "required": true,
+				    "schema": {
+				      "type": "string",
+				      "default": "true"
 				    }
 				  }
 				],				
@@ -164,6 +194,16 @@
 					  }
 					},
 					{
+					  "name": "FromSwagger",
+					  "in": "header",
+					  "description": "A custom header to identity the source",
+					  "required": true,
+					  "schema": {
+					    "type": "string",
+					    "default": "true"
+					  }
+					},
+					{
 						"name": "id",
 						"in": "path",
 						"required": true,
@@ -201,6 +241,16 @@
 					  "schema": {
 					    "type": "string",
                         "default": "abc"
+					  }
+					},
+					{
+					  "name": "FromSwagger",
+					  "in": "header",
+					  "description": "A custom header to identity the source",
+					  "required": true,
+					  "schema": {
+					    "type": "string",
+					    "default": "true"
 					  }
 					},
 					{
@@ -242,6 +292,16 @@
 				      "type": "string",
 					  "default": "abc"
 				    }
+				  },
+				  {
+				    "name": "FromSwagger",
+				    "in": "header",
+				    "description": "A custom header to identity the source",
+				    "required": true,
+				    "schema": {
+				      "type": "string",
+				      "default": "true"
+				    }
 				  }
 				],				
 				"responses": {
@@ -273,6 +333,16 @@
 				    "schema": {
 				      "type": "string",
 					  "default": "abc"
+				    }
+				  },
+				  {
+				    "name": "FromSwagger",
+				    "in": "header",
+				    "description": "A custom header to identity the source",
+				    "required": true,
+				    "schema": {
+				      "type": "string",
+				      "default": "true"
 				    }
 				  }
 				],				

@@ -22,6 +22,7 @@ import dto.response.NonModelAdditionalFields;
 import entities.NotificationEntity;
 import entities.TemplateEntity;
 import errorHandling.helpers.ApiValidationError;
+import helpers.RequestOrigin;
 import helpers.StringBuilderContainer;
 import helpers.ValidationErrorContainer;
 import hibenate.utils.HibernateUtil;
@@ -68,9 +69,10 @@ public class NotificationAndTemplateHandler
 	
 	@Override
 	public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent input, Context context) {
-		String requestOrigin = getRequestOrigin(input);
+		RequestOrigin requestOrigin = getRequestOrigin(input);
 		String requestMethod = input.getRequestContext().getHttp().getMethod();
-		System.out.println("The request Origin is: " + requestOrigin);
+		System.out.println("The request Origin is: " + requestOrigin.getOrigin());
+		System.out.println("FromSwagger is: " + requestOrigin.isFromSwagger());
 		System.out.println("The request Method is: " + requestMethod);
 		System.out.println("raw path is: " + input.getRawPath());
 		
@@ -126,7 +128,7 @@ public class NotificationAndTemplateHandler
 	
 	protected APIGatewayV2HTTPResponse creation(APIGatewayV2HTTPEvent input, Notification notificationService,
 		ValidationErrorContainer requestValidationErrorsContainer, StringBuilderContainer stringBuilderContainer,
-		String requestOrigin)
+		RequestOrigin requestOrigin)
 	{
 		APIGatewayV2HTTPResponse retVar = null;
 		RequestValidation<CreateNotification> createNotificationValidation = 
@@ -185,7 +187,7 @@ public class NotificationAndTemplateHandler
 
 	protected APIGatewayV2HTTPResponse findAll(APIGatewayV2HTTPEvent input, Notification notificationService,
 			ValidationErrorContainer requestValidationErrorsContainer, StringBuilderContainer stringBuilderContainer,
-			String requestOrigin)
+			RequestOrigin requestOrigin)
 	{
 		APIGatewayV2HTTPResponse retVar = null;
 
@@ -214,7 +216,7 @@ public class NotificationAndTemplateHandler
 	
 	protected APIGatewayV2HTTPResponse findById(APIGatewayV2HTTPEvent input, Notification notificationService,
 			ValidationErrorContainer requestValidationErrorsContainer, StringBuilderContainer stringBuilderContainer,
-			String requestOrigin)
+			RequestOrigin requestOrigin)
 	{
 		APIGatewayV2HTTPResponse retVar = null;
 		RequestValidation<GetById> getByIdValidation = 
@@ -265,7 +267,7 @@ public class NotificationAndTemplateHandler
 	
 	protected APIGatewayV2HTTPResponse creation(APIGatewayV2HTTPEvent input, Template templateService,
 			ValidationErrorContainer requestValidationErrorsContainer, StringBuilderContainer stringBuilderContainer,
-			String requestOrigin)
+			RequestOrigin requestOrigin)
 	{
 		APIGatewayV2HTTPResponse retVar = null;
 		RequestValidation<CreateTemplate> createTemplateValidation = 
@@ -304,7 +306,7 @@ public class NotificationAndTemplateHandler
 	
 	protected APIGatewayV2HTTPResponse findAll(APIGatewayV2HTTPEvent input, Template templateService,
 			ValidationErrorContainer requestValidationErrorsContainer, StringBuilderContainer stringBuilderContainer,
-			String requestOrigin)
+			RequestOrigin requestOrigin)
 	{
 		APIGatewayV2HTTPResponse retVar = null;
 
@@ -335,7 +337,7 @@ public class NotificationAndTemplateHandler
 	
 	protected APIGatewayV2HTTPResponse findById(APIGatewayV2HTTPEvent input, Template templateService,
 			ValidationErrorContainer requestValidationErrorsContainer, StringBuilderContainer stringBuilderContainer,
-			String requestOrigin)
+			RequestOrigin requestOrigin)
 	{
 		APIGatewayV2HTTPResponse retVar = null;
 		RequestValidation<GetById> getByIdValidation = 
@@ -378,7 +380,7 @@ public class NotificationAndTemplateHandler
 	
 	protected APIGatewayV2HTTPResponse update(APIGatewayV2HTTPEvent input, Template templateService,
 			ValidationErrorContainer requestValidationErrorsContainer, StringBuilderContainer stringBuilderContainer,
-			String requestOrigin)
+			RequestOrigin requestOrigin)
 	{
 		APIGatewayV2HTTPResponse retVar = null;
 		RequestValidation<UpdateTemplate> updateTemplateValidation = 
@@ -426,7 +428,7 @@ public class NotificationAndTemplateHandler
 	// being created by the SIGKILL or SIGINT not being sent by Ctrl-C from sam.cmd
     // The only other possible way would be a modification of sam.cmd which uses python.exe
 	// The sam.cmd would have to start using pythonw.exe, not going there
-	protected APIGatewayV2HTTPResponse shutdownHook(String requestOrigin)
+	protected APIGatewayV2HTTPResponse shutdownHook(RequestOrigin requestOrigin)
 	{
 		APIGatewayV2HTTPResponse retVar = null;
 		
@@ -453,17 +455,5 @@ public class NotificationAndTemplateHandler
 		retVar = handleShutdownException(new ShutdownException(outputMessage, outputStatus, requestOrigin), mapper);
 		return retVar;
 	}
-	
-	protected APIGatewayV2HTTPResponse optionsMethod(APIGatewayV2HTTPEvent input, String requestOrigin)
-	{
-		// support CORS
-		APIGatewayV2HTTPResponse retVar = new APIGatewayV2HTTPResponse();
-		retVar.setIsBase64Encoded(false);
-		retVar.setHeaders(createOptionsResponseHeader(requestOrigin));
-		retVar.setStatusCode(HttpStatusCode.OK);
-		retVar.setBody("{}"); // empty Json Object
-		
-		return retVar;
-	}	
 	
 }

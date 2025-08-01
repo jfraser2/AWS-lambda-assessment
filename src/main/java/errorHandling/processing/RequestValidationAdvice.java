@@ -13,7 +13,7 @@ import validation.exceptions.DatabaseRowNotFoundException;
 import validation.exceptions.RequestValidationException;
 import validation.exceptions.ShutdownException;
 import errorHandling.helpers.ApiError;
-
+import helpers.RequestOrigin;
 import software.amazon.awssdk.http.HttpStatusCode;
 
 /*
@@ -37,7 +37,7 @@ public abstract class RequestValidationAdvice
 	//other exception handlers or handler overrides below
 	
     public APIGatewayV2HTTPResponse handleAccessDeniedException(
-    		AccessDeniedException ex, String requestOrigin, ObjectMapper mapper)
+    		AccessDeniedException ex, RequestOrigin requestOrigin, ObjectMapper mapper)
     {
 		ApiError apiError = new ApiError();
 		apiError.setStatus("FORBIDDEN");
@@ -52,7 +52,7 @@ public abstract class RequestValidationAdvice
     }
 	
     public APIGatewayV2HTTPResponse handleIllegalArgumentException(
-    		IllegalArgumentException ex, String requestOrigin, ObjectMapper mapper)
+    		IllegalArgumentException ex, RequestOrigin requestOrigin, ObjectMapper mapper)
     {
 		ApiError apiError = new ApiError();
 		apiError.setStatus("BAD_REQUEST");
@@ -109,7 +109,7 @@ public abstract class RequestValidationAdvice
         return buildResponseEntity(json, HttpStatusCode.OK, ex.getRequestOrigin());
     }
     
-	public APIGatewayV2HTTPResponse buildResponseEntity(String json, int aStatus, String requestOrigin)
+	public APIGatewayV2HTTPResponse buildResponseEntity(String json, int aStatus, RequestOrigin requestOrigin)
 	{
 		APIGatewayV2HTTPResponse retVar = new APIGatewayV2HTTPResponse();
 		// support CORS
@@ -141,22 +141,25 @@ public abstract class RequestValidationAdvice
 		return json;
 	}
 	
-	public Map<String, String> createErrorResponseHeader(String requestOrigin)
+	public Map<String, String> createErrorResponseHeader(RequestOrigin requestOrigin)
 	{
 		// support CORS
 //		System.err.println("Access-Control-Allow-Origin is: " + requestOrigin);
 		Map<String, String> aResponseHeader = new HashMap<String, String>();
 		
-		if (null != requestOrigin && requestOrigin.length() > 0) {
-			aResponseHeader.put("Access-Control-Allow-Origin", requestOrigin); //who is allowed to access the resource
+		boolean originPopulated = (null != requestOrigin && null != requestOrigin.getOrigin() && requestOrigin.getOrigin().length() > 0);
+		
+		if (originPopulated) {
+			aResponseHeader.put("Access-Control-Allow-Origin", requestOrigin.getOrigin()); //who is allowed to access the resource
 		} else {
 			aResponseHeader.put("Access-Control-Allow-Origin", "*"); //who is allowed to access the resource
 		}
 		
-		if (null != requestOrigin && requestOrigin.length() > 0)
+		if (originPopulated)
 		{
-			if (requestOrigin.contains(":8080")) { 
-				aResponseHeader.put("Content-Type", "image/svg+xml;charset=utf-8"); // Swagger a.k.a OpenApi
+			if (requestOrigin.isFromSwagger()) { 
+//				aResponseHeader.put("Content-Type", "image/svg+xml;charset=utf-8"); // Swagger a.k.a OpenApi
+				aResponseHeader.put("Content-Type", "application/json"); // Swagger a.k.a OpenApi
 			} else {
 				aResponseHeader.put("Content-Type", "application/json"); // browser or curl
 			}
@@ -168,7 +171,7 @@ public abstract class RequestValidationAdvice
 		aResponseHeader.put("X-Requested-With", "*"); // enable CORS for AWS
 		
 		aResponseHeader.put("Access-Control-Allow-Methods", "OPTIONS,GET,POST,PUT,DELETE,PATCH"); // Allowed HTTP methods
-		aResponseHeader.put("Access-Control-Allow-Headers", "Content-Type,Origin,Accept,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,x-requested-with,Referer,User-Agent,api_key,Host,X-Forwarded-Proto,X-Forwarded-Port"); // Allowed headers		
+		aResponseHeader.put("Access-Control-Allow-Headers", "Content-Type,Origin,Accept,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,x-requested-with,Referer,User-Agent,api_key,Host,X-Forwarded-Proto,X-Forwarded-Port,FromSwagger"); // Allowed headers		
 		
 		return aResponseHeader;
 		

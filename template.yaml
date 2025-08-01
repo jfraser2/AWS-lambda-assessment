@@ -26,6 +26,7 @@ Resources:
           - 'Host'
           - 'X-Forwarded-Proto'
           - 'X-Forwarded-Port'
+          - 'FromSwagger'
         AllowMethods:
           - 'GET'
           - 'POST'
