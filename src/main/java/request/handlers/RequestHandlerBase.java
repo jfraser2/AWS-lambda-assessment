@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
+import helpers.RequestOrigin;
 import helpers.StringBuilderContainer;
 import dto.response.NonModelAdditionalFields;
 import dto.response.ResultStatus;
@@ -219,50 +220,52 @@ public abstract class RequestHandlerBase
 		return  tempString;
 	}
 
-	protected String getRequestOrigin(APIGatewayV2HTTPEvent  request)
+	protected RequestOrigin getRequestOrigin(APIGatewayV2HTTPEvent  request)
 	{
-		String retVar = null;
+		RequestOrigin retVar = null;
 		
-		if (null != request && null != request.getHeaders()) {
+		if (null != request && null != request.getHeaders())  {
 			String tempRetVar = request.getHeaders().get("Referer"); //Sent for Cross-Origin Requests
 			if (null != tempRetVar && tempRetVar.length() > 0) {
-				retVar = tempRetVar;
+				retVar = new RequestOrigin(tempRetVar);
 			} else {
-				retVar = request.getHeaders().get("Origin"); // look for the Origin
+				String tempOrigin = request.getHeaders().get("Origin"); // look for the Origin
+				if (null != tempOrigin && tempOrigin.length() > 0) {
+					retVar = new RequestOrigin(tempOrigin);
+				} else {
+					retVar = new RequestOrigin();
+				}
 			}
-		}
+			
+//			System.out.println("Header map is: " + request.getHeaders());
+			//swagger is changing the header from FromSwagger to Fromswagger			
+			String swaggerCheck = request.getHeaders().get("Fromswagger"); 
+			if (null != swaggerCheck) {
+				retVar.setFromSwagger(Boolean.TRUE);
+//				System.out.println("String from swagger to true");
+			} else {
+				
+			}
+		} // end request has headers
 		
 		return retVar;
 	}
 	
-	protected boolean isSwaggerRequest(String requestOrigin)
-	{
-		boolean retVar = false;
-		
-		if (null != requestOrigin && requestOrigin.length() > 0)
-		{
-			if (requestOrigin.contains(":8080")) { 
-				retVar = true;
-			}
-		}
-		
-		return retVar;
-	}
-	
-	protected Map<String, String> createResponseHeader(String requestOrigin)
+	protected Map<String, String> createResponseHeader(RequestOrigin requestOrigin)
 	{
 		// support CORS
 		Map<String, String> aResponseHeader = new HashMap<String, String>();
 		
-		if (null != requestOrigin && requestOrigin.length() > 0) {
-			aResponseHeader.put("Access-Control-Allow-Origin", requestOrigin); //who is allowed to access the resource
+		if (null != requestOrigin && null != requestOrigin.getOrigin() && requestOrigin.getOrigin().length() > 0) {
+			aResponseHeader.put("Access-Control-Allow-Origin", requestOrigin.getOrigin()); //who is allowed to access the resource
 		} else {
 			aResponseHeader.put("Access-Control-Allow-Origin", "*"); //who is allowed to access the resource
 		}
 		
-		if (isSwaggerRequest(requestOrigin))
+		if (requestOrigin.isFromSwagger())
 		{
-			aResponseHeader.put("Content-Type", "image/svg+xml;charset=utf-8"); // Swagger a.k.a OpenApi
+//			aResponseHeader.put("Content-Type", "image/svg+xml;charset=utf-8"); // Swagger a.k.a OpenApi
+			aResponseHeader.put("Content-Type", "application/json"); // Swagger a.k.a OpenApi
 		} else {
 			aResponseHeader.put("Content-Type", "application/json"); // default Content-Type, for broser, curl or no Origin
 		}
@@ -288,14 +291,14 @@ public abstract class RequestHandlerBase
 		return retVar;
 	}
 
-	protected Map<String, String> createOptionsResponseHeader(String requestOrigin)
+	protected Map<String, String> createOptionsResponseHeader(RequestOrigin requestOrigin)
 	{
 		// support CORS
 //		System.err.println("Access-Control-Allow-Origin is: " + request.getHeader("Origin"));
 		Map<String, String> aResponseHeader = createResponseHeader(requestOrigin);
 		
 		aResponseHeader.put("Access-Control-Allow-Methods", "OPTIONS,GET,POST,PUT,DELETE,PATCH"); // Allowed HTTP methods
-		aResponseHeader.put("Access-Control-Allow-Headers", "Content-Type,Origin,Accept,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,x-requested-with,Referer,User-Agent,api_key,Host,X-Forwarded-Proto,X-Forwarded-Port"); // Allowed headers		
+		aResponseHeader.put("Access-Control-Allow-Headers", "Content-Type,Origin,Accept,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,x-requested-with,Referer,User-Agent,api_key,Host,X-Forwarded-Proto,X-Forwarded-Port,FromSwagger"); // Allowed headers		
 		
 		return aResponseHeader;
 	}

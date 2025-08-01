@@ -3,6 +3,7 @@ package validation.exceptions;
 import java.util.List;
 
 import errorHandling.helpers.ApiValidationError;
+import helpers.RequestOrigin;
 
 public class RequestValidationException
 	extends Exception
@@ -12,9 +13,9 @@ public class RequestValidationException
 	 */
 	protected static final long serialVersionUID = -3967697713578441774L;
 	protected List<ApiValidationError> subErrorList;
-	protected String requestOrigin; //support CORS
+	protected RequestOrigin requestOrigin; //support CORS
 	
-	public RequestValidationException(List<ApiValidationError> requestErrorList, String requestOrigin)
+	public RequestValidationException(List<ApiValidationError> requestErrorList, RequestOrigin requestOrigin)
 	{
 		super();
 		this.subErrorList = requestErrorList;
@@ -25,11 +26,11 @@ public class RequestValidationException
 		return this.subErrorList;
 	}
 
-	public String getRequestOrigin() {
+	public RequestOrigin getRequestOrigin() {
 		return requestOrigin;
 	}
 
-	public void setRequestOrigin(String requestOrigin) {
+	public void setRequestOrigin(RequestOrigin requestOrigin) {
 		this.requestOrigin = requestOrigin;
 	}
 

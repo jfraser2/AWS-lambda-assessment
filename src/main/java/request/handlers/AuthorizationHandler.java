@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import helpers.RequestOrigin;
+
 public class AuthorizationHandler
 	extends RequestHandlerBase
 	implements RequestHandler<APIGatewayV2HTTPEvent, Map<String, Object>>
@@ -42,9 +44,10 @@ public class AuthorizationHandler
 	public Map<String, Object> handleRequest(APIGatewayV2HTTPEvent input, Context context) {
 		System.out.println("Entered the Authorization Handler");
 		
-		String requestOrigin = getRequestOrigin(input);
+		RequestOrigin requestOrigin = getRequestOrigin(input);
 		String requestMethod = input.getRequestContext().getHttp().getMethod();
-		System.out.println("The request Origin is: " + requestOrigin);
+		System.out.println("The request Origin is: " + requestOrigin.getOrigin());
+		System.out.println("FromSwagger is: " + requestOrigin.isFromSwagger());
 		System.out.println("The request Method is: " + requestMethod);
 		System.out.println("raw path is: " + input.getRawPath());
 		
