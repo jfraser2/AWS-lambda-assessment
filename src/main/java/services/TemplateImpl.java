@@ -63,7 +63,9 @@ public class TemplateImpl
 	}
 	
 	@Override
-	public TemplateEntity mergeData(TemplateEntity templateEntity) {
+	public TemplateEntity mergeData(TemplateEntity templateEntity)
+		throws Exception
+	{
 		
 		TemplateEntity retVar = null;
 		
@@ -74,6 +76,7 @@ public class TemplateImpl
 			}	
 		} catch (Exception e) {
 			retVar = null;
+			throw e;
 		}
 		
 		return retVar;

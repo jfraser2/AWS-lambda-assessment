@@ -21,6 +21,9 @@ public class NotificationEntity {
     @JoinColumn(name = "template_id", referencedColumnName = "id", nullable = false)
     protected TemplateEntity templateEntity;
     
+    @Version
+    protected Long version;  // optimistic locking
+    
 	public Long getId() {
 		return this.id;
 	}
@@ -53,5 +56,12 @@ public class NotificationEntity {
 		this.templateEntity = templateEntity;
 	}
 
+	public Long getVersion() {
+		return version;
+	}
+
+	public void setVersion(Long version) {
+		this.version = version;
+	}
     
 }

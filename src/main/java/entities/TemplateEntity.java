@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 
 @Table(name = "templates", schema="va_assessment")
 @Entity
@@ -18,6 +19,9 @@ public class TemplateEntity {
 
     @Column(name = "body", columnDefinition = "VARCHAR(200)", nullable = false)
     protected String body;
+    
+    @Version
+    protected Long version;  // optimistic locking
 
 	public Long getId() {
 		return id;
@@ -34,6 +38,13 @@ public class TemplateEntity {
 	public void setBody(String body) {
 		this.body = body;
 	}
-    
+
+	public Long getVersion() {
+		return version;
+	}
+
+	public void setVersion(Long version) {
+		this.version = version;
+	}
 
 }
