@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import validation.exceptions.DatabaseRowNotFoundException;
+import validation.exceptions.OptimisticLockingException;
 import validation.exceptions.RequestValidationException;
 import validation.exceptions.ShutdownException;
 import errorHandling.helpers.ApiError;
@@ -66,6 +67,19 @@ public abstract class RequestValidationAdvice
     }
     
     public APIGatewayV2HTTPResponse handleDatabaseRowNotFoundException(DatabaseRowNotFoundException ex, ObjectMapper mapper)
+    {
+		ApiError apiError = new ApiError();
+		apiError.setStatus("NO_CONTENT");
+		
+        apiError.setMessage(ex.getMessage());
+        
+		String json = convertApiErrorToJson(apiError, mapper);
+		apiError = null;
+        
+        return buildResponseEntity(json, HttpStatusCode.OK, ex.getRequestOrigin());
+    }
+    
+    public APIGatewayV2HTTPResponse handleOptimisticLockingException(OptimisticLockingException ex, ObjectMapper mapper)
     {
 		ApiError apiError = new ApiError();
 		apiError.setStatus("NO_CONTENT");

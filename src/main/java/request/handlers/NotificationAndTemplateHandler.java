@@ -35,6 +35,7 @@ import services.validation.request.RequestValidationService;
 import software.amazon.awssdk.http.HttpStatusCode;
 import validation.exceptions.BuildNotificationException;
 import validation.exceptions.DatabaseRowNotFoundException;
+import validation.exceptions.OptimisticLockingException;
 import validation.exceptions.RequestValidationException;
 import validation.exceptions.ShutdownException;
 
@@ -409,15 +410,20 @@ public class NotificationAndTemplateHandler
 				retVar = handleDatabaseRowNotFoundException(new DatabaseRowNotFoundException(errorMessage, requestOrigin), mapper);
 			} else {
 				record.setBody(createTemplate.getNewTemplateText());
-				TemplateEntity updatedEntity = templateService.mergeData(record);
-				
-				String jsonString = goodResponse(updatedEntity, stringBuilderContainer, null, mapper);
-				// support CORS
-				retVar = new APIGatewayV2HTTPResponse();
-				retVar.setIsBase64Encoded(false);
-				retVar.setHeaders(createOptionsResponseHeader(requestOrigin));
-				retVar.setStatusCode(HttpStatusCode.OK);
-				retVar.setBody(jsonString);
+				try {
+					TemplateEntity updatedEntity = templateService.mergeData(record);
+					
+					String jsonString = goodResponse(updatedEntity, stringBuilderContainer, null, mapper);
+					// support CORS
+					retVar = new APIGatewayV2HTTPResponse();
+					retVar.setIsBase64Encoded(false);
+					retVar.setHeaders(createOptionsResponseHeader(requestOrigin));
+					retVar.setStatusCode(HttpStatusCode.OK);
+					retVar.setBody(jsonString);
+				} catch (Exception e) {
+					String errorMessage = "The Template for Id: " + createTemplate.getTemplateId() + " was updated by another user. Try Again!!";
+					retVar = handleOptimisticLockingException(new OptimisticLockingException(errorMessage, requestOrigin), mapper);
+				}
 			}
 		}
 		
