@@ -1,7 +1,8 @@
 package errorHandling.helpers;
 
-//import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 //import com.fasterxml.jackson.annotation.JsonFormat;
@@ -11,9 +12,9 @@ public class ApiError
 {
 	protected String status; //HttpStatus as Text
 	   
-	@JsonSerialize(using = DateConverter.class)
+	@JsonSerialize(using = ZonedDateTimeConverter.class)
 //	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy HH:mm:ss")
-	protected Date timestamp;
+	protected ZonedDateTime timestamp;
 	   
 	protected String message;
 	protected String debugMessage;
@@ -21,7 +22,10 @@ public class ApiError
 	protected List<ApiValidationError> subErrors;
 
 	public ApiError() {
-		setTimestamp(new Date());
+	    Instant instant = Instant.now(); // Current instant from London(Greenwich)
+	    ZoneId zoneId = ZoneId.of("America/Chicago");
+	    ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(instant, zoneId);
+		setTimestamp(zonedDateTime);
 	}
 
 	public String getStatus() {
@@ -56,11 +60,11 @@ public class ApiError
 		this.subErrors = subErrors;
 	}
 
-	public Date getTimestamp() {
+	public ZonedDateTime getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(Date timestamp) {
+	public void setTimestamp(ZonedDateTime timestamp) {
 		this.timestamp = timestamp;
 	}
 	   
