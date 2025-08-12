@@ -35,6 +35,7 @@ import services.validation.request.RequestValidationService;
 import software.amazon.awssdk.http.HttpStatusCode;
 import validation.exceptions.BuildNotificationException;
 import validation.exceptions.DatabaseRowNotFoundException;
+import validation.exceptions.EmptyListException;
 import validation.exceptions.OptimisticLockingException;
 import validation.exceptions.RequestValidationException;
 import validation.exceptions.ShutdownException;
@@ -199,7 +200,7 @@ public class NotificationAndTemplateHandler
 		}
 		
 		if(isEmpty) {
-			retVar = handleDatabaseRowNotFoundException(new DatabaseRowNotFoundException("Notification Table is empty.", requestOrigin), mapper);
+			retVar = handleEmptyListException(new EmptyListException("Notification Table is empty.", requestOrigin), mapper);
 		} else {
 			List<Object> objectList = new ArrayList<Object>(aList);
 			String jsonString = goodResponseList(objectList, stringBuilderContainer, gsonWithNoNulls, gsonWithNoNullsAndPrettyPrint, mapper);
@@ -318,7 +319,7 @@ public class NotificationAndTemplateHandler
 		}
 		
 		if(isEmpty) {
-			retVar = handleDatabaseRowNotFoundException(new DatabaseRowNotFoundException("Template Table is empty.", requestOrigin), mapper);
+			retVar = handleEmptyListException(new EmptyListException("Template Table is empty.", requestOrigin), mapper);
 		} else {
 			List<Object> objectList = new ArrayList<Object>(aList);
 			String jsonString = goodResponseList(objectList, stringBuilderContainer, gsonWithNoNulls, gsonWithNoNullsAndPrettyPrint, mapper);

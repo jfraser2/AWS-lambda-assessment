@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import validation.exceptions.DatabaseRowNotFoundException;
+import validation.exceptions.EmptyListException;
 import validation.exceptions.OptimisticLockingException;
 import validation.exceptions.RequestValidationException;
 import validation.exceptions.ShutdownException;
@@ -69,6 +70,19 @@ public abstract class RequestValidationAdvice
     public APIGatewayV2HTTPResponse handleDatabaseRowNotFoundException(DatabaseRowNotFoundException ex, ObjectMapper mapper)
     {
 		ApiError apiError = new ApiError();
+		apiError.setStatus("DATABASE_ROW_NOT_FOUND");
+		
+        apiError.setMessage(ex.getMessage());
+        
+		String json = convertApiErrorToJson(apiError, mapper);
+		apiError = null;
+        
+        return buildResponseEntity(json, HttpStatusCode.NOT_FOUND, ex.getRequestOrigin());
+    }
+    
+    public APIGatewayV2HTTPResponse handleEmptyListException(EmptyListException ex, ObjectMapper mapper)
+    {
+		ApiError apiError = new ApiError();
 		apiError.setStatus("NO_CONTENT");
 		
         apiError.setMessage(ex.getMessage());
@@ -82,14 +96,15 @@ public abstract class RequestValidationAdvice
     public APIGatewayV2HTTPResponse handleOptimisticLockingException(OptimisticLockingException ex, ObjectMapper mapper)
     {
 		ApiError apiError = new ApiError();
-		apiError.setStatus("NO_CONTENT");
+		apiError.setStatus("OPTIMISTIC_LOCKING_ERROR");
 		
         apiError.setMessage(ex.getMessage());
         
 		String json = convertApiErrorToJson(apiError, mapper);
 		apiError = null;
         
-        return buildResponseEntity(json, HttpStatusCode.OK, ex.getRequestOrigin());
+		// 412 Http code official description is: Precondition Failed
+        return buildResponseEntity(json, 412, ex.getRequestOrigin());
     }
     
     public APIGatewayV2HTTPResponse handleRequestValidationException(
