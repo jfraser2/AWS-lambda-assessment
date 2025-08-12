@@ -59,8 +59,8 @@
 					"required": true
 				},
 				"responses": {
-					"200": {
-						"description": "OK",
+					"201": {
+						"description": "CREATED",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -111,8 +111,18 @@
 					"required": true
 				},
 				"responses": {
-					"200": {
-						"description": "OK",
+					"201": {
+						"description": "CREATED",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "NOT_FOUND",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -172,6 +182,26 @@
 								}
 							}
 						}
+					},
+					"404": {
+						"description": "NOT_FOUND",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object"
+								}
+							}
+						}
+					},
+					"412": {
+						"description": "PRECONDITION_FAILED",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object"
+								}
+							}
+						}
 					}
 				}
 			}
@@ -222,6 +252,16 @@
 								}
 							}
 						}
+					},
+					"404": {
+						"description": "NOT_FOUND",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object"
+								}
+							}
+						}
 					}
 				}
 			}
@@ -265,6 +305,16 @@
 				"responses": {
 					"200": {
 						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "NOT_FOUND",
 						"content": {
 							"application/json": {
 								"schema": {
