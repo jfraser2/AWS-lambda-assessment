@@ -90,7 +90,7 @@ public abstract class RequestValidationAdvice
 		String json = convertApiErrorToJson(apiError, mapper);
 		apiError = null;
         
-        return buildResponseEntity(json, HttpStatusCode.NO_CONTENT, ex.getRequestOrigin());
+        return buildResponseEntity(json, HttpStatusCode.OK, ex.getRequestOrigin());
     }
     
     public APIGatewayV2HTTPResponse handleOptimisticLockingException(OptimisticLockingException ex, ObjectMapper mapper)
