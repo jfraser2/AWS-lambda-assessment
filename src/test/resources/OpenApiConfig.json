@@ -364,6 +364,16 @@
 								}
 							}
 						}
+					},
+					"204": {
+						"description": "NO_CONTENT",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object"
+								}
+							}
+						}
 					}
 				}
 			}
@@ -399,6 +409,16 @@
 				"responses": {
 					"200": {
 						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object"
+								}
+							}
+						}
+					},
+					"204": {
+						"description": "NO_CONTENT",
 						"content": {
 							"application/json": {
 								"schema": {
