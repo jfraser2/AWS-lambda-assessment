@@ -117,11 +117,9 @@ curl -i --header "X-Api-Key: abc" --header "Origin: http://localhost:9000" local
 curl -i --header "X-Api-Key: abc" --header "Origin: http://localhost:9000" localhost:9000/v1/all/notifications<br/>
 You should see the following result After a wait:<br/>
 {<br/>
-&nbsp; "status" : "NO_CONTENT",<br/>
-&nbsp; "timestamp" : "07-02-2025 00:00:32",<br/>
-&nbsp; "message" : "Notification Table is empty."<br/>
+&nbsp; "status" : "OK",<br/>
+&nbsp; "NotificationEntity" : [ ]<br/>
 }<br/>
-
 
 curl -i --header "Accept: application/json" --header "X-Api-Key: abc" --header "Origin: http://localhost:9000" --request POST --data "{\"phoneNumber\":\"913-333-1460\",\"personalization\":\"Joe\",\"templateId\":null,\"templateText\":\"Hello, (personal). How are you today, (personal)?\"}" localhost:9000/v1/createNotification
 
