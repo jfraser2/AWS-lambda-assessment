@@ -200,7 +200,7 @@ public class NotificationAndTemplateHandler
 		}
 		
 		if(isEmpty) {
-			retVar = handleEmptyListException(new EmptyListException("Notification Table is empty.", requestOrigin), mapper);
+			retVar = handleEmptyListException(new EmptyListException("Notification Table is empty.", requestOrigin, "NotificationEntity"), mapper);
 		} else {
 			List<Object> objectList = new ArrayList<Object>(aList);
 			String jsonString = goodResponseList(objectList, stringBuilderContainer, gsonWithNoNulls, gsonWithNoNullsAndPrettyPrint, mapper);
@@ -319,7 +319,7 @@ public class NotificationAndTemplateHandler
 		}
 		
 		if(isEmpty) {
-			retVar = handleEmptyListException(new EmptyListException("Template Table is empty.", requestOrigin), mapper);
+			retVar = handleEmptyListException(new EmptyListException("Template Table is empty.", requestOrigin, "TemplateEntity"), mapper);
 		} else {
 			List<Object> objectList = new ArrayList<Object>(aList);
 			String jsonString = goodResponseList(objectList, stringBuilderContainer, gsonWithNoNulls, gsonWithNoNullsAndPrettyPrint, mapper);

@@ -8,6 +8,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import validation.exceptions.DatabaseRowNotFoundException;
 import validation.exceptions.EmptyListException;
@@ -82,13 +83,18 @@ public abstract class RequestValidationAdvice
     
     public APIGatewayV2HTTPResponse handleEmptyListException(EmptyListException ex, ObjectMapper mapper)
     {
-		ApiError apiError = new ApiError();
-		apiError.setStatus("NO_CONTENT");
-		
-        apiError.setMessage(ex.getMessage());
-        
-		String json = convertApiErrorToJson(apiError, mapper);
-		apiError = null;
+    	String json = null;
+        String rawJson = "{\"status\": \"OK\"," + "\"" + ex.getClassName() + "\": []}";
+		try {
+			if (null != rawJson)
+			{
+				JsonNode rootNode = mapper.readTree(rawJson);
+				json = rootNode.toPrettyString();			}
+		}
+		catch(JsonProcessingException jpe)
+		{
+			json = null;
+		}
         
         return buildResponseEntity(json, HttpStatusCode.OK, ex.getRequestOrigin());
     }
