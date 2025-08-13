@@ -51,7 +51,7 @@ public abstract class RequestValidationAdvice
 		String json = convertApiErrorToJson(apiError, mapper);
 		apiError = null;
         
-        return buildResponseEntity(json, HttpStatusCode.OK, requestOrigin);
+        return buildResponseEntity(json, HttpStatusCode.FORBIDDEN, requestOrigin);
     }
 	
     public APIGatewayV2HTTPResponse handleIllegalArgumentException(
@@ -65,7 +65,7 @@ public abstract class RequestValidationAdvice
 		String json = convertApiErrorToJson(apiError, mapper);
 		apiError = null;
         
-        return buildResponseEntity(json, HttpStatusCode.OK, requestOrigin);
+        return buildResponseEntity(json, HttpStatusCode.BAD_REQUEST, requestOrigin);
     }
     
     public APIGatewayV2HTTPResponse handleDatabaseRowNotFoundException(DatabaseRowNotFoundException ex, ObjectMapper mapper)
@@ -89,7 +89,8 @@ public abstract class RequestValidationAdvice
 			if (null != rawJson)
 			{
 				JsonNode rootNode = mapper.readTree(rawJson);
-				json = rootNode.toPrettyString();			}
+				json = rootNode.toPrettyString();
+			}
 		}
 		catch(JsonProcessingException jpe)
 		{
@@ -126,7 +127,7 @@ public abstract class RequestValidationAdvice
 		String json = convertApiErrorToJson(apiError, mapper);
 		apiError = null;
         
-        return buildResponseEntity(json, HttpStatusCode.OK, ex.getRequestOrigin());
+        return buildResponseEntity(json, HttpStatusCode.BAD_REQUEST, ex.getRequestOrigin());
     }
 	 
     public APIGatewayV2HTTPResponse handleShutdownException(
