@@ -10,10 +10,12 @@ public class EmptyListException
 	 */
 	protected static final long serialVersionUID = 1896610476358234443L;
 	protected RequestOrigin requestOrigin; //support CORS
+	protected String className;
 
-	public EmptyListException(String exceptionText, RequestOrigin requestOrigin) {
+	public EmptyListException(String exceptionText, RequestOrigin requestOrigin, String className) {
 		super(exceptionText);
 		this.requestOrigin = requestOrigin;
+		this.className = className;
 	}
 
 	public RequestOrigin getRequestOrigin() {
@@ -24,4 +26,12 @@ public class EmptyListException
 		this.requestOrigin = requestOrigin;
 	}
 
+	public String getClassName() {
+		return className;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
+	}
+	
 }
