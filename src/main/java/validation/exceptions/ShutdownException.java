@@ -9,21 +9,21 @@ public class ShutdownException
 	 * 
 	 */
 	protected static final long serialVersionUID = 2305399875677747137L;
-	protected String status;
+	protected String requestStatus;
 	protected RequestOrigin requestOrigin; //support CORS
 	
 	public ShutdownException(String exceptionText, String statusText, RequestOrigin requestOrigin) {
 		super(exceptionText);
-		this.status = statusText;
+		this.requestStatus = statusText;
 		this.requestOrigin = requestOrigin;
 	}
 
-	public String getStatus() {
-		return status;
+	public String getRequestStatus() {
+		return requestStatus;
 	}
 
-	public void setStatus(String status) {
-		this.status = status;
+	public void setRequestStatus(String status) {
+		this.requestStatus = status;
 	}
 
 	public RequestOrigin getRequestOrigin() {

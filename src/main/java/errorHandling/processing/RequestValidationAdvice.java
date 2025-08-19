@@ -43,7 +43,7 @@ public abstract class RequestValidationAdvice
     		AccessDeniedException ex, RequestOrigin requestOrigin, ObjectMapper mapper)
     {
 		ApiError apiError = new ApiError();
-		apiError.setStatus("FORBIDDEN");
+		apiError.setRequestStatus("FORBIDDEN");
     	
  		String error = ex.getMessage();
         apiError.setMessage(error);
@@ -58,7 +58,7 @@ public abstract class RequestValidationAdvice
     		IllegalArgumentException ex, RequestOrigin requestOrigin, ObjectMapper mapper)
     {
 		ApiError apiError = new ApiError();
-		apiError.setStatus("BAD_REQUEST");
+		apiError.setRequestStatus("BAD_REQUEST");
 		
         apiError.setMessage(ex.getMessage());
         
@@ -71,7 +71,7 @@ public abstract class RequestValidationAdvice
     public APIGatewayV2HTTPResponse handleDatabaseRowNotFoundException(DatabaseRowNotFoundException ex, ObjectMapper mapper)
     {
 		ApiError apiError = new ApiError();
-		apiError.setStatus("DATABASE_ROW_NOT_FOUND");
+		apiError.setRequestStatus("DATABASE_ROW_NOT_FOUND");
 		
         apiError.setMessage(ex.getMessage());
         
@@ -84,7 +84,7 @@ public abstract class RequestValidationAdvice
     public APIGatewayV2HTTPResponse handleEmptyListException(EmptyListException ex, ObjectMapper mapper)
     {
     	String json = null;
-        String rawJson = "{\"status\": \"OK\"," + "\"" + ex.getClassName() + "\": []}";
+        String rawJson = "{\"requestStatus\": \"OK\"," + "\"" + ex.getClassName() + "\": []}";
 		try {
 			if (null != rawJson)
 			{
@@ -103,7 +103,7 @@ public abstract class RequestValidationAdvice
     public APIGatewayV2HTTPResponse handleOptimisticLockingException(OptimisticLockingException ex, ObjectMapper mapper)
     {
 		ApiError apiError = new ApiError();
-		apiError.setStatus("OPTIMISTIC_LOCKING_ERROR");
+		apiError.setRequestStatus("OPTIMISTIC_LOCKING_ERROR");
 		
         apiError.setMessage(ex.getMessage());
         
@@ -118,7 +118,7 @@ public abstract class RequestValidationAdvice
     	RequestValidationException ex, ObjectMapper mapper)
     {
 		ApiError apiError = new ApiError();
-		apiError.setStatus("BAD_REQUEST");
+		apiError.setRequestStatus("BAD_REQUEST");
 		
 		String error = "Validation errors";
         apiError.setMessage(error);
@@ -134,7 +134,7 @@ public abstract class RequestValidationAdvice
         ShutdownException ex, ObjectMapper mapper)
     {
 		ApiError apiError = new ApiError();
-		apiError.setStatus(ex.getStatus());
+		apiError.setRequestStatus(ex.getRequestStatus());
 		
 		String error = ex.getMessage();
         apiError.setMessage(error);
