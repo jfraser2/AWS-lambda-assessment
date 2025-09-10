@@ -1,7 +1,6 @@
 package errorHandling.helpers;
 
-import java.time.Instant;
-import java.time.ZoneId;
+import enums.ZonedDateTimeEnum;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -22,9 +21,7 @@ public class ApiError
 	protected List<ApiValidationError> subErrors;
 
 	public ApiError() {
-	    Instant instant = Instant.now(); // Current instant from London(Greenwich)
-	    ZoneId zoneId = ZoneId.of("America/Chicago");
-	    ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(instant, zoneId);
+	    ZonedDateTime zonedDateTime = ZonedDateTimeEnum.INSTANCE.now();
 		setTimestamp(zonedDateTime);
 	}
 
