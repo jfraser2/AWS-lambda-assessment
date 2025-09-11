@@ -7,6 +7,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+//AWS should not hold state(i.e. no non-final fields in enum)
 public enum ZonedDateTimeEnum {
 
 	INSTANCE;
@@ -17,17 +18,10 @@ public enum ZonedDateTimeEnum {
 	public final String DATE_FORMAT2 = "yyyy-MM-dd'T'HH:mm:ss[xx][XX]";
 	public final String DATE_FORMAT3 = "MM-dd-yyyy HH:mm:ss z (XXX)";
 	
-	protected ZoneId zoneId = null;
-
 	private ZonedDateTimeEnum() {
 	    // Perform any configuration here.
-	    this.zoneId = this.defaultZoneId;
 	}
 
-	public void resetDefaultZoneId() {
-	    this.zoneId = this.defaultZoneId;
-	}
-	
 	protected boolean validString(String aString) {
 		boolean retVar = false;
 		
@@ -53,19 +47,9 @@ public enum ZonedDateTimeEnum {
 		
 	}
 	
-	public void setZoneId(String newZoneId) {
-		if (validString(newZoneId)) {
-			// If the zone ID equals 'Z', the result is ZoneOffset.UTC
-			ZoneId tempZoneId = getZoneId(newZoneId);
-			if (null != tempZoneId) {
-				this.zoneId = tempZoneId;
-			}
-		}
-	}
-	
 	public ZonedDateTime now() {
 	    Instant instant = Instant.now(); // Current instant from London(Greenwich)
-		return  ZonedDateTime.ofInstant(instant, this.zoneId);
+		return  ZonedDateTime.ofInstant(instant, this.defaultZoneId);
 	}
 	
 	public ZonedDateTime now(ZoneId aZoneId) {
@@ -99,7 +83,7 @@ public enum ZonedDateTimeEnum {
 		
 		if (validString(date) && validString(dateFormat)) {
 			try {
-				DateTimeFormatter dtf = DateTimeFormatter.ofPattern(dateFormat).withZone(this.zoneId);
+				DateTimeFormatter dtf = DateTimeFormatter.ofPattern(dateFormat).withZone(this.defaultZoneId);
 				retVar = ZonedDateTime.parse(date, dtf);
 			} catch(Exception e) {
 				retVar = null;
@@ -127,12 +111,12 @@ public enum ZonedDateTimeEnum {
 		return retVar;
 	}
 	
-	public Long convertZonedDateToMilliseconds(ZonedDateTime orig) {
+	protected Long convertZonedDateToMilliseconds(ZonedDateTime orig) {
 		
 		Long retVar = null;
 		
 		if (null != orig) {
-			retVar = Long.valueOf(orig.toInstant().toEpochMilli());
+			retVar = Long.valueOf(orig.toInstant().toEpochMilli()); // orig.toInstant() returns UTC
 		}	
 		
 		return retVar;
@@ -170,7 +154,7 @@ public enum ZonedDateTimeEnum {
 		String retVar = null;
 		
 		if (null != theTime && validString(dateFormat)) {
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat).withZone(this.zoneId);			
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat).withZone(this.defaultZoneId);			
 			retVar = theTime.format(formatter);
 		}
 		
@@ -198,7 +182,7 @@ public enum ZonedDateTimeEnum {
 			Instant i = Instant.ofEpochSecond(milliSeconds);
 			ZonedDateTime zulu = ZonedDateTime.ofInstant(i, UTC_ZONE_ID);
 			
-			ZoneId usingZone = this.zoneId;
+			ZoneId usingZone = this.defaultZoneId;
 			if (null != usingZone) {
 				ZonedDateTime newDateTime = zulu.withZoneSameInstant(usingZone);
 				retVar = writeDateString(newDateTime, dateFormat);
